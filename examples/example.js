@@ -1,5 +1,5 @@
 // example.js
-const BagelDB = require('./BagelDB'); // Import the BagelDB client
+const BagelDB = require('bageldb-beta'); // Import the BagelDB client
 
 const main = async () => {
   const db = new BagelDB(); // Create a new instance of BagelDB
