@@ -83,3 +83,57 @@ db.search(index, vector)
 `search` returns a promise. If successful, the server's response is logged. If not, an error message is logged.
 
 **Possible errors**: Invalid vector or index. Ensure your vector is an array of numbers and the index exists in the database.
+
+
+Sure, I can provide a step by step guide on how to get OpenAI Embeddings and then use it to store and search vectors in BagelDB. Here's how you can document this part:
+
+## 6. Getting OpenAI Embeddings
+
+This client also provides a method to interact with the OpenAI API and get embeddings. 
+
+1. Use `getOpenAIEmbedding` to generate embeddings for a given input text.
+
+```javascript
+const inputText = 'Sample text for embedding';
+
+db.getOpenAIEmbedding(inputText)
+  .then(response => console.log(response))
+  .catch(error => console.error('An error occurred:', error));
+```
+
+`getOpenAIEmbedding` returns a promise. If successful, the server's response is logged. If not, an error message is logged.
+
+**Possible errors**: Invalid input text or missing OpenAI API key. Make sure your input text is a string and you have your OpenAI API key in your environment variables.
+
+## 7. Storing and Searching Embeddings
+
+1. Once you have the embeddings from OpenAI, you can store them in BagelDB using the `insert` method.
+
+```javascript
+const index = 'myEmbeddingsIndex';
+const vectors = [
+  {
+    id: 'embed1',
+    values: response.embeddings, // Assuming 'response' is the result from the `getOpenAIEmbedding` method.
+    metadata: { text: inputText },
+  },
+];
+
+db.insert(index, vectors)
+  .then(response => console.log(response))
+  .catch(error => console.error('An error occurred:', error));
+```
+
+2. Then, you can perform a search in this index.
+
+```javascript
+const vector = response.embeddings; // Assuming 'response' is the result from the `getOpenAIEmbedding` method.
+
+db.search(index, vector)
+  .then(response => console.log(response))
+  .catch(error => console.error('An error occurred:', error));
+```
+
+Both `insert` and `search` return a promise. If successful, the server's response is logged. If not, an error message is logged.
+
+**Possible errors**: Invalid vector, index, or embedding. Make sure your embeddings are an array of numbers, your input text is a string, and the index exists in the database.
