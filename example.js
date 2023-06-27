@@ -1,10 +1,10 @@
 // example.js
-const BagelDB = require('./BagelDB'); // assuming the client and this script are in the same directory
+const BagelDB = require('./BagelDB'); // Import the BagelDB client
 
 const main = async () => {
-  const db = new BagelDB();
+  const db = new BagelDB(); // Create a new instance of BagelDB
 
-  // Ping the server
+  // Ping the server to check if it's responding
   try {
     const pingResponse = await db.ping();
     console.log(pingResponse);
@@ -12,7 +12,7 @@ const main = async () => {
     console.error('An error occurred while pinging:', error);
   }
 
-  // Get an OpenAI embedding
+  // Get an OpenAI embedding for a sample text
   const inputText = 'Sample text for embedding';
   let embedding;
   try {
@@ -41,8 +41,8 @@ const main = async () => {
     console.error('An error occurred while inserting:', error);
   }
 
-  // Perform a search in the index
-  const vector = embedding; // Use the retrieved embedding array
+  // Perform a search in the index using the same embedding
+  const vector = embedding;
 
   try {
     const searchResponse = await db.search(index, vector);
@@ -52,4 +52,5 @@ const main = async () => {
   }
 };
 
-main();
+main(); // Call the main function to start the example
+
