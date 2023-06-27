@@ -24,3 +24,16 @@ package-lock.json
 .DS_Store
 Thumbs.db
 
+# Python related
+*.pyc
+*.pyo
+*.pyd
+__pycache__
+*.py[cod]
+*$py.class
+
+# virtualenv related
+*.venv
+venv/
+ENV/
+env/
