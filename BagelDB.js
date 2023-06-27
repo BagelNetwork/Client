@@ -3,6 +3,8 @@ const axios = require('axios');
 class BagelDB {
   constructor() {
     this.baseURL = 'https://api.bageldb.ai';
+    this.openAIURL = 'https://api.openai.com';
+    this.openAIKey = process.env.OPENAI_API_KEY;
   }
 
   async ping() {
@@ -11,6 +13,31 @@ class BagelDB {
       return response.data;
     } catch (error) {
       throw error;
+    }
+  }
+
+  async getOpenAIEmbedding(inputText, model='text-embedding-ada-002') {
+    if (typeof inputText !== 'string') {
+        throw new Error("Input text must be a string");
+    }
+
+    if (!this.openAIKey) {
+        throw new Error("OpenAI API key is missing from environment variables");
+    }
+
+    try {
+        const response = await axios.post(`${this.openAIURL}/v1/embeddings`, {
+            input: inputText,
+            model: model
+        }, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.openAIKey}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        throw error;
     }
   }
 

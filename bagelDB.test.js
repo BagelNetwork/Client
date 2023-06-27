@@ -24,6 +24,25 @@ describe('BagelDB', () => {
     expect(axios.get).toHaveBeenCalledWith(`${bagelDB.baseURL}/v0/ping`);
   });
 
+  test('getOpenAIEmbedding', async () => {
+    const inputText = 'Some input text';
+    const model = 'text-embedding-ada-002';
+    const responseData = {
+      embeddings: [0.1, 0.2, 0.3, 0.4],
+    };
+    axios.post.mockResolvedValue({ data: responseData });
+  
+    const result = await bagelDB.getOpenAIEmbedding(inputText, model);
+  
+    expect(result).toEqual(responseData);
+    expect(axios.post).toHaveBeenCalledWith(`${bagelDB.openAIURL}/v1/embeddings`, { input: inputText, model: model }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${bagelDB.openAIKey}`,
+      },
+    });
+  });  
+
   test('insert with valid data', async () => {
     const index = 'bagel';
     const vectors = [
