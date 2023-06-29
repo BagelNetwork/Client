@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch, Mock
-from betabageldb import BagelDB
+from BagelDB import BagelDB
 
 class TestBagelDB(unittest.TestCase):
     def setUp(self):
@@ -66,4 +66,5 @@ class TestBagelDB(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
 

@@ -1,3 +1,20 @@
+Metadata-Version: 2.1
+Name: betabageldb
+Version: 0.1.0
+Summary: BagelDB is a Python library for interacting with the BagelDB API.
+Home-page: https://github.com/Bagel-DB/Client
+Author: Bidhan Roy
+Author-email: bidhan@bageldb.ai
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE.txt
+
 Sure, here's a step-by-step guide on how to use the `BagelDB` Python client:
 
 1. **Import the `BagelDB` client**
@@ -5,7 +22,7 @@ Sure, here's a step-by-step guide on how to use the `BagelDB` Python client:
    Start by importing the `BagelDB` client into your Python script.
 
    ```python
-   from betabageldb import BagelDB
+   from BagelDB import BagelDB
    ```
 
 2. **Initialize the BagelDB client**
