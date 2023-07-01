@@ -1,4 +1,4 @@
-Sure, here's a step-by-step guide on how to use the `BagelDB` Python client:
+Here's a step-by-step guide on how to use the `BagelDB` Python client:
 
 1. **Import the `BagelDB` client**
 
