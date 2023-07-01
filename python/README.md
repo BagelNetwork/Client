@@ -1,4 +1,4 @@
-Here's a step-by-step guide on how to use the `BagelDB` Python client:
+Here's a step by step guide on how to use BagelDB python client.
 
 1. **Import the `BagelDB` client**
 
@@ -10,15 +10,16 @@ Here's a step-by-step guide on how to use the `BagelDB` Python client:
 
 2. **Initialize the BagelDB client**
 
-   Next, initialize a new instance of the `BagelDB` client. Make sure you have your OpenAI API key set in your environment variables as `OPENAI_API_KEY`. 
+   Initialize a new instance of the `BagelDB` client. You need to specify the index you want to work with at this stage. This index will be used for all subsequent insertions and searches. Make sure you have your OpenAI API key set in your environment variables as `OPENAI_API_KEY`.
 
    ```python
-   db = BagelDB()
+   index = "myIndex"
+   db = BagelDB(index)
    ```
 
 3. **Ping the BagelDB server**
 
-   To check the connection to the BagelDB server, you can use the `ping()` method. This method will return a response from the BagelDB API in JSON format. 
+   To check the connection to the BagelDB server, you can use the `ping()` method. This method will return a response from the BagelDB API in JSON format.
 
    ```python
    response = db.ping()
@@ -27,7 +28,7 @@ Here's a step-by-step guide on how to use the `BagelDB` Python client:
 
 4. **Get OpenAI embeddings**
 
-   Use the `getOpenAIEmbedding(inputText, model='text-embedding-ada-002')` method to get embeddings from OpenAI. The `inputText` is the text for which embeddings are required. `model` is optional and defaults to 'text-embedding-ada-002'. 
+   Use the `getOpenAIEmbedding(inputText, model='text-embedding-ada-002')` method to get embeddings from OpenAI. The `inputText` is the text for which embeddings are required. `model` is optional and defaults to 'text-embedding-ada-002'.
 
    ```python
    input_text = "Some text"
@@ -37,25 +38,25 @@ Here's a step-by-step guide on how to use the `BagelDB` Python client:
 
 5. **Insert vectors into BagelDB**
 
-   To insert vectors into a given index in BagelDB, use the `insert(index, vectors)` method. `index` is the index in which vectors are to be inserted, and `vectors` is a list of vectors to be inserted.
+   To insert vectors into BagelDB, use the `insert(vectors)` method. `vectors` is a list of vectors to be inserted. The index is already set during the initialization of the BagelDB client and is not required here.
 
    ```python
-   index = "myIndex"
    vectors = [{'id': 'vec1', 'values': [0.1, 0.2, 0.3], 'metadata': {'key': 'value'}}]
-   insert_response = db.insert(index, vectors)
+   insert_response = db.insert(vectors)
    print(insert_response)
    ```
 
 6. **Search for a vector in BagelDB**
 
-   To search for a vector in a given index in BagelDB, use the `search(index, vector)` method. `index` is the index in which the search is to be performed, and `vector` is the vector for which the search is to be performed.
+   To search for a vector in BagelDB, use the `search(vector)` method. `vector` is the vector for which the search is to be performed. The index is already set during the initialization of the BagelDB client and is not required here.
 
    ```python
-   index = "myIndex"
    vector = [0.1, 0.2, 0.3]
-   search_response = db.search(index, vector)
+   search_response = db.search(vector)
    print(search_response)
    ```
+
+Remember to handle exceptions in your application. The methods in the `BagelDB` client can raise exceptions if a network error occurs or if the response from the server indicates a failed HTTP status code.
 
 7. **Insert vectors from texts**
 
