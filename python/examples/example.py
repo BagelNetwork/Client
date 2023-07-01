@@ -1,5 +1,5 @@
 # example.py
-from BagelDB import BagelDB # Import the BagelDB client
+from betabageldb import BagelDB # Import the BagelDB client
 
 def main():
     db = BagelDB() # Create a new instance of BagelDB

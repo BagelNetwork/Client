@@ -3,13 +3,21 @@ import requests
 import json
 
 class BagelDB:
-    def __init__(self):
+    def __init__(self, index):
         """
-        Constructor to initialize BagelDB and OpenAI base URLs and OpenAI API key from environment variables.
+        Constructor to initialize BagelDB and OpenAI base URLs, OpenAI API key from environment variables, 
+        and an index that can't be changed afterwards.
+        
+        :param index: The index in which vectors are to be inserted or searched.
+        :type index: str
         """
+        if not isinstance(index, str):
+            raise ValueError("Index must be a string")
+
         self.baseURL = 'https://api.bageldb.ai'
         self.openAIURL = 'https://api.openai.com'
         self.openAIKey = os.getenv('OPENAI_API_KEY')
+        self.index = index
 
     def ping(self):
         """
@@ -59,20 +67,15 @@ class BagelDB:
         except requests.exceptions.RequestException as err:
             print(f'Request failed: {err}')
 
-    def insert(self, index, vectors):
+    def insert(self, vectors):
         """
-        Method to insert vectors into a given index in BagelDB.
+        Method to insert vectors into the initialized index in BagelDB.
         
-        :param index: The index in which vectors are to be inserted.
-        :type index: str
         :param vectors: An array of vectors to be inserted.
         :type vectors: list
         :return: Response from the BagelDB API in json format.
         :rtype: dict
         """
-        if not isinstance(index, str):
-            raise ValueError("Index must be a string")
-
         if not isinstance(vectors, list):
             raise ValueError("Vectors must be an array")
 
@@ -81,7 +84,7 @@ class BagelDB:
                 raise ValueError("Each vector must be an object with an 'id', 'values' array, and 'metadata' object")
 
         data = {
-            "index": index,
+            "index": self.index,
             "vectors": vectors
         }
 
@@ -92,25 +95,20 @@ class BagelDB:
         except requests.exceptions.RequestException as err:
             print(f'Request failed: {err}')
 
-    def search(self, index, vector):
+    def search(self, vector):
         """
-        Method to search for a vector in a given index in BagelDB.
+        Method to search for a vector in the initialized index in BagelDB.
         
-        :param index: The index in which the search is to be performed.
-        :type index: str
         :param vector: The vector for which the search is to be performed.
         :type vector: list
         :return: Response from the BagelDB API in json format.
         :rtype: dict
         """
-        if not isinstance(index, str):
-            raise ValueError("Index must be a string")
-
         if not isinstance(vector, list):
             raise ValueError("Vector must be an array")
 
         data = {
-            "index": index,
+            "index": self.index,
             "vector": vector
         }
 
@@ -120,4 +118,49 @@ class BagelDB:
             return response.json()
         except requests.exceptions.RequestException as err:
             print(f'Request failed: {err}')
+
+    def insertFromTexts(self, texts, model='text-embedding-ada-002'):
+        """
+        Method to convert a list of texts to embeddings and insert them into the initialized index in BagelDB.
+
+        :param texts: A list of texts to be converted to embeddings and inserted.
+        :type texts: list of str
+        :param model: The model to use for generating embeddings. Defaults to 'text-embedding-ada-002'.
+        :type model: str, optional
+        :return: Response from the BagelDB API in json format.
+        :rtype: dict
+        """
+        if not isinstance(texts, list):
+            raise ValueError("Texts must be a list")
+
+        vectors = []
+        for i, text in enumerate(texts):
+            embedding = self.getOpenAIEmbedding(text, model)
+            vector = {
+                'id': f'vec{i}',
+                'values': embedding['embeddings'],
+                'metadata': {'text': text},
+            }
+            vectors.append(vector)
+
+        return self.insert(vectors)
+
+    def searchFromText(self, text, model='text-embedding-ada-002'):
+        """
+        Method to convert a text to an embedding and search for it in the initialized index in BagelDB.
+
+        :param text: The text to be converted to an embedding and searched.
+        :type text: str
+        :param model: The model to use for generating embeddings. Defaults to 'text-embedding-ada-002'.
+        :type model: str, optional
+        :return: Response from the BagelDB API in json format.
+        :rtype: dict
+        """
+        if not isinstance(text, str):
+            raise ValueError("Text must be a string")
+
+        embedding = self.getOpenAIEmbedding(text, model)
+        vector = embedding['embeddings']
+
+        return self.search(vector)
 
