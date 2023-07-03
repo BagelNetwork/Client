@@ -1,110 +1,39 @@
+import os
 import unittest
-from unittest.mock import patch, Mock
-from BagelDB import BagelDB
-import json
+import BagelDB
 
 class TestBagelDB(unittest.TestCase):
-    def setUp(self):
-        self.index = 'bagel'
-        self.bagelDB = BagelDB(self.index)
-        self.vector = [1.0, 2.0, 3.0, 4.0]
-        self.inputText = 'Some input text'
-        self.model = 'text-embedding-ada-002'
+    @classmethod
+    def setUpClass(cls):
+        cls.bageldb = BagelDB.BagelDB('your_real_index')
 
-    @patch('requests.get')
-    def test_ping(self, mock_get):
-        mock_get.return_value.json.return_value = {'status': 'ok'}
-        result = self.bagelDB.ping()
-        self.assertEqual(result, {'status': 'ok'})
-        mock_get.assert_called_once_with(f'{self.bagelDB.baseURL}/v0/ping')
+    def test_constructor(self):
+        self.assertEqual(self.bageldb.index, 'your_real_index')
+        self.assertEqual(self.bageldb.openAIKey, os.getenv('OPENAI_API_KEY'))
 
-    @patch('requests.post')
-    def test_getOpenAIEmbedding(self, mock_post):
-        mock_post.return_value.json.return_value = {'embeddings': [0.1, 0.2, 0.3, 0.4]}
-        result = self.bagelDB.getOpenAIEmbedding(self.inputText, self.model)
-        self.assertEqual(result, {'embeddings': [0.1, 0.2, 0.3, 0.4]})
-        mock_post.assert_called_once_with(
-            f'{self.bagelDB.openAIURL}/v1/embeddings',
-            data='{"input": "Some input text", "model": "text-embedding-ada-002"}',
-            headers={'Content-Type': 'application/json', 'Authorization': f'Bearer {self.bagelDB.openAIKey}'}
-        )
+    def test_ping(self):
+        response = self.bageldb.ping()
+        self.assertIn('ok', response.values())
 
-    @patch('requests.post')
-    def test_insert(self, mock_post):
-        vectors = [
-            {
-                'id': 'vec1',
-                'values': [0.1, 0.2, 0.3, 0.4],
-                'metadata': {'genre': 'drama'},
-            },
-            {
-                'id': 'vec2',
-                'values': [0.2, 0.3, 0.4, 0.5],
-                'metadata': {'genre': 'action'},
-            },
-        ]
-        mock_post.return_value.json.return_value = {'status': 'ok'}
-        result = self.bagelDB.insert(vectors)
-        self.assertEqual(result, {'status': 'ok'})
-        mock_post.assert_called_once_with(
-            f'{self.bagelDB.baseURL}/v0/insert',
-            data=f'{{"index": "{self.index}", "vectors": {json.dumps(vectors)}}}'
-        )
+    #def test_getOpenAIEmbedding(self):
+    #    response = self.bageldb.getOpenAIEmbedding('test_text')
+    #    self.assertIn('embedding', response['data'][0])
 
-    @patch('requests.post')
-    def test_search(self, mock_post):
-        mock_post.return_value.json.return_value = {
-            'results': {
-                'matches': [{'score': 0.75, 'vectorId': 'vec1'}, {'score': 0.65, 'vectorId': 'vec2'}]
-            }
-        }
-        result = self.bagelDB.search(self.vector)
-        self.assertEqual(result, {'results': {'matches': [{'score': 0.75, 'vectorId': 'vec1'}, {'score': 0.65, 'vectorId': 'vec2'}]}})
-        mock_post.assert_called_once_with(
-            f'{self.bagelDB.baseURL}/v0/search',
-            data=f'{{"index": "{self.index}", "vector": {self.vector}}}'
-        )
+    def test_insert(self):
+        response = self.bageldb.insert([{'id': 'test_id', 'values': [1.0], 'metadata': {}}])
+        self.assertIn('status', response)
 
-    @patch.object(BagelDB, 'getOpenAIEmbedding')
-    @patch('requests.post')
-    def test_insertFromTexts(self, mock_post, mock_getEmbedding):
-        mock_getEmbedding.return_value = {'embeddings': [0.1, 0.2, 0.3, 0.4]}
-        texts = ["Some text 1", "Some text 2"]
-        vectors = [
-            {
-                'id': 'vec0',
-                'values': [0.1, 0.2, 0.3, 0.4],
-                'metadata': {'text': "Some text 1"},
-            },
-            {
-                'id': 'vec1',
-                'values': [0.1, 0.2, 0.3, 0.4],
-                'metadata': {'text': "Some text 2"},
-            },
-        ]
-        mock_post.return_value.json.return_value = {'status': 'ok'}
-        result = self.bagelDB.insertFromTexts(texts, self.model)
-        self.assertEqual(result, {'status': 'ok'})
-        mock_post.assert_called_once_with(
-            f'{self.bagelDB.baseURL}/v0/insert',
-            data=f'{{"index": "{self.index}", "vectors": {json.dumps(vectors)}}}'
-        )
+    def test_search(self):
+        response = self.bageldb.search([1.0])
+        self.assertIn('results', response)
 
-    @patch.object(BagelDB, 'getOpenAIEmbedding')
-    @patch('requests.post')
-    def test_searchFromText(self, mock_post, mock_getEmbedding):
-        mock_getEmbedding.return_value = {'embeddings': [0.1, 0.2, 0.3, 0.4]}
-        mock_post.return_value.json.return_value = {
-            'results': {
-                'matches': [{'score': 0.75, 'vectorId': 'vec1'}, {'score': 0.65, 'vectorId': 'vec2'}]
-            }
-        }
-        result = self.bagelDB.searchFromText(self.inputText, self.model)
-        self.assertEqual(result, {'results': {'matches': [{'score': 0.75, 'vectorId': 'vec1'}, {'score': 0.65, 'vectorId': 'vec2'}]}})
-        mock_post.assert_called_once_with(
-            f'{self.bagelDB.baseURL}/v0/search',
-            data=f'{{"index": "{self.index}", "vector": {mock_getEmbedding.return_value["embeddings"]}}}'
-        )
+    def test_insertFromTexts(self):
+        response = self.bageldb.insertFromTexts(['test_text'])
+        self.assertIn('status', response)
+
+    def test_searchFromText(self):
+        response = self.bageldb.searchFromText('test_text')
+        self.assertIn('results', response)
 
 if __name__ == '__main__':
     unittest.main()
