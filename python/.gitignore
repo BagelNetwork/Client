@@ -6,6 +6,7 @@ __pycache__/
 *.pyd
 *.egg-info/
 dist/
+build/
 
 # Virtualenv
 venv/

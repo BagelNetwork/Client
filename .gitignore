@@ -1,18 +1,50 @@
-# Node.js dependencies
-node_modules/
-package-lock.json
+# Python
+*.py[cod]
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
 
-# IDE-specific ignores
+# Virtualenv
+venv/
+env/
+ENV/
+
+# IDE
 .vscode/
+*.vscode/
 .idea/
 *.code-workspace
 *.sublime-*
-*.swp
-*.swo
 *.komodoproject
 *.komodotools
 *.kpf
 *.komodotool
+
+# Editors
+*~
+*.swp
+*.swo
+
+# Logs and Databases
+*.log
+*.sqlite3
+*.db
+*.sqlite
+db.sqlite3
+
+# Temporary files
+*.bak
+*.tmp
+*.swp
+*.DS_Store
+
+# Node.js dependencies
+node_modules/
+package-lock.json
 
 # Text editor ignores
 *~
@@ -25,15 +57,7 @@ package-lock.json
 Thumbs.db
 
 # Python related
-*.pyc
-*.pyo
-*.pyd
-__pycache__
-*.py[cod]
 *$py.class
 
 # virtualenv related
 *.venv
-venv/
-ENV/
-env/
