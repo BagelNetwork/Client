@@ -1,8 +1,16 @@
-Here's a step by step guide on how to use BagelDB python client.
+## BagelDB Python Client - Step by Step Guide
+
+Before you start, make sure you've installed the BagelDB Python client package through pip:
+
+```shell
+pip install betabageldb
+```
+
+Now, let's dive into how to use the BagelDB Python client:
 
 1. **Import the `BagelDB` client**
 
-   Start by importing the `BagelDB` client into your Python script.
+   First, you need to import the `BagelDB` class from the installed package in your Python script.
 
    ```python
    from betabageldb import BagelDB
@@ -10,25 +18,25 @@ Here's a step by step guide on how to use BagelDB python client.
 
 2. **Initialize the BagelDB client**
 
-   Initialize a new instance of the `BagelDB` client. You need to specify the index you want to work with at this stage. This index will be used for all subsequent insertions and searches. Make sure you have your OpenAI API key set in your environment variables as `OPENAI_API_KEY`.
+   Create a new instance of the `BagelDB` client. During initialization, you should specify the index that you want to use for your operations. This index is immutable and will be used for all subsequent insertions and searches.
 
    ```python
    index = "myIndex"
    db = BagelDB(index)
    ```
 
-3. **Ping the BagelDB server**
+3. **Check Server Connection**
 
-   To check the connection to the BagelDB server, you can use the `ping()` method. This method will return a response from the BagelDB API in JSON format.
+   Use the `ping()` method to test your connection to the BagelDB server. It sends a GET request to the BagelDB API and returns a response in JSON format.
 
    ```python
    response = db.ping()
    print(response)
    ```
 
-4. **Get OpenAI embeddings**
+4. **Generate OpenAI Embeddings**
 
-   Use the `getOpenAIEmbedding(inputText, model='text-embedding-ada-002')` method to get embeddings from OpenAI. The `inputText` is the text for which embeddings are required. `model` is optional and defaults to 'text-embedding-ada-002'.
+   Use the `getOpenAIEmbedding(inputText, model='text-embedding-ada-002')` method to generate embeddings from OpenAI. The `inputText` parameter should be the text for which embeddings are required. The `model` parameter is optional and defaults to 'text-embedding-ada-002'.
 
    ```python
    input_text = "Some text"
@@ -36,9 +44,9 @@ Here's a step by step guide on how to use BagelDB python client.
    print(embeddings)
    ```
 
-5. **Insert vectors into BagelDB**
+5. **Insert Vectors into BagelDB**
 
-   To insert vectors into BagelDB, use the `insert(vectors)` method. `vectors` is a list of vectors to be inserted. The index is already set during the initialization of the BagelDB client and is not required here.
+   Use the `insert(vectors)` method to insert vectors into BagelDB. `vectors` should be a list of vectors you want to insert. The index you specified during the initialization of the BagelDB client is used automatically.
 
    ```python
    vectors = [{'id': 'vec1', 'values': [0.1, 0.2, 0.3], 'metadata': {'key': 'value'}}]
@@ -46,9 +54,9 @@ Here's a step by step guide on how to use BagelDB python client.
    print(insert_response)
    ```
 
-6. **Search for a vector in BagelDB**
+6. **Search for a Vector in BagelDB**
 
-   To search for a vector in BagelDB, use the `search(vector)` method. `vector` is the vector for which the search is to be performed. The index is already set during the initialization of the BagelDB client and is not required here.
+   Use the `search(vector)` method to search for a vector in BagelDB. `vector` should be the vector for which you want to perform the search.
 
    ```python
    vector = [0.1, 0.2, 0.3]
@@ -56,11 +64,9 @@ Here's a step by step guide on how to use BagelDB python client.
    print(search_response)
    ```
 
-Remember to handle exceptions in your application. The methods in the `BagelDB` client can raise exceptions if a network error occurs or if the response from the server indicates a failed HTTP status code.
+7. **Insert Vectors from Texts**
 
-7. **Insert vectors from texts**
-
-   The `insertFromTexts(texts, model='text-embedding-ada-002')` method can be used to convert a list of texts to their respective embeddings and insert these as vectors into BagelDB. The `texts` parameter is a list of strings for which embeddings are required, and `model` is optional and defaults to 'text-embedding-ada-002'. Each vector will be assigned an id incrementally starting from 0 and metadata will contain original text.
+   The `insertFromTexts(texts, model='text-embedding-ada-002')` method allows you to convert a list of texts to embeddings and insert them into BagelDB. `texts` should be a list of strings to be converted and inserted. The `model` parameter is optional and defaults to 'text-embedding-ada-002'.
 
    ```python
    texts = ["Some text 1", "Some text 2"]
@@ -68,9 +74,11 @@ Remember to handle exceptions in your application. The methods in the `BagelDB` 
    print(insert_response)
    ```
 
-8. **Search for a vector from text**
+8. **Search for a Vector from Text**
 
-   To search for a vector derived from a given text in BagelDB, you can use the `searchFromText(text, model='text-embedding-ada-002')` method. `text` is the string for which the corresponding embedding is to be found and searched, and `model` is optional and defaults to 'text-embedding-ada-002'. 
+   Use the `searchFromText(text, model='text-embedding-ada-002')` method to convert a given text to a vector and perform a search in BagelDB. `text` should be the string to be converted and
+
+ searched. The `model` parameter is optional and defaults to 'text-embedding-ada-002'.
 
    ```python
    text = "Some text"
@@ -78,6 +86,4 @@ Remember to handle exceptions in your application. The methods in the `BagelDB` 
    print(search_response)
    ```
 
-These new methods, `insertFromTexts` and `searchFromText`, simplify the process of converting text to embeddings and performing operations on BagelDB, providing a higher level of abstraction for users to work with.
-
-Remember to handle exceptions in your application. The methods in the `BagelDB` client can raise exceptions if a network error occurs or if the response from the server indicates a failed HTTP status code.
+Always ensure you handle exceptions appropriately in your application. Methods in the `BagelDB` client may raise exceptions if a network error occurs or if the server's response indicates a failed HTTP status code.
