@@ -13,7 +13,7 @@ Now, let's dive into how to use the BagelDB Python client:
    First, you need to import the `BagelDB` class from the installed package in your Python script.
 
    ```python
-   from betabageldb import BagelDB
+   from BagelDB import BagelDB
    ```
 
 2. **Initialize the BagelDB client**
