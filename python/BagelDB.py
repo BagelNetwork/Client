@@ -83,17 +83,20 @@ class BagelDB:
             if not ('id' in vector and isinstance(vector['values'], list) and isinstance(vector['metadata'], dict)):
                 raise ValueError("Each vector must be an object with an 'id', 'values' array, and 'metadata' object")
 
+        headers = {'Content-Type': 'application/json'}
+
         data = {
             "index": self.index,
             "vectors": vectors
         }
 
         try:
-            response = requests.post(f'{self.baseURL}/v0/insert', data=json.dumps(data))
+            response = requests.post(f'{self.baseURL}/v0/insert', headers=headers, data=json.dumps(data))
             response.raise_for_status()
             return response.json()
         except requests.exceptions.RequestException as err:
             print(f'Request failed: {err}')
+
 
     def search(self, vector):
         """
@@ -107,13 +110,15 @@ class BagelDB:
         if not isinstance(vector, list):
             raise ValueError("Vector must be an array")
 
+        headers = {'Content-Type': 'application/json'}
+
         data = {
             "index": self.index,
             "vector": vector
         }
 
         try:
-            response = requests.post(f'{self.baseURL}/v0/search', data=json.dumps(data))
+            response = requests.post(f'{self.baseURL}/v0/search', headers=headers, data=json.dumps(data))
             response.raise_for_status()
             return response.json()
         except requests.exceptions.RequestException as err:
@@ -135,10 +140,10 @@ class BagelDB:
 
         vectors = []
         for i, text in enumerate(texts):
-            embedding = self.getOpenAIEmbedding(text, model)
+            embedding = self.getOpenAIEmbedding(text, model)['data'][0]
             vector = {
                 'id': f'vec{i}',
-                'values': embedding['embeddings'],
+                'values': embedding['embedding'],
                 'metadata': {'text': text},
             }
             vectors.append(vector)
@@ -159,8 +164,8 @@ class BagelDB:
         if not isinstance(text, str):
             raise ValueError("Text must be a string")
 
-        embedding = self.getOpenAIEmbedding(text, model)
-        vector = embedding['embeddings']
+        embedding = self.getOpenAIEmbedding(text, model)['data'][0]
+        vector = embedding['embedding']
 
         return self.search(vector)
 
