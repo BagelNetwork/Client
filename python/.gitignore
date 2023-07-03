@@ -1,0 +1,36 @@
+# Python
+*.py[cod]
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+
+# Virtualenv
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+*.vscode/
+
+# Editors
+*~
+*.swp
+*.swo
+
+# Logs and Databases
+*.log
+*.sqlite3
+*.db
+*.sqlite
+db.sqlite3
+
+# Temporary files
+*.bak
+*.tmp
+*.swp
+*.DS_Store
+
