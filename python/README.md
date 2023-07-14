@@ -1,89 +1,101 @@
-## BagelDB Python Client - Step by Step Guide
+# BagelDB Python Client Example
 
-Before you start, make sure you've installed the BagelDB Python client package through pip:
+This README provides steps on how to use the BagelDB python client example code.
 
-```shell
-pip install betabageldb
+## Prerequisites
+
+- Python 3.6+
+- pip package manager
+- BagelDB account and API key
+
+## Installation
+
+Install the BagelDB python client:
+
+```
+pip install bagel
 ```
 
-Now, let's dive into how to use the BagelDB Python client:
+## Usage
 
-1. **Import the `BagelDB` client**
+1. Import the necessary modules:
 
-   First, you need to import the `BagelDB` class from the installed package in your Python script.
+```python
+import uuid
+import bagel
+from bagel.config import Settings
+```
 
-   ```python
-   from BagelDB import BagelDB
-   ```
+2. Define the BagelDB server settings:
 
-2. **Initialize the BagelDB client**
+```python 
+server_settings = Settings(
+    bagel_api_impl="rest",
+    bagel_server_host="api2.bageldb.ai",
+    bagel_server_http_port="8000"
+)
+```
 
-   Create a new instance of the `BagelDB` client. During initialization, you should specify the index that you want to use for your operations. This index is immutable and will be used for all subsequent insertions and searches.
+3. Create the BagelDB client:
 
-   ```python
-   index = "myIndex"
-   db = BagelDB(index)
-   ```
+```python
+client = bagel.Client(server_settings)
+```
 
-3. **Check Server Connection**
+4. Ping the BagelDB server:
 
-   Use the `ping()` method to test your connection to the BagelDB server. It sends a GET request to the BagelDB API and returns a response in JSON format.
+```python
+print(client.ping())
+```
 
-   ```python
-   response = db.ping()
-   print(response)
-   ```
+5. Get the BagelDB server version:
 
-4. **Generate OpenAI Embeddings**
+```python
+print(client.get_version()) 
+```
 
-   Use the `getOpenAIEmbedding(inputText, model='text-embedding-ada-002')` method to generate embeddings from OpenAI. The `inputText` parameter should be the text for which embeddings are required. The `model` parameter is optional and defaults to 'text-embedding-ada-002'.
+6. Create and delete a cluster:
 
-   ```python
-   input_text = "Some text"
-   embeddings = db.getOpenAIEmbedding(input_text)
-   print(embeddings)
-   ```
+```python
+name = str(uuid.uuid4())
+client.create_cluster(name)
+client.delete_cluster(name)
+```
 
-5. **Insert Vectors into BagelDB**
+7. Create, add documents, and query a cluster:
 
-   Use the `insert(vectors)` method to insert vectors into BagelDB. `vectors` should be a list of vectors you want to insert. The index you specified during the initialization of the BagelDB client is used automatically.
+```python
+cluster = client.get_or_create_cluster("testing")
 
-   ```python
-   vectors = [{'id': 'vec1', 'values': [0.1, 0.2, 0.3], 'metadata': {'key': 'value'}}]
-   insert_response = db.insert(vectors)
-   print(insert_response)
-   ```
+cluster.add(documents=["doc1", "doc2"]) 
 
-6. **Search for a Vector in BagelDB**
+results = cluster.find(query_texts=["query"], n_results=5)
+```
 
-   Use the `search(vector)` method to search for a vector in BagelDB. `vector` should be the vector for which you want to perform the search.
+8. Add embeddings and query:
 
-   ```python
-   vector = [0.1, 0.2, 0.3]
-   search_response = db.search(vector)
-   print(search_response)
-   ```
+```python
+cluster.add(embeddings=[[1.1, 2.3], [4.5, 6.9]])
 
-7. **Insert Vectors from Texts**
+results = cluster.find(query_embeddings=[[1.1, 2.3]], n_results=2) 
+```
 
-   The `insertFromTexts(texts, model='text-embedding-ada-002')` method allows you to convert a list of texts to embeddings and insert them into BagelDB. `texts` should be a list of strings to be converted and inserted. The `model` parameter is optional and defaults to 'text-embedding-ada-002'.
+9. Modify cluster name:
 
-   ```python
-   texts = ["Some text 1", "Some text 2"]
-   insert_response = db.insertFromTexts(texts)
-   print(insert_response)
-   ```
+```python 
+cluster.modify(name="new_name")
+```
 
-8. **Search for a Vector from Text**
+10. Update document metadata:
 
-   Use the `searchFromText(text, model='text-embedding-ada-002')` method to convert a given text to a vector and perform a search in BagelDB. `text` should be the string to be converted and
+```python
+cluster.update(ids=["doc1"], metadatas=[{"new":"metadata"}])
+```
 
- searched. The `model` parameter is optional and defaults to 'text-embedding-ada-002'.
+11. Upsert documents:
 
-   ```python
-   text = "Some text"
-   search_response = db.searchFromText(text)
-   print(search_response)
-   ```
+```python
+cluster.upsert(documents=["new doc"], ids=["doc1"])
+```
 
-Always ensure you handle exceptions appropriately in your application. Methods in the `BagelDB` client may raise exceptions if a network error occurs or if the server's response indicates a failed HTTP status code.
+See the [example code](paste.txt) for more details on using the BagelDB python client.
