@@ -1,6 +1,8 @@
 # BagelDB Python Client Example
 
-This README provides steps on how to use the BagelDB python client example code.
+Welcome to the BagelDB Python Client Example! BagelDB is your bread-and-butter library for interacting with the BagelDB API without breaking a sweat. 
+
+One of the perks? **No need to call the OpenAI Embeddings method or any other model to generate embeddings!** That's right, the BagelDB client handles that for you. So, you don't need to spend extra bucks on generating embeddings. Quite a dough-saver, isn't it? 🥯💰
 
 ## Prerequisites
 
@@ -10,15 +12,15 @@ This README provides steps on how to use the BagelDB python client example code.
 
 ## Installation
 
-Install the BagelDB python client:
+To install the BagelDB Python client, run the following command in your terminal:
 
-```
-pip install bagel
+```shell
+pip install betabageldb
 ```
 
 ## Usage
 
-1. Import the necessary modules:
+1. **Import the necessary modules:**
 
 ```python
 import uuid
@@ -26,7 +28,7 @@ import bagel
 from bagel.config import Settings
 ```
 
-2. Define the BagelDB server settings:
+2. **Define the BagelDB server settings:**
 
 ```python 
 server_settings = Settings(
@@ -36,25 +38,25 @@ server_settings = Settings(
 )
 ```
 
-3. Create the BagelDB client:
+3. **Create the BagelDB client:**
 
 ```python
 client = bagel.Client(server_settings)
 ```
 
-4. Ping the BagelDB server:
+4. **Ping the BagelDB server:**
 
 ```python
 print(client.ping())
 ```
 
-5. Get the BagelDB server version:
+5. **Get the BagelDB server version:**
 
 ```python
 print(client.get_version()) 
 ```
 
-6. Create and delete a cluster:
+6. **Create and delete a cluster:**
 
 ```python
 name = str(uuid.uuid4())
@@ -62,7 +64,7 @@ client.create_cluster(name)
 client.delete_cluster(name)
 ```
 
-7. Create, add documents, and query a cluster:
+7. **Create, add documents, and query a cluster:**
 
 ```python
 cluster = client.get_or_create_cluster("testing")
@@ -72,7 +74,7 @@ cluster.add(documents=["doc1", "doc2"])
 results = cluster.find(query_texts=["query"], n_results=5)
 ```
 
-8. Add embeddings and query:
+8. **Add embeddings and query (without needing to generate embeddings yourself!):**
 
 ```python
 cluster.add(embeddings=[[1.1, 2.3], [4.5, 6.9]])
@@ -80,22 +82,24 @@ cluster.add(embeddings=[[1.1, 2.3], [4.5, 6.9]])
 results = cluster.find(query_embeddings=[[1.1, 2.3]], n_results=2) 
 ```
 
-9. Modify cluster name:
+9. **Modify cluster name:**
 
 ```python 
 cluster.modify(name="new_name")
 ```
 
-10. Update document metadata:
+10. **Update document metadata:**
 
 ```python
 cluster.update(ids=["doc1"], metadatas=[{"new":"metadata"}])
 ```
 
-11. Upsert documents:
+11. **Upsert documents:**
 
 ```python
 cluster.upsert(documents=["new doc"], ids=["doc1"])
 ```
 
-See the [example code](paste.txt) for more details on using the BagelDB python client.
+Need more dough-tails? See the [example code](example.py) for a more comprehensive guide on using the BagelDB Python client.
+
+Happy coding and enjoy your fresh Bagels! 🥯👩‍💻👨‍💻
