@@ -1,15 +1,15 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name="betabageldb",
-    version="0.1.6",
+    version="0.1.80",
     description="BagelDB is a Python library for interacting with the BagelDB API.",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     author="Bidhan Roy",
     author_email="bidhan@bageldb.ai",
     url="https://github.com/Bagel-DB/Client",
-    py_modules=["BagelDB"],
+    packages=find_packages(),
     install_requires=[
         "annotated-types==0.5.0",
         "backoff==2.2.1",
