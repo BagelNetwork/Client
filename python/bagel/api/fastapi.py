@@ -2,9 +2,9 @@ from typing import Optional, cast
 from bagel.api import API
 from bagel.config import System
 from bagel.api.types import (
+    Document,
     Documents,
     Embeddings,
-    EmbeddingFunction,
     IDs,
     Include,
     Metadatas,
@@ -13,8 +13,8 @@ from bagel.api.types import (
     GetResult,
     QueryResult,
     ClusterMetadata,
+    OneOrMany,
 )
-import bagel.utils.embedding_utils as emb
 import pandas as pd
 import requests
 import json
@@ -36,7 +36,6 @@ class FastAPI(API):
     @override
     def ping(self) -> int:
         """Returns the current server time in nanoseconds to check if the server is alive"""
-        print(f'url {self._api_url}')
         resp = requests.get(self._api_url)
         raise_bagel_error(resp)
         return int(resp.json()["nanosecond heartbeat"])
@@ -58,7 +57,6 @@ class FastAPI(API):
         self,
         name: str,
         metadata: Optional[ClusterMetadata] = None,
-        embedding_function: Optional[EmbeddingFunction] = emb.DefaultEmbeddingFunction(),
         get_or_create: bool = False,
     ) -> Cluster:
         """Creates a cluster"""
@@ -74,7 +72,6 @@ class FastAPI(API):
             client=self,
             id=resp_json["id"],
             name=resp_json["name"],
-            embedding_function=embedding_function,
             metadata=resp_json["metadata"],
         )
 
@@ -82,7 +79,6 @@ class FastAPI(API):
     def get_cluster(
         self,
         name: str,
-        embedding_function: Optional[EmbeddingFunction] = emb.DefaultEmbeddingFunction(),
     ) -> Cluster:
         """Returns a cluster"""
         resp = requests.get(self._api_url + "/clusters/" + name)
@@ -92,7 +88,6 @@ class FastAPI(API):
             client=self,
             name=resp_json["name"],
             id=resp_json["id"],
-            embedding_function=embedding_function,
             metadata=resp_json["metadata"],
         )
 
@@ -101,12 +96,11 @@ class FastAPI(API):
         self,
         name: str,
         metadata: Optional[ClusterMetadata] = None,
-        embedding_function: Optional[EmbeddingFunction] = emb.DefaultEmbeddingFunction(),
     ) -> Cluster:
         """Get a cluster, or return it if it exists"""
 
         return self.create_cluster(
-            name, metadata, embedding_function, get_or_create=True
+            name, metadata, get_or_create=True
         )
 
     @override
@@ -212,7 +206,7 @@ class FastAPI(API):
         self,
         ids: IDs,
         cluster_id: UUID,
-        embeddings: Embeddings,
+        embeddings: Optional[Embeddings] = None,
         metadatas: Optional[Metadatas] = None,
         documents: Optional[Documents] = None,
         increment_index: bool = True,
@@ -273,7 +267,7 @@ class FastAPI(API):
         self,
         cluster_id: UUID,
         ids: IDs,
-        embeddings: Embeddings,
+        embeddings: Optional[Embeddings] = None,
         metadatas: Optional[Metadatas] = None,
         documents: Optional[Documents] = None,
         increment_index: bool = True,
@@ -308,9 +302,9 @@ class FastAPI(API):
         where: Optional[Where] = {},
         where_document: Optional[WhereDocument] = {},
         include: Include = ["metadatas", "documents", "distances"],
+        query_texts: Optional[OneOrMany[Document]] = None,
     ) -> QueryResult:
         """Gets the nearest neighbors of a single embedding"""
-
         resp = requests.post(
             self._api_url + "/clusters/" + str(cluster_id) + "/query",
             data=json.dumps(
@@ -320,6 +314,7 @@ class FastAPI(API):
                     "where": where,
                     "where_document": where_document,
                     "include": include,
+                    "query_texts": query_texts,
                 }
             ),
         )

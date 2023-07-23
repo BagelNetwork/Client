@@ -5,6 +5,7 @@ from uuid import UUID
 from bagel.api.models.Cluster import Cluster
 from bagel.api.types import (
     ClusterMetadata,
+    Document,
     Documents,
     EmbeddingFunction,
     Embeddings,
@@ -15,9 +16,9 @@ from bagel.api.types import (
     QueryResult,
     GetResult,
     WhereDocument,
+    OneOrMany,
 )
 from bagel.config import Component
-import bagel.utils.embedding_utils as ef
 from overrides import override
 
 
@@ -53,7 +54,6 @@ class API(Component, ABC):
         self,
         name: str,
         metadata: Optional[ClusterMetadata] = None,
-        embedding_function: Optional[EmbeddingFunction] = ef.DefaultEmbeddingFunction(),
         get_or_create: bool = False,
     ) -> Cluster:
         """Creates a new cluster in the database
@@ -87,7 +87,6 @@ class API(Component, ABC):
         self,
         name: str,
         metadata: Optional[ClusterMetadata] = None,
-        embedding_function: Optional[EmbeddingFunction] = ef.DefaultEmbeddingFunction(),
     ) -> Cluster:
         """Calls create_cluster with get_or_create=True.
            If the cluster exists, but with different metadata, the metadata will be replaced.
@@ -106,7 +105,6 @@ class API(Component, ABC):
     def get_cluster(
         self,
         name: str,
-        embedding_function: Optional[EmbeddingFunction] = ef.DefaultEmbeddingFunction(),
     ) -> Cluster:
         """Gets a cluster from the database by either name or uuid
 
@@ -275,6 +273,7 @@ class API(Component, ABC):
         where: Where = {},
         where_document: WhereDocument = {},
         include: Include = ["embeddings", "metadatas", "documents", "distances"],
+        query_texts: Optional[OneOrMany[Document]] = None,
     ) -> QueryResult:
         """Gets the nearest neighbors of a single embedding
         ⚠️ This method should not be used directly.

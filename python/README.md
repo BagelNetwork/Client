@@ -30,7 +30,7 @@ from bagel.config import Settings
 
 2. **Define the BagelDB server settings:**
 
-```python 
+```python
 server_settings = Settings(
     bagel_api_impl="rest",
     bagel_server_host="api2.bageldb.ai",
