@@ -1,18 +1,71 @@
 const axios = require('axios');
 
+
+// Settings class to hold the configuration settings for BagelDB
+class Settings {
+  constructor() {
+      this.environment = ''; // The environment setting
+      this.bagel_impl = 'bagel.db.duckdb.DuckDB'; // The implementation for BagelDB
+      this.bagel_api_impl = 'bagel.api.fastapi.FastAPI'; // The implementation for Bagel API
+      this.bagel_telemetry_impl = 'bagel.telemetry.posthog.Posthog'; // The implementation for Bagel telemetry
+      this.clickhouse_host = null; // ClickHouse host
+      this.clickhouse_port = null; // ClickHouse port
+      this.persist_directory = '.bagel'; // The directory for persisting data
+      this.bagel_server_host = null; // Bagel server host
+      this.bagel_server_http_port = null; // Bagel server HTTP port
+      this.bagel_server_ssl_enabled = false; // Flag indicating if Bagel server SSL is enabled
+      this.bagel_server_grpc_port = null; // Bagel server gRPC port
+      this.bagel_server_cors_allow_origins = []; // List of allowed origins for Bagel server CORS
+      this.anonymized_telemetry = true; // Flag indicating if telemetry is anonymized
+      this.allow_reset = false; // Flag indicating if reset is allowed
+      this.sqlite_database = ':memory:'; // SQLite database setting
+      this.migrations = 'apply'; // Migrations setting
+  }
+
+  // Return the value of a required config key, or raise an exception if it is not set
+  require(key) {
+      const val = this[key];
+      if (val === null || val === undefined) {
+          throw new Error(`Missing required config value '${key}'`);
+      }
+      return val;
+  }
+
+  // Get the value of a config key with backward compatibility for short names
+  getConfigValue(key) {
+      const legacyConfigValues = {
+          rest: 'bagel.api.fastapi.FastAPI', // Legacy value mapping for 'rest'
+      };
+      let val = this[key];
+      // Backwards compatibility with short names instead of full class names
+      if (val in legacyConfigValues) {
+          const newval = legacyConfigValues[val];
+          val = newval;
+      }
+      return val;
+  }
+}
+
+
 /**
  * BagelDB is a class to interact with the BagelDB and OpenAI APIs.
  * It provides methods to insert data, search data in BagelDB, and get embeddings from OpenAI.
  * This class requires the axios module and uses environment variables.
  */
+
+
 class BagelDB {
   /**
    * Constructor to initialize BagelDB and OpenAI base URLs and OpenAI API key from environment variables.
    */
-  constructor() {
+  constructor(settings = null) {
     this.baseURL = 'https://api.bageldb.ai';
     this.openAIURL = 'https://api.openai.com';
     this.openAIKey = process.env.OPENAI_API_KEY;
+    this.settings = settings; // Use provided settings to initiate BagelDB
+    if(this.settings == null) {
+      throw new Error("Settings cannot be null");
+    }
   }
 
   /**
@@ -117,4 +170,4 @@ class BagelDB {
   }
 }
 
-module.exports = BagelDB;
+module.exports = {BagelDB, Settings};
