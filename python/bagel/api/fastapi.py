@@ -19,7 +19,7 @@ import pandas as pd
 import requests
 import json
 from typing import Sequence
-from bagel.api.models.Cluster import Cluster
+from bagel.api.Cluster import Cluster
 import bagel.errors as errors
 from uuid import UUID
 from overrides import override

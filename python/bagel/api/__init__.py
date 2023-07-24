@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Sequence, Optional
 import pandas as pd
 from uuid import UUID
-from bagel.api.models.Cluster import Cluster
+from bagel.api.Cluster import Cluster
 from bagel.api.types import (
     ClusterMetadata,
     Document,

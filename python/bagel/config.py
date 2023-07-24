@@ -24,18 +24,13 @@ _legacy_config_values = {
 
 # TODO: Don't use concrete types here to avoid circular deps. Strings are fine for right here!
 _abstract_type_keys: Dict[str, str] = {
-    "bagel.db.DB": "bagel_impl",
     "bagel.api.API": "bagel_api_impl",
-    "bagel.telemetry.Telemetry": "bagel_telemetry_impl",
 }
 
 
 class Settings(BaseSettings):
     environment: str = ""
-
-    bagel_impl: str = "bagel.db.duckdb.DuckDB"
     bagel_api_impl: str = "bagel.api.fastapi.FastAPI"
-    bagel_telemetry_impl: str = "bagel.telemetry.posthog.Posthog"
 
     clickhouse_host: Optional[str] = None
     clickhouse_port: Optional[str] = None
@@ -46,8 +41,7 @@ class Settings(BaseSettings):
     bagel_server_http_port: Optional[str] = None
     bagel_server_ssl_enabled: Optional[bool] = False
     bagel_server_grpc_port: Optional[str] = None
-    bagel_server_cors_allow_origins: List[str] = []  # eg ["http://localhost:3000"]
-
+    bagel_server_cors_allow_origins: List[str] = []
     anonymized_telemetry: bool = True
 
     allow_reset: bool = False
