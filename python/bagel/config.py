@@ -11,7 +11,7 @@ import inspect
 # The thin client will have a flag to control which implementations to use
 is_thin_client = False
 try:
-    from bagel.is_thin_client import is_thin_client  # type: ignore
+    from bagel.is_thin_client import is_thin_client
 except ImportError:
     is_thin_client = False
 
@@ -22,7 +22,6 @@ _legacy_config_values = {
     "rest": "bagel.api.fastapi.FastAPI",
 }
 
-# TODO: Don't use concrete types here to avoid circular deps. Strings are fine for right here!
 _abstract_type_keys: Dict[str, str] = {
     "bagel.api.API": "bagel_api_impl",
 }
