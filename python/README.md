@@ -53,7 +53,7 @@ print(client.ping())
 5. **Get the BagelDB server version:**
 
 ```python
-print(client.get_version()) 
+print(client.get_version())
 ```
 
 6. **Create and delete a cluster:**
@@ -69,7 +69,12 @@ client.delete_cluster(name)
 ```python
 cluster = client.get_or_create_cluster("testing")
 
-cluster.add(documents=["doc1", "doc2"]) 
+cluster.add(
+    documents=["This is doc", "This is gooogle doc"],
+    metadatas=[{"source": "notion"},
+               {"source": "google-doc"}],
+    ids=[str(uuid.uuid4()), str(uuid.uuid4())],
+)
 
 results = cluster.find(query_texts=["query"], n_results=5)
 ```
@@ -77,27 +82,34 @@ results = cluster.find(query_texts=["query"], n_results=5)
 8. **Add embeddings and query (without needing to generate embeddings yourself!):**
 
 ```python
-cluster.add(embeddings=[[1.1, 2.3], [4.5, 6.9]])
+cluster = client.get_or_create_cluster("new_testing")
 
-results = cluster.find(query_embeddings=[[1.1, 2.3]], n_results=2) 
+cluster.add(embeddings=[[1.1, 2.3], [4.5, 6.9]],
+            metadatas=[{"info": "M1"}, {"info": "M1"}],
+            documents=["doc1", "doc2"],
+            ids=["id1", "id2"])
+
+results = cluster.find(query_embeddings=[[1.1, 2.3]], n_results=2)
 ```
 
 9. **Modify cluster name:**
 
-```python 
+```python
 cluster.modify(name="new_name")
 ```
 
 10. **Update document metadata:**
 
 ```python
-cluster.update(ids=["doc1"], metadatas=[{"new":"metadata"}])
+cluster.update(ids=["id1"], metadatas=[{"new":"metadata"}])
 ```
 
 11. **Upsert documents:**
 
 ```python
-cluster.upsert(documents=["new doc"], ids=["doc1"])
+cluster.upsert(documents=["new doc"],
+               metadatas=[{"new": "metadata"}],
+               ids=["doc1"])
 ```
 
 Need more dough-tails? See the [example code](example.py) for a more comprehensive guide on using the BagelDB Python client.
