@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING, Optional, Tuple, cast, List
 from pydantic import BaseModel, PrivateAttr
 from uuid import UUID
-import bagel.utils.embedding_utils as ef
 
 from bagel.api.types import (
     ClusterMetadata,
@@ -39,18 +38,15 @@ class Cluster(BaseModel):
     id: UUID
     metadata: Optional[ClusterMetadata] = None
     _client: "API" = PrivateAttr()
-    _embedding_function: Optional[EmbeddingFunction] = PrivateAttr()
 
     def __init__(
         self,
         client: "API",
         name: str,
         id: UUID,
-        embedding_function: Optional[EmbeddingFunction] = ef.DefaultEmbeddingFunction(),
         metadata: Optional[ClusterMetadata] = None,
     ):
         self._client = client
-        self._embedding_function = embedding_function
         super().__init__(name=name, metadata=metadata, id=id)
 
     def __repr__(self) -> str:
@@ -200,18 +196,7 @@ class Cluster(BaseModel):
             query_embeddings is not None and query_texts is not None
         ):
             raise ValueError(
-                "You must provide either query embeddings or query texts, but not both"
-            )
-
-        # If query_embeddings are not provided, we need to compute them from the query_texts
-        if query_embeddings is None:
-            if self._embedding_function is None:
-                raise ValueError(
-                    "You must provide embeddings or a function to compute them"
-                )
-            # We know query texts is not None at this point, cast for the typechecker
-            query_embeddings = self._embedding_function(
-                cast(List[Document], query_texts)
+                "You must provide either embeddings or texts to find, but not both"
             )
 
         if where is None:
@@ -227,6 +212,7 @@ class Cluster(BaseModel):
             where=where,
             where_document=where_document,
             include=include,
+            query_texts=query_texts
         )
 
     def modify(
@@ -377,18 +363,4 @@ class Cluster(BaseModel):
             raise ValueError(
                 f"Number of documents {len(documents)} must match number of ids {len(ids)}"
             )
-
-        # If document embeddings are not provided, we need to compute them
-        if embeddings is None and documents is not None:
-            if self._embedding_function is None:
-                raise ValueError(
-                    "You must provide embeddings or a function to compute them"
-                )
-            embeddings = self._embedding_function(documents)
-
-        # if embeddings is None:
-        #     raise ValueError(
-        #         "Something went wrong. Embeddings should be computed at this point"
-        #     )
-
         return ids, embeddings, metadatas, documents  # type: ignore
