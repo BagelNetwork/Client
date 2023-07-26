@@ -134,7 +134,7 @@ class API(Component, ABC):
         pass
 
     @abstractmethod
-    def     _add(
+    def _add(
         self,
         ids: IDs,
         cluster_id: UUID,

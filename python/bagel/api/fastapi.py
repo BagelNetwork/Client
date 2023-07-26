@@ -30,7 +30,6 @@ class FastAPI(API):
         super().__init__(system)
         url_prefix = "https" if system.settings.bagel_server_ssl_enabled else "http"
         system.settings.require("bagel_server_host")
-        #system.settings.require("bagel_server_http_port")
         if system.settings.bagel_server_http_port:
             self._api_url = f"{url_prefix}://{system.settings.bagel_server_host}:{system.settings.bagel_server_http_port}/api/v1"
         else:
