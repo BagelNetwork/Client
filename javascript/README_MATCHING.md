@@ -87,13 +87,13 @@ db.getAllClusters()
 // Create a new cluster
 const embUtil = new EmbeddingUtil('your_api_key');
 const name = String(uuidv4());
-db.createCluster(name, embUtil.getOpenAIEmbedding(), true);
+db.createCluster(name, embUtil.getOpenAIEmbedding('hello world'), true);
 
 // Delete a cluster
 db.deleteCluster(name);
 
 // Get or create a cluster
-const cluster = db.getOrCreateCluster("testing", null, embUtil.getOpenAIEmbedding());
+const cluster = db.getOrCreateCluster("testing", null, embUtil.getOpenAIEmbedding('hello world'));
 
 // Add an item to a cluster
 cluster._add("test", embUtil.getOpenAIEmbedding("test"));
