@@ -34,11 +34,13 @@ db.getAllClusters().then((clusters) => {
 
 const embUtil = new EmbeddingUtil('key', );
 const name = String(uuidv4())
-db.createCluster(name, embUtil.getOpenAIEmbedding(), true)
+db.createCluster(name, embUtil.getOpenAIEmbedding('hello world'), true)
 db.deleteCluster(name)
 
 
-cluster = db.getOrCreateCluster("testing", null, embUtil.getOpenAIEmbedding())
+cluster = db.getOrCreateCluster("testing", null, embUtil.getOpenAIEmbedding('hello world'))
+
+console.log(cluster)
 
 
 cluster._add("test", embUtil.getOpenAIEmbedding("test"))
