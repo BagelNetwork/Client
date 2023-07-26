@@ -1,5 +1,5 @@
 // example.js
-const {BagelDB, Settings} = require('../BagelDB'); // Import the BagelDB client
+const {BagelDB, Settings} = require('../BagelDB_v2'); // Import the BagelDB client
 
 const main = async () => {
   server_settings = new Settings(
