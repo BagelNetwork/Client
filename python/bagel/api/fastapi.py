@@ -30,8 +30,11 @@ class FastAPI(API):
         super().__init__(system)
         url_prefix = "https" if system.settings.bagel_server_ssl_enabled else "http"
         system.settings.require("bagel_server_host")
-        system.settings.require("bagel_server_http_port")
-        self._api_url = f"{url_prefix}://{system.settings.bagel_server_host}:{system.settings.bagel_server_http_port}/api/v1"
+        #system.settings.require("bagel_server_http_port")
+        if system.settings.bagel_server_http_port:
+            self._api_url = f"{url_prefix}://{system.settings.bagel_server_host}:{system.settings.bagel_server_http_port}/api/v1"
+        else:
+            self._api_url = f"{url_prefix}://{system.settings.bagel_server_host}/api/v1"
 
     @override
     def ping(self) -> int:
@@ -216,7 +219,7 @@ class FastAPI(API):
         - pass in column oriented data lists
         - by default, the index is progressively built up as you add more data. If for ingestion performance reasons you want to disable this, set increment_index to False
         -     and then manually create the index yourself with cluster.create_index()
-        """
+        """ 
         resp = requests.post(
             self._api_url + "/clusters/" + str(cluster_id) + "/add",
             data=json.dumps(
