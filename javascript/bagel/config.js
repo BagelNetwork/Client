@@ -1,22 +1,28 @@
 class Settings {
-    constructor() {
-      this.environment = '';
-      this.bagel_impl = 'bagel.db.duckdb.DuckDB';
-      this.bagel_api_impl = 'bagel.api.fastapi.FastAPI';
-      this.bagel_telemetry_impl = 'bagel.telemetry.posthog.Posthog';
-      this.clickhouse_host = null;
-      this.clickhouse_port = null;
-      this.persist_directory = '.bagel';
-      this.bagel_server_host = null;
-      this.bagel_server_http_port = null;
-      this.bagel_server_ssl_enabled = false;
-      this.bagel_server_grpc_port = null;
-      this.bagel_server_cors_allow_origins = []; // eg ["http://localhost:3000"]
-      this.anonymized_telemetry = true;
-      this.allow_reset = false;
-      this.sqlite_database = ':memory:';
-      this.migrations = 'apply';
-    }
+  constructor(options = {}) {
+    // Default settings
+    this.environment = '';
+    this.bagel_impl = 'bagel.db.duckdb.DuckDB';
+    this.bagel_api_impl = 'bagel.api.fastapi.FastAPI';
+    this.bagel_telemetry_impl = 'bagel.telemetry.posthog.Posthog';
+    this.clickhouse_host = null;
+    this.clickhouse_port = null;
+    this.persist_directory = '.bagel';
+    this.bagel_server_host = null;
+    this.bagel_server_http_port = null;
+    this.bagel_server_ssl_enabled = false;
+    this.bagel_server_grpc_port = null;
+    this.bagel_server_cors_allow_origins = []; // eg ["http://localhost:3000"]
+    this.anonymized_telemetry = true;
+    this.allow_reset = false;
+    this.sqlite_database = ':memory:';
+    this.migrations = 'apply';
+
+    // Override default settings with custom options
+    Object.keys(options).forEach(key => {
+      this[key] = options[key];
+    });
+  }
   
     // Return the value of a required config key, or raise an exception if it is not set
     require(key) {

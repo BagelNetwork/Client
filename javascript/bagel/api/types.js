@@ -1,5 +1,5 @@
 // bagel/errors.js - Assuming this file contains error classes or error handling functions
-const errors = require('bagel/errors'); // Replace this with the actual path to your error handling file
+const errors = require('../error'); // Replace this with the actual path to your error handling file
 
 class EmbeddingFunction {
   constructor() {

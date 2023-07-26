@@ -1,5 +1,5 @@
 const { v4: uuidv4 } = require('uuid');
-const bagel_utils_embedding_utils = require('bagel.utils.embedding_utils');
+const bagel_utils_embedding_utils = require('../../utils/embedding_utils');
 
 const {
   ClusterMetadata,
@@ -23,14 +23,11 @@ const {
   validate_where_document,
   validate_n_results,
   validate_embeddings,
-} = require('bagel.api.types');
+} = require('../types');
 
-const logging = require('logging');
-const logger = logging.getLogger(__name__);
 
-class Cluster extends BaseModel {
+class Cluster {
   constructor(client, name, id, embedding_function = bagel_utils_embedding_utils.DefaultEmbeddingFunction(), metadata = null) {
-    super({ name, metadata, id });
     this._client = client;
     this._embedding_function = embedding_function;
   }
@@ -176,9 +173,4 @@ class Cluster extends BaseModel {
 
     return [ids, embeddings, metadatas, documents];
   }
-}
-
-// If TYPE_CHECKING is true, import the API module
-if (TYPE_CHECKING) {
-  const { API } = require('bagel.api');
 }

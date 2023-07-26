@@ -1,21 +1,28 @@
 const axios = require("axios");
-const { Cluster } = require("bagel");
-const emb = require("bagel/utils/embedding_utils");
-const errors = require("bagel/errors");
+const { Cluster } = require("./models/cluster");
+const emb = require("../utils/embedding_utils");
+const errors = require("../error");
 
 class FastAPI {
   constructor(system) {
-    super(system);
+    console.log(system)
     const urlPrefix = system.settings.bagel_server_ssl_enabled ? "https" : "http";
     const { bagel_server_host, bagel_server_http_port } = system.settings;
-    this._apiUrl = `${urlPrefix}://${bagel_server_host}:${bagel_server_http_port}/api/v1`;
+    console.log(bagel_server_host, bagel_server_http_port)
+    if(bagel_server_http_port){
+      this._apiUrl = `${urlPrefix}://${bagel_server_host}:${bagel_server_http_port}/api/v1`;
+    }else{
+      this._apiUrl = `${urlPrefix}://${bagel_server_host}`;
+    }
   }
 
-  ping() {
-    console.log(`url ${this._apiUrl}`);
-    return axios.get(this._apiUrl)
-      .then(resp => resp.data["nanosecond heartbeat"])
-      .catch(raiseBagelError);
+  async ping() {
+    try {
+      const response = await axios.get(`${this._apiUrl}/v0/ping`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
   }
 
   getAllClusters() {

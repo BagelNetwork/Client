@@ -6,11 +6,17 @@
   "scripts": {
     "test": "jest"
   },
-  "keywords": ["bageldb", "database", "client"],
+  "keywords": [
+    "bageldb",
+    "database",
+    "client"
+  ],
   "author": "Your Name <yourname@example.com>",
   "license": "MIT",
   "dependencies": {
-    "axios": "^0.21.1"
+    "axios": "^0.21.1",
+    "openai": "^3.3.0",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "jest": "^27.0.6"
