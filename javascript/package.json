@@ -14,9 +14,7 @@
   "author": "Your Name <yourname@example.com>",
   "license": "MIT",
   "dependencies": {
-    "axios": "^0.21.1",
-    "openai": "^3.3.0",
-    "uuid": "^9.0.0"
+    "axios": "^0.21.1"
   },
   "devDependencies": {
     "jest": "^27.0.6"
