@@ -1,7 +1,6 @@
 {
   "dependencies": {
     "bageldb-beta": "^1.0.1",
-    "openai": "^3.3.0",
     "uuid": "^9.0.0"
   }
 }
