@@ -33,8 +33,7 @@ from bagel.config import Settings
 ```python
 server_settings = Settings(
     bagel_api_impl="rest",
-    bagel_server_host="api2.bageldb.ai",
-    bagel_server_http_port="8000"
+    bagel_server_host="api.bageldb.ai"
 )
 ```
 
