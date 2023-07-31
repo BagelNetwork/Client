@@ -1,53 +1,82 @@
-const {Settings} = require('./utils/settings.js');
-const {API} = require('./api/api.js');
-const { v4: uuidv4 } = require('uuid');
+// imports
+const {Settings} = require('../src/utils/settings.js');
+const {API} = require('../src/api/api.js');
 
-
+// example for new javascript api
 const example = async () => {
+    // create settings
     const settings = new Settings({
         bagel_api_impl:"rest",
         bagel_server_host:"api.bageldb.ai",
         bagel_server_http_port:80,
     });
 
+    // create api
     const api = new API(settings);
 
+    // ping server
     const response = await api.ping();
-
     console.log(response);
 
+    // get version
     const version = await api.get_version();
-
     console.log(version);
 
+    // get all clusters
     const clusters = await api.get_all_clusters();
-
     console.log(clusters);
 
-
-    const name = String(uuidv4());
-
+    // create a new cluster
+    const name = 'my_test_cluster_13'
     await api.create_cluster(name);
 
+    // delete a cluster
     await api.delete_cluster(name);
 
-    const cluster2 = await api.get_or_create_cluster("new_testing");
 
-    console.log(cluster2);
+    // get or create a cluster
+    const cluster = await api.get_or_create_cluster("my_test_cluster_13");
+    console.log(cluster);
+
+    // add data to the cluster
+    await cluster.add(
+        ids = ["id1", "id2"],
+        embeddings = [[1.1, 2.3], [4.5, 6.9]],
+        metadatas = [{"info": "M1"}, {"info": "M1"}],
+        documents = ["doc1", "doc2"]
+    );
 
 
-    // await cluster2.add(
-    //     embeddings=[[1.1, 2.3], [4.5, 6.9]],
-    //     metadatas=[{"info": "M1"}, {"info": "M1"}],
-    //     documents=["doc1", "doc2"],
-    //     ids=["id1", "id2"]
-    // );
+    // peek into the cluster
+    const peeks = await cluster.peek(10);
+    console.log(peeks);
 
 
-    // await cluster2.find
-    //await cluster2.modify(name="new_testing_2");
+    // find data in the cluster
+    const results = await cluster.find(query_embeddings=[[1.1, 2.3]]);
+    console.log(results);
 
-}
+
+    // modify cluster name
+    await cluster.modify("my_test_cluster_15");
+
+
+    // update data in the cluster
+    await cluster.update(
+        ids = ["id1", "id2"],
+        embeddings = [[1.9, 4.3], [2.5, 8.9]]
+    );
+
+
+    // upsert data in the cluster
+    await cluster.upsert(
+        ids = ["id3"],
+        embeddings = [[9.9, 16.3]],
+        metadatas = [{"info": "M3"}],
+        documents = ["doc3"],
+    );
+
+};
 
 
 example();
