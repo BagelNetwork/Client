@@ -370,6 +370,12 @@ class FastAPI(API):
         raise_bagel_error(resp)
         return cast(str, resp.json())
 
+    def get_api_url(self) -> str:
+        """
+        Get API link
+        """
+        return self._api_url
+
 
 def raise_bagel_error(resp: requests.Response) -> None:
     """Raises an error if the response is not ok, using a BagelError if possible"""
