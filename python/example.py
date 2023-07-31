@@ -1,6 +1,25 @@
 import uuid
 import bagel
 from bagel.config import Settings
+import requests
+
+
+def check_emaillist(api):
+    """
+    Email waitlist test
+    """
+    valid_email = "example@gmail.com"
+
+    url = api.get_api_url().replace('/api/v1', '') + "/join_waitlist/" + valid_email
+    try:
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()
+        # If the response is in JSON format, you can access the data like this:
+        json_data = response.json()
+        if json_data["message"] == "successful":
+            print("joined_waitlist")
+    except requests.exceptions.RequestException as ex:
+        print(f"An error occurred: {ex}")
 
 
 def create_and_delete(api):
@@ -243,17 +262,17 @@ def main():
         bagel_api_impl="rest",
         bagel_server_host="api.bageldb.ai"
     )
-
     # Create Bagel client
     client = bagel.Client(server_settings)
 
     # Ping the Bagel server
-    print(client.ping())
+    print("ping >>", client.ping())
 
     # Get the Bagel server version
-    print(client.get_version())
+    print("version >>", client.get_version())
 
     # calling all functions
+    check_emaillist(client)
     create_and_delete(client)
     create_add_get(client)
     create_add_find(client)
