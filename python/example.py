@@ -7,7 +7,7 @@ def check_emaillist(api):
     """
     Email waitlist test
     """
-    valid_email = "example@gmail"
+    valid_email = "example@gmail.com"
     print(">> ", api.join_waitlist(valid_email))
 
 
