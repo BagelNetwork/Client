@@ -13,9 +13,6 @@ const example = async () => {
     // create api
     const api = new Client(settings);
 
-
-    api.delete_cluster("my_test_cluster_200000")
-
     // ping server
     const response = await api.ping();
     console.log(response);
