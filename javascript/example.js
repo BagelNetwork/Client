@@ -2,7 +2,7 @@
 const {Settings, Client} = require('./BagelDB.js');
 
 // example for new javascript api
-const connect_client = async () => {
+const example = async () => {
     // create settings
     const settings = new Settings({
         bagel_api_impl:"rest",
@@ -12,6 +12,9 @@ const connect_client = async () => {
 
     // create api
     const api = new Client(settings);
+
+
+    api.delete_cluster("my_test_cluster_200000")
 
     // ping server
     const response = await api.ping();
@@ -20,45 +23,21 @@ const connect_client = async () => {
     // get version
     const version = await api.get_version();
     console.log(version);
-};
 
-
-const get_create_delete_cluster = async () => {
-    // create settings
-    const settings = new Settings({
-        bagel_api_impl:"rest",
-        bagel_server_host:"api.bageldb.ai",
-        bagel_server_http_port:80,
-    });
-
-    // create api
-    const api = new Client(settings);
-    
     // get all clusters
     const clusters = await api.get_all_clusters();
     console.log(clusters);
 
     // create a new cluster
-    const name = 'my_test_cluster_1111';
+    const name = 'my_test_cluster_200000'
     await api.create_cluster(name);
 
     // delete a cluster
     await api.delete_cluster(name);
-};
 
-const add_data_to_cluster = async () => {
-    // create settings
-    const settings = new Settings({
-        bagel_api_impl:"rest",
-        bagel_server_host:"api.bageldb.ai",
-        bagel_server_http_port:80,
-    });
-
-    // create api
-    const api = new Client(settings);
 
     // get or create a cluster
-    const cluster = await api.get_or_create_cluster("my_test_cluster_1111");
+    const cluster = await api.get_or_create_cluster("my_test_cluster_200000");
     console.log(cluster);
 
     // add data to the cluster
@@ -68,23 +47,7 @@ const add_data_to_cluster = async () => {
         metadatas = [{"info": "M1"}, {"info": "M1"}],
         documents = ["doc1", "doc2"]
     );
-};
 
-
-const peek_find_in_cluster = async () => {
-    // create settings
-    const settings = new Settings({
-        bagel_api_impl:"rest",
-        bagel_server_host:"api.bageldb.ai",
-        bagel_server_http_port:80,
-    });
-
-    // create api
-    const api = new Client(settings);
-
-    // get or create a cluster
-    const cluster = await api.get_or_create_cluster("my_test_cluster_1111");
-    console.log(cluster);
 
     // peek into the cluster
     const peeks = await cluster.peek(10);
@@ -92,54 +55,24 @@ const peek_find_in_cluster = async () => {
 
 
     // find data in the cluster
-    const results = await cluster.find(query_embeddings=[[1.1, 2.3]]);
-};
+    const results = await cluster.find(query_embeddings=[[1.1, 2.3]], n_results=2, where={}, where_document={}, include=["metadatas", "documents", "distances"], query_texts=null);
+    console.log(results);
 
 
-/*
-Server not responding/returning null response
-*/
+    // modify cluster name
+    await cluster.modify("my_test_cluster_200001");
 
-// const modify_cluster_name = async () => {
-//     // create settings
-//     const settings = new Settings({
-//         bagel_api_impl:"rest",
-//         bagel_server_host:"api.bageldb.ai",
-//         bagel_server_http_port:80,
-//     });
-
-//     // create api
-//     const api = new Client(settings);
-
-//     // get or create a cluster
-//     const cluster = await api.get_or_create_cluster("my_test_cluster_113");
-//     console.log(cluster);
-
-//     // modify cluster name
-//     await cluster.modify("my_test_cluster_313");
-// };
-
-
-const update_upsert_cluster = async () => {
-    // create settings
-    const settings = new Settings({
-        bagel_api_impl:"rest",
-        bagel_server_host:"api.bageldb.ai",
-        bagel_server_http_port:80,
-    });
-
-    // create api
-    const api = new Client(settings);
-
-    // get or create a cluster
-    const cluster = await api.get_or_create_cluster("my_test_cluster_1111");
-    console.log(cluster);
 
     // update data in the cluster
     await cluster.update(
         ids = ["id1", "id2"],
         embeddings = [[1.9, 4.3], [2.5, 8.9]]
     );
+
+
+    // peek into the cluster
+    const peeks2 = await cluster.peek(10);
+    console.log(peeks2);
 
 
     // upsert data in the cluster
@@ -150,13 +83,16 @@ const update_upsert_cluster = async () => {
         documents = ["doc3"],
     );
 
+
+    // peek into the cluster
+    const peeks3 = await cluster.peek(10);
+    console.log(peeks3);
+
+
+    // delete the cluster
+    await api.delete_cluster("my_test_cluster_200001");
+
 };
 
 
-// run examples - one at a time
-// connect_client();
-// get_create_delete_cluster();
-// add_data_to_cluster();
-// peek_find_in_cluster();
-// update_upsert_cluster();
-// peek_find_in_cluster();
+example();

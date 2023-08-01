@@ -60,7 +60,7 @@ class Cluster {
 
 
     // querying data in the cluster
-    find(query_embeddings = null, n_results = 10, where = {}, where_document = {}, include = ["metadatas", "documents"], query_texts = null) {
+    find(query_embeddings = null, n_results = 10, where = {}, where_document = {}, include = ["metadatas", "documents", "distances"], query_texts = null) {
         if ((query_embeddings === null && query_texts === null) || (query_embeddings !== null && query_texts !== null)) {
             throw new Error("You must provide either embeddings or texts to find, but not both");
         }

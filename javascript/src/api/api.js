@@ -229,14 +229,14 @@ class API {
 
 
     // modify cluster name and metadata
-    async _modify(cluster_id, name = null, metadata = null) {
+    async _modify(cluster_id, new_name = null, new_metadata = null) {
         try {
             const response = await axios.put(
                 this._api_url + "/clusters/" + cluster_id,
-                { new_name: name, new_metadata: metadata },
+                { "new_metadata": new_metadata, "new_name": new_name },
                 { headers: { "Content-Type": "application/json" }}
             );
-            return new Cluster(this, response.data);
+            return 'success';
         } catch (error) {
             console.error("Error:", error.message);
             throw error;
@@ -333,7 +333,7 @@ class API {
                     "query_texts": query_texts,
                 }
             );
-            console.log(response.data);
+            console.log(JSON.stringify(response.data));
             if (!response.data) {
                 throw new Error("Empty response data received");
             }
