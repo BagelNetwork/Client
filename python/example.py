@@ -1,25 +1,14 @@
 import uuid
 import bagel
 from bagel.config import Settings
-import requests
 
 
 def check_emaillist(api):
     """
     Email waitlist test
     """
-    valid_email = "example@gmail.com"
-
-    url = api.get_api_url().replace('/api/v1', '') + "/join_waitlist/" + valid_email
-    try:
-        response = requests.get(url, timeout=10)
-        response.raise_for_status()
-        # If the response is in JSON format, you can access the data like this:
-        json_data = response.json()
-        if json_data["message"] == "successful":
-            print("joined_waitlist")
-    except requests.exceptions.RequestException as ex:
-        print(f"An error occurred: {ex}")
+    valid_email = "example@gmail"
+    print(">> ", api.join_waitlist(valid_email))
 
 
 def create_and_delete(api):
@@ -35,7 +24,7 @@ def create_and_delete(api):
 
     # Delete it
     api.delete_cluster(name)
-    print("create and delete done!")
+    print(">> create and delete done !\n")
 
 
 def create_add_get(api):
@@ -48,14 +37,14 @@ def create_add_get(api):
     cluster = api.get_or_create_cluster(name)
 
     # Add documents to the cluster
-    cluster.add(
+    resp = cluster.add(
         documents=[
             "This is document1",
             "This is bidhan",
         ],
         metadatas=[
             {"source": "google"},
-            {"source": "duckduckgo"}
+            {"source": "notion"}
         ],
         ids=[str(uuid.uuid4()), str(uuid.uuid4())]
     )
@@ -68,7 +57,7 @@ def create_add_get(api):
     if first_item:
         print("get 1st item")
 
-    print("create_add_get done!")
+    print(">> create_add_get done !\n")
 
 
 def create_add_find(api):
@@ -88,22 +77,26 @@ def create_add_find(api):
     # Add documents to the cluster
     cluster.add(
         documents=[
-            "This is document2",
+            "This is document",
             "This is Towhid",
+            "This is text",
         ],
         metadatas=[{"source": "notion"},
-                   {"source": "google-doc"}],
-        ids=[str(uuid.uuid4()), str(uuid.uuid4())],
+                   {"source": "notion"},
+                   {"source": "google-doc"},],
+        ids=[str(uuid.uuid4()), str(uuid.uuid4()), str(uuid.uuid4())],
     )
 
     # Query the cluster for similar results
     results = cluster.find(
         query_texts=["This"],
-        n_results=1,
+        n_results=5,
+        where={"source": "notion"},
+        where_document={"$contains": "is"}
     )
 
-    print("find result:", results)
-    print("create_add_find done !")
+    print(results)
+    print(">> create_add_find done  !\n")
 
 
 def create_add_find_em(api):
@@ -149,11 +142,11 @@ def create_add_find_em(api):
     # Query the cluster for results
     results = cluster.find(
         query_embeddings=[[1.1, 2.3, 3.2]],
-        n_results=2
+        n_results=5
     )
 
     print("find result:", results)
-    print("create_add_find_em done !")
+    print(">> create_add_find_em done  !\n")
 
 
 def create_add_modify_update(api):
@@ -202,10 +195,10 @@ def create_add_modify_update(api):
     )
 
     # Retrieve document metadata after updating
-    print("After update:")
+    print("After update source:")
     print(cluster.get(ids=["id1"]))
 
-    print("create_add_modify_update done!")
+    print(">> create_add_modify_update done !\n")
 
 
 def create_upsert(api):
@@ -253,23 +246,24 @@ def create_upsert(api):
 
     # Print the count of documents in the cluster
     print("Count of documents:", cluster.count())
-    print("create_upsert done!")
+    print(">> create_upsert done !\n")
 
 
 def main():
     # Bagel server settings
     server_settings = Settings(
         bagel_api_impl="rest",
-        bagel_server_host="api.bageldb.ai"
+        bagel_server_host="api.bageldb.ai",
     )
+
     # Create Bagel client
     client = bagel.Client(server_settings)
 
     # Ping the Bagel server
-    print("ping >>", client.ping())
+    print("ping: ", client.ping())
 
     # Get the Bagel server version
-    print("version >>", client.get_version())
+    print("version: ", client.get_version())
 
     # calling all functions
     check_emaillist(client)
