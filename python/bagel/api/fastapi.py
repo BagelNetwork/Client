@@ -18,7 +18,7 @@ from bagel.api.types import (
 import pandas as pd
 import requests
 import json
-from typing import Sequence
+from typing import Sequence, Dict
 from bagel.api.Cluster import Cluster
 import bagel.errors as errors
 from uuid import UUID
@@ -41,6 +41,13 @@ class FastAPI(API):
         resp = requests.get(self._api_url)
         raise_bagel_error(resp)
         return int(resp.json()["nanosecond heartbeat"])
+
+    @override
+    def join_waitlist(self, email: str) -> Dict[str, str]:
+        """Add email to waitlist"""
+        url = self._api_url.replace("/api/v1", "")
+        resp = requests.get(url + "/join_waitlist/" + email, timeout=60)
+        return resp.json()
 
     @override
     def get_all_clusters(self) -> Sequence[Cluster]:
@@ -369,12 +376,6 @@ class FastAPI(API):
         resp = requests.get(self._api_url + "/version")
         raise_bagel_error(resp)
         return cast(str, resp.json())
-
-    def get_api_url(self) -> str:
-        """
-        Get API link
-        """
-        return self._api_url
 
 
 def raise_bagel_error(resp: requests.Response) -> None:
