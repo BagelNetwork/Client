@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Sequence, Optional
+from typing import Sequence, Optional, Dict
 import pandas as pd
 from uuid import UUID
 from bagel.api.Cluster import Cluster
@@ -46,6 +46,18 @@ class API(Component, ABC):
         Returns:
             dict: A dictionary of clusters
 
+        """
+        pass
+
+    @abstractmethod
+    def join_waitlist(self, email: str) -> Dict[str, str]:
+        """
+        Add email to waitlist
+        Args:
+            None
+
+        Returns:
+            dict: A dictionary of resposne
         """
         pass
 
