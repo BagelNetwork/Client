@@ -6,11 +6,16 @@
   "scripts": {
     "test": "jest"
   },
-  "keywords": ["bageldb", "database", "client"],
+  "keywords": [
+    "bageldb",
+    "database",
+    "client"
+  ],
   "author": "Your Name <yourname@example.com>",
   "license": "MIT",
   "dependencies": {
-    "axios": "^0.21.1"
+    "axios": "^0.21.1",
+    "node-fetch": "^2.6.12"
   },
   "devDependencies": {
     "jest": "^27.0.6"
