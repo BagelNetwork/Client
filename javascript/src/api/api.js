@@ -246,11 +246,17 @@ class API {
 
 
     // add data to a cluster
-    async _add(cluster_id, ids, embeddings=null, metadatas=null, documents=null, increment_index=true) {
+    async _add(cluster_id, ids, embeddings, metadatas=null, documents=null, increment_index=true) {
         try {
             const response = await axios.post(
                 this._api_url + "/clusters/" + cluster_id + "/add",
-                { ids, embeddings, metadatas, documents, increment_index }
+                {
+                    "ids": ids,
+                    "embeddings": embeddings,
+                    "metadatas": metadatas,
+                    "documents": documents,
+                    "increment_index": increment_index,
+                }
             );
             if (!response.data) {
                 throw new Error("Empty response data received");
@@ -321,6 +327,40 @@ class API {
 
     // query a cluster
     async _query(cluster_id, query_embeddings, n_results = 10, where = {}, where_document = {}, include = ["metadatas", "documents", "distances"], query_texts = null) {
+        try {
+            const response = await axios.post(
+                this._api_url + "/clusters/" + `${cluster_id}` + "/query",
+                {
+                    "query_embeddings": query_embeddings,
+                    "n_results": n_results,
+                    "where": where,
+                    "where_document": where_document,
+                    "include": include,
+                    "query_texts": query_texts,
+                }
+            );
+            console.log(JSON.stringify(response.data));
+            if (!response.data) {
+                throw new Error("Empty response data received");
+            }
+            const {ids, embeddings, documents, metadatas, distances} = response.data;
+            return {
+                ids: ids,
+                embeddings: embeddings ? embeddings : null,
+                documents: documents ? documents : null,
+                metadatas: metadatas ? metadatas : null,
+                distances: distances ? distances : null,
+            };
+        } catch (error) {
+            console.error("Error:", error.message);
+            throw error;
+        }
+    };
+
+
+
+    // query a cluster by text
+    async _query_text(cluster_id, query_texts, n_results = 10, where = {}, where_document = {}, include = ["metadatas", "documents", "distances"], query_embeddings = null) {
         try {
             const response = await axios.post(
                 this._api_url + "/clusters/" + `${cluster_id}` + "/query",
