@@ -27,7 +27,13 @@ const example = async () => {
 
     // create a new cluster
     const name = 'my_test_cluster_200000'
-    await api.create_cluster(name);
+    await api.create_cluster(name).then((res) => {
+        if(res.name === name) {
+            console.log(`Cluster with name ${name} created successfully`);
+        }
+    }).catch((err) => {
+        console.log(err);
+    });
 
     // delete a cluster
     await api.delete_cluster(name);
@@ -43,7 +49,13 @@ const example = async () => {
         embeddings = [[1.1, 2.3], [4.5, 6.9]],
         metadatas = [{"info": "M1"}, {"info": "M1"}],
         documents = ["doc1", "doc2"]
-    );
+    ).then((res) => {
+        if(res){
+            console.log("Data added successfully");
+        }
+    }).catch((err) => {
+        console.log(err);
+    });
 
 
     // peek into the cluster
@@ -57,14 +69,27 @@ const example = async () => {
 
 
     // modify cluster name
-    await cluster.modify("my_test_cluster_200001");
+    await cluster.modify("my_test_cluster_200001").then((res) => {
+        if(res == 'success'){
+            console.log("Cluster name modified successfully");
+        }
+    }).catch((err) => {
+        console.log(err);
+    });
 
 
     // update data in the cluster
     await cluster.update(
         ids = ["id1", "id2"],
         embeddings = [[1.9, 4.3], [2.5, 8.9]]
-    );
+    ).then((res) => {
+        if(res){
+            console.log("Data updated successfully");
+        }
+    }).catch((err) => {
+        console.log(err);
+    });
+
 
 
     // peek into the cluster
@@ -78,7 +103,14 @@ const example = async () => {
         embeddings = [[9.9, 16.3]],
         metadatas = [{"info": "M3"}],
         documents = ["doc3"],
-    );
+    ).then((res) => {
+        if(res){
+            console.log("Data upserted successfully");
+        }
+    }).catch((err) => {
+        console.log(err);
+    });
+    
 
 
     // peek into the cluster

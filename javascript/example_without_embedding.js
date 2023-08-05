@@ -7,13 +7,19 @@ async function example(api) {
     const version = await api.get_version();
     console.log(version);
 
-    // get all clusters
-    const clusters = await api.get_all_clusters();
-    console.log(clusters);
+    // // get all clusters
+    // const clusters = await api.get_all_clusters();
+    // console.log(clusters);
 
     // create a new cluster
-    const name = 'my_test_cluster_3000'
-    await api.create_cluster(name);
+    const name = 'my_test_cluster_3000';
+    await api.create_cluster(name).then((res) => {
+        if(res.name === name) {
+            console.log(`Cluster with name ${name} created successfully`);
+        }
+    }).catch((err) => {
+        console.log(err);
+    });
 
     // delete a cluster
     await api.delete_cluster(name);
@@ -26,7 +32,7 @@ async function example(api) {
 
     // add data to the cluster
     await cluster.add(
-        ids = ['i31', 'i32', 'i33'],
+        ids = ['i37', 'i38', 'i39'],
         embeddings = null,
         metadatas = [
             { source: "notion" },
@@ -38,7 +44,13 @@ async function example(api) {
             "This is Towhid",
             "This is text",
         ],
-    );
+    ).then((res) => {
+        if(res){
+            console.log("Data added successfully");
+        }
+    }).catch((err) => {
+        console.log(err);
+    });
 
 
     // peek into the cluster
