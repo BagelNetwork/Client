@@ -39,27 +39,10 @@ const example = async () => {
 
     // add data to the cluster
     await cluster.add(
-        ids = ["id3", "id4"],
+        ids = ["id1", "id2"],
         embeddings = [[1.1, 2.3], [4.5, 6.9]],
         metadatas = [{"info": "M1"}, {"info": "M1"}],
         documents = ["doc1", "doc2"]
-    );
-
-
-    // add data without embeddings to the cluster
-    await cluster.add(
-        ids = ['i13', 'i14', 'i15'],
-        embeddings = null,
-        metadatas = [
-            { source: "notion" },
-            { source: "notion" },
-            { source: "google-doc" }
-        ],
-        documents = [
-            "This is document",
-            "This is Towhid",
-            "This is text",
-        ],
     );
 
 
@@ -71,17 +54,6 @@ const example = async () => {
     // find data in the cluster
     const results = await cluster.find(query_embeddings=[[1.1, 2.3]], n_results=2, where={}, where_document={}, include=["metadatas", "documents", "distances"], query_texts=null);
     console.log(results);
-
-
-    // find data in the cluster by text
-    const results2 = await cluster.find_by_text(
-        query_texts = ["This"],
-        n_results = 5,
-        where = { source: "notion" },
-        where_document = { $contains: "is" }
-    );
-
-    console.log(results2);
 
 
     // modify cluster name
