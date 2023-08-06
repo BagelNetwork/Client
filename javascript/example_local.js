@@ -7,8 +7,8 @@ const ping_version_example = async () => {
     // create settings
     const settings = new Settings({
         bagel_api_impl:"rest",
-        bagel_server_host:"api.bageldb.ai",
-        bagel_server_http_port:80,
+        bagel_server_host:"localhost",
+        bagel_server_http_port:8000,
     });
 
     // create api
@@ -29,8 +29,8 @@ const get_all_clusters_example = async () => {
     // create settings
     const settings = new Settings({
         bagel_api_impl:"rest",
-        bagel_server_host:"api.bageldb.ai",
-        bagel_server_http_port:80,
+        bagel_server_host:"localhost",
+        bagel_server_http_port:8000,
     });
 
     // create api
@@ -47,8 +47,8 @@ const create_delete_get_or_create_cluster_example = async () => {
     // create settings
     const settings = new Settings({
         bagel_api_impl:"rest",
-        bagel_server_host:"api.bageldb.ai",
-        bagel_server_http_port:80,
+        bagel_server_host:"localhost",
+        bagel_server_http_port:8000,
     });
 
     // create api
@@ -84,15 +84,15 @@ const add_data_to_cluster_without_embedding_example = async () => {
     // create settings
     const settings = new Settings({
         bagel_api_impl:"rest",
-        bagel_server_host:"api.bageldb.ai",
-        bagel_server_http_port:80,
+        bagel_server_host:"localhost",
+        bagel_server_http_port:8000,
     });
 
     // create api
     const api = new Client(settings);
 
     // get or create a cluster
-    const newName = "testing_1000";
+    const newName = "testing_10000";
 
     const cluster = await api.get_or_create_cluster(newName);
 
@@ -147,15 +147,15 @@ const add_data_to_cluster_with_embedding_example = async () => {
     // create settings
     const settings = new Settings({
         bagel_api_impl:"rest",
-        bagel_server_host:"api.bageldb.ai",
-        bagel_server_http_port:80,
+        bagel_server_host:"localhost",
+        bagel_server_http_port:8000,
     });
 
     // create api
     const api = new Client(settings);
 
     // get or create a cluster
-    const newName = "testing_2000";
+    const newName = "testing_20000";
 
     const cluster = await api.get_or_create_cluster(newName);
 
@@ -201,15 +201,15 @@ const delete_data_from_cluster_example = async () => {
     // create settings
     const settings = new Settings({
         bagel_api_impl:"rest",
-        bagel_server_host:"api.bageldb.ai",
-        bagel_server_http_port:80,
+        bagel_server_host:"localhost",
+        bagel_server_http_port:8000,
     });
 
     // create api
     const api = new Client(settings);
 
     // get or create a cluster
-    const newName = "testing_3000";
+    const newName = "testing_30000";
 
     const cluster = await api.get_or_create_cluster(newName);
 
@@ -258,15 +258,15 @@ const update_data_in_cluster_example = async () => {
     // create settings
     const settings = new Settings({
         bagel_api_impl:"rest",
-        bagel_server_host:"api.bageldb.ai",
-        bagel_server_http_port:80,
+        bagel_server_host:"localhost",
+        bagel_server_http_port:8000,
     });
 
     // create api
     const api = new Client(settings);
 
     // get or create a cluster
-    const newName = "testing_4000";
+    const newName = "testing_40000";
 
     const cluster = await api.get_or_create_cluster(newName);
 
@@ -317,15 +317,15 @@ const upsert_data_in_cluster_example = async () => {
     // create settings
     const settings = new Settings({
         bagel_api_impl:"rest",
-        bagel_server_host:"api.bageldb.ai",
-        bagel_server_http_port:80,
+        bagel_server_host:"localhost",
+        bagel_server_http_port:8000,
     });
 
     // create api
     const api = new Client(settings);
 
     // get or create a cluster
-    const newName = "testing_5000";
+    const newName = "testing_50000";
 
     const cluster = await api.get_or_create_cluster(newName);
 
@@ -376,15 +376,15 @@ const modify_cluster_name_and_metadata_example = async () => {
     // create settings
     const settings = new Settings({
         bagel_api_impl:"rest",
-        bagel_server_host:"api.bageldb.ai",
-        bagel_server_http_port:80,
+        bagel_server_host:"localhost",
+        bagel_server_http_port:8000,
     });
 
     // create api
     const api = new Client(settings);
 
     // get or create a cluster
-    const newName = "testing_6000";
+    const newName = "testing_60000";
 
     const cluster = await api.get_or_create_cluster(newName);
 
@@ -402,8 +402,8 @@ const modify_cluster_name_and_metadata_example = async () => {
         console.log(err);
     });
 
+    const modified_name = "testing_70000";
 
-    const modified_name = "testing_7000";
     // modify cluster name and metadata
     await cluster.modify(
         name = modified_name,
@@ -421,7 +421,6 @@ const modify_cluster_name_and_metadata_example = async () => {
     // peek into the cluster
     const peeks = await cluster.peek(10);
     console.log(peeks);
-
 
     // delete the cluster
     await api.delete_cluster(modified_name);
