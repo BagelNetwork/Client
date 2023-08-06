@@ -11,5 +11,5 @@ pytz==2023.3
 requests==2.28.2
 six==1.16.0
 typing-extensions==4.6.3
-tzdata==2023.3
+tzdata>=2022.1
 urllib3==1.26.16
