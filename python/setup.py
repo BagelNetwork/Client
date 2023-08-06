@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="betabageldb",
-    version="0.1.80",
+    version="0.2.1",
     description="BagelDB is a Python library for interacting with the BagelDB API.",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
@@ -27,7 +27,7 @@ setup(
         "onnxruntime==1.15.1",
         "overrides==7.3.1",
         "packaging==23.1",
-        "pandas==1.3.5",
+        "pandas==2.0.1",
         "posthog==3.0.1",
         "protobuf==4.23.4",
         "pydantic==1.10.10",
