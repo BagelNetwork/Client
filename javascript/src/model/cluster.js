@@ -76,13 +76,6 @@ class Cluster {
         return this._client._query(this.id, query_embeddings, n_results, where, where_document, include, query_texts);
     }
 
-
-    // querying data in the cluster by text
-    find_by_text(query_texts, n_results = 10, where = {}, where_document = {}, include = ["metadatas", "documents", "distances"], query_embeddings = null) {
-        return this._client._query_text(this.id, query_texts, n_results, where, where_document, include, query_embeddings);
-    }
-
-
     // creating index in the cluster
     create_index() {
         return this._client._create_index(this.name);
