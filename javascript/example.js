@@ -7,8 +7,8 @@ const ping_version_example = async () => {
     // create settings
     const settings = new Settings({
         bagel_api_impl:"rest",
-        bagel_server_host:"localhost",
-        bagel_server_http_port:8000,
+        bagel_server_host:"api.bageldb.ai",
+        bagel_server_http_port:80,
     });
 
     // create api
@@ -29,8 +29,8 @@ const get_all_clusters_example = async () => {
     // create settings
     const settings = new Settings({
         bagel_api_impl:"rest",
-        bagel_server_host:"localhost",
-        bagel_server_http_port:8000,
+        bagel_server_host:"api.bageldb.ai",
+        bagel_server_http_port:80,
     });
 
     // create api
@@ -47,8 +47,8 @@ const create_delete_get_or_create_cluster_example = async () => {
     // create settings
     const settings = new Settings({
         bagel_api_impl:"rest",
-        bagel_server_host:"localhost",
-        bagel_server_http_port:8000,
+        bagel_server_host:"api.bageldb.ai",
+        bagel_server_http_port:80,
     });
 
     // create api
@@ -84,8 +84,8 @@ const add_data_to_cluster_without_embedding_example = async () => {
     // create settings
     const settings = new Settings({
         bagel_api_impl:"rest",
-        bagel_server_host:"localhost",
-        bagel_server_http_port:8000,
+        bagel_server_host:"api.bageldb.ai",
+        bagel_server_http_port:80,
     });
 
     // create api
@@ -143,8 +143,8 @@ const add_data_to_cluster_with_embedding_example = async () => {
     // create settings
     const settings = new Settings({
         bagel_api_impl:"rest",
-        bagel_server_host:"localhost",
-        bagel_server_http_port:8000,
+        bagel_server_host:"api.bageldb.ai",
+        bagel_server_http_port:80,
     });
 
     // create api
@@ -193,8 +193,8 @@ const delete_data_from_cluster_example = async () => {
     // create settings
     const settings = new Settings({
         bagel_api_impl:"rest",
-        bagel_server_host:"localhost",
-        bagel_server_http_port:8000,
+        bagel_server_host:"api.bageldb.ai",
+        bagel_server_http_port:80,
     });
 
     // create api
@@ -246,8 +246,8 @@ const update_data_in_cluster_example = async () => {
     // create settings
     const settings = new Settings({
         bagel_api_impl:"rest",
-        bagel_server_host:"localhost",
-        bagel_server_http_port:8000,
+        bagel_server_host:"api.bageldb.ai",
+        bagel_server_http_port:80,
     });
 
     // create api
@@ -301,8 +301,8 @@ const upsert_data_in_cluster_example = async () => {
     // create settings
     const settings = new Settings({
         bagel_api_impl:"rest",
-        bagel_server_host:"localhost",
-        bagel_server_http_port:8000,
+        bagel_server_host:"api.bageldb.ai",
+        bagel_server_http_port:80,
     });
 
     // create api
@@ -356,8 +356,8 @@ const modify_cluster_name_and_metadata_example = async () => {
     // create settings
     const settings = new Settings({
         bagel_api_impl:"rest",
-        bagel_server_host:"localhost",
-        bagel_server_http_port:8000,
+        bagel_server_host:"api.bageldb.ai",
+        bagel_server_http_port:80,
     });
 
     // create api
