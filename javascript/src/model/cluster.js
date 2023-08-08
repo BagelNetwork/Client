@@ -76,7 +76,6 @@ class Cluster {
         return this._client._query(this.id, query_embeddings, n_results, where, where_document, include, query_texts);
     }
 
-
     // creating index in the cluster
     create_index() {
         return this._client._create_index(this.name);

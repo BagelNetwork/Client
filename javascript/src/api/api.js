@@ -25,10 +25,11 @@ class API {
             if (!response.data) {
                 throw new Error("Empty response data received");
             }
-            return parseInt(response.data["nanosecond heartbeat"]);
+            if(parseInt(response.data["nanosecond heartbeat"]) > 0) {
+                return "pong";
+            }
         } catch (error) {
-            console.error("Error:", error.message);
-            throw error;
+            console.error("Error:", error.response.data.error);
         }
     };
 
@@ -43,8 +44,7 @@ class API {
             return response.data;
         }
         catch (error) {
-            console.error("Error:", error.message);
-            throw error;
+            console.error("Error:", error.response.data.error);
         }
     };
 
@@ -60,8 +60,7 @@ class API {
             const clusters = json_clusters.map(json_cluster => new Cluster(this, json_cluster));
             return clusters;
         } catch (error) {
-            console.error("Error:", error.message);
-            throw error;
+            console.error("Error:", error.response.data.error);
         }
     };
 
@@ -79,8 +78,8 @@ class API {
         }
         return new Cluster(this, response.data);
     } catch (error) {
-        console.error("Error:", error.message);
-        throw error;
+        console.error("Error:", error.response.data.error);
+        // throw error;
         }
     };
 
@@ -95,11 +94,9 @@ class API {
             if (!response.data) {
                 throw new Error("Empty response data received");
             }
-            //console.log(response.data);
             return new Cluster(this, response.data);
         } catch (error) {
-            console.error("Error:", error.message);
-            throw error;
+            console.error("Error:", error.response);
         }
     };
 
@@ -107,10 +104,14 @@ class API {
     // get a cluster
     async delete_cluster(name) {
         try {
-            await axios.delete(this._api_url + "/clusters/" + name);
+            const resp = await axios.delete(this._api_url + "/clusters/" + name);
+            if(resp.status == 200){
+                console.log(`Cluster with name ${name} deleted successfully`);
+            }
         } catch (error) {
-            console.error("Error:", error.message);
-            throw error;
+            if(error.response.data.error == "IndexError('list index out of range')"){
+                console.error("Error", "Cluster does not exist");
+            }
         }
     };
 
@@ -120,8 +121,7 @@ class API {
         try {
             await axios.post(this._api_url + "/reset");
         } catch (error) {
-            console.error("Error:", error.message);
-            throw error;
+            console.error("Error:", error.response.data.error);
         }
     };
 
@@ -131,8 +131,7 @@ class API {
         try {
             await axios.post(this._api_url + "/persist");
         } catch (error) {
-            console.error("Error:", error.message);
-            throw error;
+            console.error("Error:", error.response.data.error);
         }
     };
 
@@ -150,8 +149,7 @@ class API {
             }
             return response.data;
         } catch (error) {
-            console.error("Error:", error.message);
-            throw error;
+            console.error("Error:", error.response.data.error);
         }
     };
 
@@ -166,8 +164,7 @@ class API {
             }
             return parseInt(response.data);
         } catch (error) {
-            console.error("Error:", error.message);
-            throw error;
+            console.error("Error:", error.response.data.error);
         }
     };
 
@@ -204,8 +201,7 @@ class API {
                 documents: documents ? documents : null
             };
         } catch (error) {
-            console.error("Error:", error.message);
-            throw error;
+            console.error("Error:", error.response.data.error);
         }
     };
 
@@ -238,19 +234,24 @@ class API {
             );
             return 'success';
         } catch (error) {
-            console.error("Error:", error.message);
-            throw error;
+            console.error("Error:", error.response.data.error);
         }
     };
 
 
 
     // add data to a cluster
-    async _add(cluster_id, ids, embeddings=null, metadatas=null, documents=null, increment_index=true) {
+    async _add(cluster_id, ids, embeddings, metadatas=null, documents=null, increment_index=true) {
         try {
             const response = await axios.post(
                 this._api_url + "/clusters/" + cluster_id + "/add",
-                { ids, embeddings, metadatas, documents, increment_index }
+                {
+                    "ids": ids,
+                    "embeddings": embeddings,
+                    "metadatas": metadatas,
+                    "documents": documents,
+                    "increment_index": increment_index,
+                }
             );
             if (!response.data) {
                 throw new Error("Empty response data received");
@@ -258,8 +259,7 @@ class API {
             //console.log(response.data);
             return response.data;
         } catch (error) {
-            console.error("Error:", error.message);
-            throw error;
+            console.error("Error:", error.response.data.error);
         }
     }
 
@@ -277,8 +277,7 @@ class API {
             const response = await fetch(url, requestOpts);
             return response.json();
         } catch (error) {
-            console.error("Error:", error.message);
-            throw error;
+            console.error("Error:", error.response.data.error);
         }
     };
 
@@ -337,7 +336,7 @@ class API {
             if (!response.data) {
                 throw new Error("Empty response data received");
             }
-            const {ids, embeddings, documents, metadatas, distances} = response.data;
+            const {ids, embeddings, documents, metadatas, distances} = JSON.parse(JSON.stringify(response.data));
             return {
                 ids: ids,
                 embeddings: embeddings ? embeddings : null,
