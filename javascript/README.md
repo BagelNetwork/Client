@@ -1,151 +1,196 @@
-# BagelDB NPM Client Documentation
-
-This package is a client for interacting with BagelDB, a database service. It allows you to check the connection (ping), insert vectors into a specified index, perform a search in a given index, and get OpenAI embeddings.
+# 🥯 BagelDB.js Client Documentation 🥯
 
 ## Table of Contents
-- [1. Installation](#1-installation)
-- [2. Initializing the Client](#2-initializing-the-client)
-- [3. Ping](#3-ping)
-- [4. Inserting Vectors](#4-inserting-vectors)
-- [5. Searching Vectors](#5-searching-vectors)
-- [6. Getting OpenAI Embeddings](#6-getting-openai-embeddings)
-- [7. Storing and Searching Embeddings](#7-storing-and-searching-embeddings)
-- [Examples](./examples)
+- [Overview](#overview)
+- [Installation](#installation)
+- [Configuration](#configuration) 
+- [Creating the Client](#creating-the-client)
+- [Ping API](#ping-api)
+- [Get API Version](#get-api-version)
+- [Get All Clusters](#get-all-clusters)
+- [Cluster Operations](#cluster-operations)
+  - [Create Cluster](#create-cluster)
+  - [Get or Create Cluster](#get-or-create-cluster)
+  - [Delete Cluster](#delete-cluster)
+  - [Add Data](#add-data)
+  - [Query Data](#query-data)
+  - [Delete Data](#delete-data)
+  - [Update Data](#update-data)
+  - [Upsert Data](#upsert-data)
+  - [Modify Cluster](#modify-cluster)
+- [Direct SQL Queries](#direct-sql-queries)
+- [Examples](#examples)
 
-## 1. Installation
+## Overview
 
-1. Install the package using the command: 
-   ```
-   npm install bageldb-beta
-   ```
-   **Note**: If you encounter an error message, you may need to install Node.js and npm. Visit the [official Node.js website](https://nodejs.org/en/download/) and follow their instructions.
+BagelDB.js is a client for interacting with the BagelDB 🥯 vector database API. It allows you to:
 
-## 2. Initializing the Client
+- Ping the BagelDB API server
+- Get API version
+- Get all clusters  
+- Create, delete, get clusters
+- Add, delete, update, upsert data in clusters   
+- Query clusters by vector or text
+- Modify cluster name and metadata
+- Directly execute SQL on BagelDB
 
-1. Import the client into your JavaScript file. 
+## Installation
 
-   ```javascript
-   const BagelDB = require('bageldb-beta');
-   ```
+Install BagelDB.js using npm:
 
-2. Create a new instance.
+```
+npm install bageldb-beta
+```
 
-   ```javascript
-   const db = new BagelDB();
-   ```
+## Configuration
 
-   **Note**: If you encounter an error, ensure that the `bageldb-beta` package is installed and spelled correctly.
+Create a `Settings` instance, passing in your BagelDB API configuration:
 
-## 3. Ping
+```js
+const settings = new Settings({
+  // config  
+});
+```
 
-1. Use `ping` to check if the connection with BagelDB's server is healthy.
+## Creating the Client 
 
-   ```javascript
-   db.ping()
-     .then(response => console.log(response))
-     .catch(error => console.error('An error occurred while pinging:', error));
-   ```
+Pass the `Settings` instance to the `Client` constructor:
 
-   `ping` returns a promise. If successful, the response is logged. If not, an error message is logged.
+```js
+const client = new Client(settings);
+```
 
-   **Possible errors**: Network issues, BagelDB's server might be down. Check your internet connection and ensure BagelDB's server is running.
+## Ping API
 
-## 4. Inserting Vectors
+Ping the API to verify connectivity:
 
-1. Use `insert` to add vectors to a specified index.
+```js 
+client.ping();
+```
 
-   ```javascript
-   const index = 'myIndex';
-   const vectors = [
-     {
-       id: 'vec1',
-       values: [0.1, 0.2, 0.3, 0.4],
-       metadata: { genre: 'drama' },
-     },
-     {
-       id: 'vec2',
-       values: [0.2, 0.3, 0.4, 0.5],
-       metadata: { genre: 'action' },
-     },
-   ];
+## Get API Version
 
-   db.insert(index, vectors)
-     .then(response => console.log(response))
-     .catch(error => console.error('An error occurred while inserting:', error));
-   ```
+Get the API version string:
 
-   This method returns a promise. If successful, the server's response is logged. If not, an error message is logged.
+```js
+client.getVersion(); 
+```
 
-   **Possible errors**: Invalid vector format or data. Make sure your vectors follow the correct structure and the data types are correct.
+## Get All Clusters
 
-## 5. Searching Vectors
+Get an array of all clusters:
 
-1. Use `search` to find vectors in a specified index.
+```js
+client.getAllClusters();
+```
 
-   ```javascript
-   const index = 'myIndex';
-   const vector = [1.0, 2.0, 3.0, 4.0];
+## Cluster Operations 
 
-   db.search(index, vector)
-     .then(response => console.log(response))
+The `Cluster` instance has methods for interacting with the cluster.
 
+### Create Cluster 
 
-     .catch(error => console.error('An error occurred while searching:', error));
-   ```
+Create a new cluster:
 
-   `search` returns a promise. If successful, the server's response is logged. If not, an error message is logged.
+```js  
+client.createCluster("my_cluster");
+```
 
-   **Possible errors**: Invalid vector or index. Ensure your vector is an array of numbers and the index exists in the database.
+### Get or Create Cluster
 
-## 6. Getting OpenAI Embeddings
+Get a cluster if exists, otherwise create it: 
 
-1. Use `getOpenAIEmbedding` to generate embeddings for a given input text.
+```js
+client.getOrCreateCluster("my_cluster");
+```
 
-   ```javascript
-   const inputText = 'Sample text for embedding';
+### Delete Cluster 
 
-   db.getOpenAIEmbedding(inputText)
-     .then(response => console.log(response))
-     .catch(error => console.error('An error occurred while getting embedding:', error));
-   ```
+Delete a cluster by name:
 
-   `getOpenAIEmbedding` returns a promise. If successful, the server's response is logged. If not, an error message is logged.
+```js
+client.deleteCluster("my_cluster"); 
+```
 
-   **Possible errors**: Invalid input text or missing OpenAI API key. Make sure your input text is a string and you have your OpenAI API key in your environment variables.
+### Add Data
 
-## 7. Storing and Searching Embeddings
+Add data to a cluster: 
 
-1. Once you have the embeddings from OpenAI, you can store them in BagelDB using the `insert` method.
+```js 
+cluster.add(
+  // ids, embeddings, etc  
+);
+```
 
-   ```javascript
-   const index = 'myEmbeddingsIndex';
-   const vectors = [
-     {
-       id: 'embed1',
-       values: embedding, // Use the retrieved embedding array
-       metadata: { text: inputText },
-     },
-   ];
+Data can be added without passing embeddings. BagelDB 🥯 will handle embedding the data automatically:
 
-   db.insert(index, vectors)
-     .then(response => console.log(response))
-     .catch(error => console.error('An error occurred while inserting:', error));
-   ```
+```js
+cluster.add(
+  // ids, null embeddings, documents
+);
+```
 
-2. Then, you can perform a search in this index.
+### Query Data 
 
-   ```javascript
-   const vector = embedding; // Use the retrieved embedding array
+Query the cluster by vector:
 
-   db.search(index, vector)
-     .then(response => console.log(response))
-     .catch(error => console.error('An error occurred while searching:', error));
-   ```
+```js
+cluster.find(queryEmbeddings: [vector]); 
+```
 
-   Both `insert` and `search` return a promise. If successful, the server's response is logged. If not, an error message is logged.
+Or query by text:
 
-   **Possible errors**: Invalid vector, index, or embedding. Make sure your embeddings are an array of numbers, your input text is a string, and the index exists in the database.
+```js
+cluster.find(queryTexts: ['text']);
+```
+
+### Delete Data
+
+Delete data from a cluster:
+
+```js 
+cluster.delete(ids: [...]);
+```
+
+### Update Data 
+
+Update existing data in a cluster:
+
+```js
+cluster.update(ids: [...], embeddings: [...]); 
+```
+
+### Upsert Data
+
+Upsert data in a cluster:  
+
+```js 
+cluster.upsert(ids: [...], embeddings: [...]);
+```
+
+### Modify Cluster 
+
+Modify a cluster's name and metadata:
+
+```js
+cluster.modify(name: 'new-name', metadata: {...}); 
+```
+
+## Direct SQL Queries 
+
+Execute raw SQL queries directly on BagelDB:
+
+```js
+client.rawSQL('SELECT * FROM clusters');
+```
 
 ## Examples
 
-You can find an end-to-end example in the [examples/](./examples) directory. The example demonstrates the complete workflow of using the BagelDB NPM client.
+See the [examples](./example.js) file included for code samples of common operations.
+
+The key steps are:
+
+1. Create `Settings` with your API configuration  
+2. Create a `Client` instance
+3. Call API methods like `createCluster` 
+4. Use the returned `Cluster` instance to add, query, etc.
