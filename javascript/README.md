@@ -1,9 +1,10 @@
 # 🥯 BagelDB.js Client Documentation 🥯
 
 ## Table of Contents
+
 - [Overview](#overview)
 - [Installation](#installation)
-- [Configuration](#configuration) 
+- [Configuration](#configuration)
 - [Creating the Client](#creating-the-client)
 - [Ping API](#ping-api)
 - [Get API Version](#get-api-version)
@@ -27,9 +28,9 @@ BagelDB.js is a client for interacting with the BagelDB 🥯 vector database API
 
 - Ping the BagelDB API server
 - Get API version
-- Get all clusters  
+- Get all clusters
 - Create, delete, get clusters
-- Add, delete, update, upsert data in clusters   
+- Add, delete, update, upsert data in clusters
 - Query clusters by vector or text
 - Modify cluster name and metadata
 - Directly execute SQL on BagelDB
@@ -44,15 +45,25 @@ npm install bageldb-beta
 
 ## Configuration
 
+Import the `Settings` and `Client` classes:
+
+```js
+const { Settings, Client } = require("bageldb-beta");
+```
+
 Create a `Settings` instance, passing in your BagelDB API configuration:
 
 ```js
 const settings = new Settings({
-  // config  
+  bagel_api_impl: "rest",
+  bagel_server_host: "api.bageldb.ai",
+  bagel_server_http_port: 80,
 });
+
+const api = new Client(settings);
 ```
 
-## Creating the Client 
+## Creating the Client
 
 Pass the `Settings` instance to the `Client` constructor:
 
@@ -64,8 +75,11 @@ const client = new Client(settings);
 
 Ping the API to verify connectivity:
 
-```js 
-client.ping();
+```js
+async () => {
+  const response = await api.ping();
+  console.log(response);
+};
 ```
 
 ## Get API Version
@@ -73,7 +87,10 @@ client.ping();
 Get the API version string:
 
 ```js
-client.getVersion(); 
+async () => {
+  const version = await api.get_version();
+  console.log(version);
+};
 ```
 
 ## Get All Clusters
@@ -81,107 +98,220 @@ client.getVersion();
 Get an array of all clusters:
 
 ```js
-client.getAllClusters();
+async () => {
+  const clusters = await api.get_all_clusters();
+  console.log(clusters);
+};
 ```
 
-## Cluster Operations 
+## Cluster Operations
 
 The `Cluster` instance has methods for interacting with the cluster.
 
-### Create Cluster 
+### Create Cluster and Delete Cluster
 
-Create a new cluster:
+Create a new cluster by name then delete it:
 
-```js  
-client.createCluster("my_cluster");
+```js
+async () => {
+  const name = "my_test_cluster_200000";
+
+  try {
+    await api.create_cluster(name);
+    console.log(`Cluster with name ${name} created successfully`);
+  } catch (err) {
+    console.log(err);
+  }
+
+  await api.delete_cluster(name);
+
+  const cluster = await api.get_or_create_cluster("my_test_cluster_200000");
+  console.log(cluster);
+
+  await api.delete_cluster("my_test_cluster_200000");
+};
 ```
 
 ### Get or Create Cluster
 
-Get a cluster if exists, otherwise create it: 
+Get a cluster if exists, otherwise create it:
 
 ```js
-client.getOrCreateCluster("my_cluster");
-```
-
-### Delete Cluster 
-
-Delete a cluster by name:
-
-```js
-client.deleteCluster("my_cluster"); 
+async () => {
+  const cluster = await api.get_or_create_cluster("my_test_cluster_200000");
+  console.log(cluster);
+};
 ```
 
 ### Add Data
 
-Add data to a cluster: 
+Add data to a cluster:
 
-```js 
-cluster.add(
-  // ids, embeddings, etc  
-);
+```js
+async () => {
+  const name = "testing_2000";
+  const cluster = await api.get_or_create_cluster(name);
+
+  try {
+    await cluster.add({
+      ids: ["id1", "id2"],
+      embeddings: [
+        [1.1, 2.3],
+        [4.5, 6.9],
+      ],
+      metadatas: [{ info: "M1" }, { info: "M1" }],
+      documents: ["doc1", "doc2"],
+    });
+    console.log("Data added successfully");
+  } catch (err) {
+    console.log(err);
+  }
+};
 ```
 
 Data can be added without passing embeddings. BagelDB 🥯 will handle embedding the data automatically:
 
 ```js
-cluster.add(
-  // ids, null embeddings, documents
-);
+async () => {
+  const name = "testing_1000";
+  const cluster = await api.get_or_create_cluster(name);
+
+  try {
+    await cluster.add({
+      ids: ["i37", "i38", "i39"],
+      embeddings: null,
+      metadatas: [
+        { source: "notion" },
+        { source: "notion" },
+        { source: "google-doc" },
+      ],
+      documents: ["This is document", "This is Towhid", "This is text"],
+    });
+    console.log("Data added successfully");
+  } catch (err) {
+    console.log(err);
+  }
+};
 ```
 
-### Query Data 
+### Query Data
 
 Query the cluster by vector:
 
 ```js
-cluster.find(queryEmbeddings: [vector]); 
+async () => {
+  const name = "testing_2000";
+  const cluster = await api.get_or_create_cluster(name);
+
+  const queryEmbeddings = [
+    [1.1, 2.3],
+    [4.5, 6.9],
+  ];
+
+  const results = await cluster.find(queryEmbeddings);
+  console.log(results);
+};
 ```
 
 Or query by text:
 
 ```js
-cluster.find(queryTexts: ['text']);
+async () => {
+  const name = "testing_2000";
+  const cluster = await api.get_or_create_cluster(name);
+
+  const queryText = "This is document";
+
+  const results = await cluster.find(queryText);
+  console.log(results);
+};
 ```
 
 ### Delete Data
 
 Delete data from a cluster:
 
-```js 
-cluster.delete(ids: [...]);
+```js
+async () => {
+  const name = "testing_2000";
+  const cluster = await api.get_or_create_cluster(name);
+
+  await cluster.delete({
+    ids: ["id1"],
+    where: {},
+    where_document: {},
+  });
+};
 ```
 
-### Update Data 
+### Update Data
 
 Update existing data in a cluster:
 
 ```js
-cluster.update(ids: [...], embeddings: [...]); 
+async () => {
+  const name = "testing_2000";
+  const cluster = await api.get_or_create_cluster(name);
+
+  await cluster.update({
+    ids: ["id1"],
+    embeddings: [[10.1, 20.3]],
+    metadatas: [{ info: "M1" }],
+    documents: ["doc1"],
+  });
+};
 ```
 
 ### Upsert Data
 
-Upsert data in a cluster:  
+Upsert data in a cluster:
 
-```js 
-cluster.upsert(ids: [...], embeddings: [...]);
+```js
+async () => {
+  const name = "testing_2000";
+  const cluster = await api.get_or_create_cluster(name);
+
+  await cluster.upsert({
+    ids: ["id1", "id3"],
+    embeddings: [
+      [15.1, 25.3],
+      [30.1, 40.3],
+    ],
+    metadatas: [{ info: "M1" }, { info: "M1" }],
+    documents: ["doc1", "doc3"],
+  });
+};
 ```
 
-### Modify Cluster 
+### Modify Cluster
 
 Modify a cluster's name and metadata:
 
 ```js
-cluster.modify(name: 'new-name', metadata: {...}); 
+async () => {
+  const name = "testing_2000";
+  const cluster = await api.get_or_create_cluster(name);
+
+  await cluster.modify({
+    name: "testing_2000_modified",
+    metadata: { info: "M1" },
+  });
+};
 ```
 
-## Direct SQL Queries 
+## Direct SQL Queries
 
 Execute raw SQL queries directly on BagelDB:
 
 ```js
-client.rawSQL('SELECT * FROM clusters');
+async () => {
+  const name = "testing_2000";
+  const cluster = await api.get_or_create_cluster(name);
+
+  const query = "SELECT * FROM testing_2000";
+  const results = await cluster.raw_sql(query);
+  console.log(results);
+};
 ```
 
 ## Examples
@@ -190,7 +320,7 @@ See the [examples](./example.js) file included for code samples of common operat
 
 The key steps are:
 
-1. Create `Settings` with your API configuration  
+1. Create `Settings` with your API configuration
 2. Create a `Client` instance
-3. Call API methods like `createCluster` 
+3. Call API methods like `createCluster`
 4. Use the returned `Cluster` instance to add, query, etc.
