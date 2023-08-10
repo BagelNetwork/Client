@@ -1,4 +1,4 @@
-# BagelDB Python Client Example
+# BagelDB Python Client 🥯
 
 Welcome to the BagelDB Python Client Example! BagelDB is your bread-and-butter library for interacting with the BagelDB API without breaking a sweat. 
 

@@ -1,6 +1,11 @@
 # BagelDB Developer Documentation 🥯
 
-Welcome to the BagelDB client repository! If you're here, you're probably eager to dive into the world of BagelDB. And, guess what? We've prepared two clients to make your journey smooth: one for JavaScript and another for Python.
+Welcome to the BagelDB client hub! It's a thrill to see you excited about stepping into the future with us.
+
+Driven by purpose, our mission is to empower resource-limited teams, to craft state-of-the-art AI models and apps. We envision a world where, even without vast capital, teams can rival tech titans like Google and OpenAI. Together, let's democratize the AI frontier.
+
+For a seamless experience, we've tailored two dedicated clients for you: JavaScript and Python. If you're eager to delve deeper into BagelDB's capabilities, our litepaper awaits your perusal.
+
 
 For a more in-depth knowledge of what BagelDB is, head over to our [litepaper](https://paper.bageldb.ai/)
 

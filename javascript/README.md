@@ -1,4 +1,4 @@
-# BagelDB JavaScript Client Documentation 🥯
+# BagelDB JavaScript Client 🥯
 
 ## Table of Contents
 
