@@ -1,196 +1,219 @@
-# 🥯 BagelDB.js Client Documentation 🥯
+# BagelDB JavaScript Client Documentation 🥯
 
 ## Table of Contents
-- [Overview](#overview)
+
 - [Installation](#installation)
-- [Configuration](#configuration) 
-- [Creating the Client](#creating-the-client)
-- [Ping API](#ping-api)
-- [Get API Version](#get-api-version)
-- [Get All Clusters](#get-all-clusters)
-- [Cluster Operations](#cluster-operations)
-  - [Create Cluster](#create-cluster)
-  - [Get or Create Cluster](#get-or-create-cluster)
-  - [Delete Cluster](#delete-cluster)
-  - [Add Data](#add-data)
-  - [Query Data](#query-data)
-  - [Delete Data](#delete-data)
-  - [Update Data](#update-data)
-  - [Upsert Data](#upsert-data)
-  - [Modify Cluster](#modify-cluster)
-- [Direct SQL Queries](#direct-sql-queries)
-- [Examples](#examples)
-
-## Overview
-
-BagelDB.js is a client for interacting with the BagelDB 🥯 vector database API. It allows you to:
-
-- Ping the BagelDB API server
-- Get API version
-- Get all clusters  
-- Create, delete, get clusters
-- Add, delete, update, upsert data in clusters   
-- Query clusters by vector or text
-- Modify cluster name and metadata
-- Directly execute SQL on BagelDB
+- [Client](#client)
+- [Settings](#settings)  
+- [Usage](#usage)
+- [API Methods](#api-methods)
+- [Cluster Methods](#cluster-methods)
+- [Full Example](#full-example)
 
 ## Installation
-
-Install BagelDB.js using npm:
 
 ```
 npm install bageldb-beta
 ```
 
-## Configuration
+## Overview
 
-Create a `Settings` instance, passing in your BagelDB API configuration:
+The official BagelDB API endpoint is `api.bageldb.ai`.
+
+The BagelDB JavaScript client provides easy access to the BagelDB API from Node.js applications.
+
+The full source code with examples is available on GitHub:
+https://github.com/Bagel-DB/Client/tree/main/javascript
+
+See `example.js` for complete usage examples.
+
+## Client
 
 ```js
-const settings = new Settings({
-  // config  
-});
-```
+const { Client } = require('bageldb-beta');
 
-## Creating the Client 
-
-Pass the `Settings` instance to the `Client` constructor:
-
-```js
 const client = new Client(settings);
 ```
 
-## Ping API
-
-Ping the API to verify connectivity:
+The `Client` class is the main interface to the BagelDB API. It requires a `Settings` object to configure connectivity:
 
 ```js 
-client.ping();
+// Settings config
+const settings = new Settings({
+  bagel_api_impl: "rest",
+  bagel_server_host: "api.bageldb.ai",
+  bagel_server_http_port: 80
+});
 ```
 
-## Get API Version
+## Settings
 
-Get the API version string:
+The `Settings` class contains configuration options for the client:
+
+- `bagel_api_impl` - The BagelDB API implementation, usually `"rest"`
+- `bagel_server_host` - BagelDB server hostname
+- `bagel_server_http_port` - BagelDB HTTP port
+- See `Settings` source for additional options
+
+## Usage 
+
+Once you have created a `Client` instance, you can call API methods like:
+
+## API Methods
+
+### Ping API
 
 ```js
-client.getVersion(); 
+const response = await client.ping(); 
 ```
 
-## Get All Clusters
+Pings the API to check connectivity.
 
-Get an array of all clusters:
+### Get API Version
 
 ```js
-client.getAllClusters();
+const version = await client.get_version();
 ```
 
-## Cluster Operations 
+Gets the API version string.
 
-The `Cluster` instance has methods for interacting with the cluster.
-
-### Create Cluster 
-
-Create a new cluster:
-
-```js  
-client.createCluster("my_cluster");
-```
-
-### Get or Create Cluster
-
-Get a cluster if exists, otherwise create it: 
+### Get All Clusters 
 
 ```js
-client.getOrCreateCluster("my_cluster");
+const clusters = await client.get_all_clusters();
 ```
 
-### Delete Cluster 
+Gets info on all existing clusters.
 
-Delete a cluster by name:
+### Create Cluster
 
 ```js
-client.deleteCluster("my_cluster"); 
+const cluster = await client.create_cluster('mycluster');
+``` 
+
+Creates a new cluster.
+
+### Get Cluster
+
+```js
+const cluster = await client.get_cluster('mycluster'); 
 ```
 
-### Add Data
+Gets an existing cluster by name.
 
-Add data to a cluster: 
+### Delete Cluster
+
+```js
+await client.delete_cluster('mycluster');
+```
+
+Deletes a cluster by name.
+
+## Cluster Methods
+
+The `Cluster` class represents a specific cluster and has methods like:
+
+```js
+// Add documents
+await cluster.add([
+  { id: 1, text: 'Document 1' },  
+  { id: 2, text: 'Document 2' }
+]);
+
+// Search by vector 
+const results = await cluster.query([0.5, 0.5]); 
+```
+
+See the `Cluster` class documentation for full details on:
+
+- `count()` - Get total rows
+- `add()` - Insert new rows
+- `delete()` - Delete rows  
+- `update()` - Update existing rows
+- `query()` - Search by vectors
+- `peek()` - Sample rows
+- And more
+
+## Full Example
+
+```js
+const { Client } = require('bageldb-beta');
+
+const settings = new Settings({
+  bagel_api_impl:"rest",
+  bagel_server_host:"api.bageldb.ai",
+  bagel_server_http_port:80,
+});
+
+const client = new Client(settings); 
+
+const cluster = await client.get_or_create_cluster('products');
+
+await cluster.add([
+  { id: 1, name: 'Baseball', vector: [0.1, 0.3] },
+  { id: 2, name: 'Bat', vector: [0.7, 0.2] }
+]);
+
+const results = await cluster.query([0.5, 0.5]); 
+```
+
+Here is another example showing the usage flow:
+
+You're right, I should show an example of searching by text as well. Here is an updated full example:
 
 ```js 
-cluster.add(
-  // ids, embeddings, etc  
-);
+// Import and initialize client
+const { Client } = require('bageldb-beta');
+
+const settings = new Settings({
+  bagel_api_impl: "rest",
+  bagel_server_host: "api.bageldb.ai", 
+  bagel_server_http_port: 80  
+});
+
+const client = new Client(settings);
+
+// Get or create cluster
+const cluster = await client.get_or_create_cluster('products');  
+
+// Add documents
+await cluster.add([
+  { id: 1, text: 'Baseball' },
+  { id: 2, text: 'Bat' }  
+]); 
+
+// Search by vector 
+const results1 = await cluster.query([0.5, 0.5]);
+
+// Search by text
+const results2 = await cluster.query(null, {
+  query_texts: ['Baseball'] 
+});
+
+// BagelDB will search using the embeddings
+// it previously generated for the documents
 ```
 
-Data can be added without passing embeddings. BagelDB 🥯 will handle embedding the data automatically:
+The key addition is the `query_texts` parameter to search by text directly:
 
 ```js
-cluster.add(
-  // ids, null embeddings, documents
-);
+const results2 = await cluster.query(null, {
+  query_texts: ['Baseball']  
+});
 ```
 
-### Query Data 
+This searches for the document with the text "Baseball" without needing to provide any embeddings.
 
-Query the cluster by vector:
+The key points are:
 
-```js
-cluster.find(queryEmbeddings: [vector]); 
-```
+- You can insert documents by just providing a text field instead of an embedding vector.
 
-Or query by text:
+- Behind the scenes, BagelDB will run the text through its built-in neural network to generate an embedding vector. 
 
-```js
-cluster.find(queryTexts: ['text']);
-```
+- When you search by vector later, it will use the embeddings it previously generated.
 
-### Delete Data
+This allows you to easily index and search text without having to generate embeddings yourself. BagelDB handles it automatically.
 
-Delete data from a cluster:
+Let me know if this helps explain the full end-to-end flow!
 
-```js 
-cluster.delete(ids: [...]);
-```
-
-### Update Data 
-
-Update existing data in a cluster:
-
-```js
-cluster.update(ids: [...], embeddings: [...]); 
-```
-
-### Upsert Data
-
-Upsert data in a cluster:  
-
-```js 
-cluster.upsert(ids: [...], embeddings: [...]);
-```
-
-### Modify Cluster 
-
-Modify a cluster's name and metadata:
-
-```js
-cluster.modify(name: 'new-name', metadata: {...}); 
-```
-
-## Direct SQL Queries 
-
-Execute raw SQL queries directly on BagelDB:
-
-```js
-client.rawSQL('SELECT * FROM clusters');
-```
-
-## Examples
-
-See the [examples](./example.js) file included for code samples of common operations.
-
-The key steps are:
-
-1. Create `Settings` with your API configuration  
-2. Create a `Client` instance
-3. Call API methods like `createCluster` 
-4. Use the returned `Cluster` instance to add, query, etc.
+See the [GitHub README](https://github.com/Bagel-DB/Client/tree/main/javascript) and `example.js` for more complete examples. Let me know if any part needs more explanation!
