@@ -2,6 +2,8 @@
 
 Welcome to the BagelDB client repository! If you're here, you're probably eager to dive into the world of BagelDB. And, guess what? We've prepared two clients to make your journey smooth: one for JavaScript and another for Python.
 
+For a more in-depth knowledge of what BagelDB is, head over to our [litepaper](https://paper.bageldb.ai/)
+
 ## What's Inside? 🥯
 
 Well, this repository houses tools that make chatting with the BagelDB API a breeze. Instead of you juggling with HTTP requests or handling API responses, these clients will take on the grunt work. What's left for you? Just the fun part – crafting great applications!
