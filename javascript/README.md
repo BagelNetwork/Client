@@ -1,8 +1,9 @@
-# 🥯 BagelDB.js Client Documentation 🥯
+# BagelDB JavaScript Client 🥯
 
 ## Table of Contents
 
 - [Overview](#overview)
+
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Creating the Client](#creating-the-client)
@@ -34,16 +35,20 @@ BagelDB.js is a client for interacting with the BagelDB 🥯 vector database API
 - Query clusters by vector or text
 - Modify cluster name and metadata
 - Directly execute SQL on BagelDB
+- [Client](#client)
+- [Settings](#settings)
+- [Usage](#usage)
+- [API Methods](#api-methods)
+- [Cluster Methods](#cluster-methods)
+- [Full Example](#full-example)
 
 ## Installation
-
-Install BagelDB.js using npm:
 
 ```
 npm install bageldb-beta
 ```
 
-## Configuration
+## Overview
 
 Import the `Settings` and `Client` classes:
 
@@ -51,7 +56,7 @@ Import the `Settings` and `Client` classes:
 const { Settings, Client } = require("bageldb-beta");
 ```
 
-Create a `Settings` instance, passing in your BagelDB API configuration:
+The BagelDB JavaScript client provides easy access to the BagelDB API from Node.js applications.
 
 ```js
 const settings = new Settings({
@@ -63,17 +68,18 @@ const settings = new Settings({
 const api = new Client(settings);
 ```
 
+The full source code with examples is available on GitHub:
+https://github.com/Bagel-DB/Client/tree/main/javascript
+
 ## Creating the Client
 
-Pass the `Settings` instance to the `Client` constructor:
+## Client
 
 ```js
 const client = new Client(settings);
 ```
 
-## Ping API
-
-Ping the API to verify connectivity:
+The `Client` class is the main interface to the BagelDB API. It requires a `Settings` object to configure connectivity:
 
 ```js
 async () => {
@@ -82,9 +88,22 @@ async () => {
 };
 ```
 
-## Get API Version
+## Settings
 
-Get the API version string:
+The `Settings` class contains configuration options for the client:
+
+- `bagel_api_impl` - The BagelDB API implementation, usually `"rest"`
+- `bagel_server_host` - BagelDB server hostname
+- `bagel_server_http_port` - BagelDB HTTP port
+- See `Settings` source for additional options
+
+## Usage
+
+Once you have created a `Client` instance, you can call API methods like:
+
+## API Methods
+
+### Ping API
 
 ```js
 async () => {
@@ -93,9 +112,9 @@ async () => {
 };
 ```
 
-## Get All Clusters
+Pings the API to check connectivity.
 
-Get an array of all clusters:
+### Get API Version
 
 ```js
 async () => {
@@ -143,7 +162,7 @@ async () => {
 };
 ```
 
-### Add Data
+Gets an existing cluster by name.
 
 Add data to a cluster:
 
@@ -169,7 +188,7 @@ async () => {
 };
 ```
 
-Data can be added without passing embeddings. BagelDB 🥯 will handle embedding the data automatically:
+The key addition is the `query_texts` parameter to search by text directly:
 
 ```js
 async () => {
@@ -196,7 +215,7 @@ async () => {
 
 ### Query Data
 
-Query the cluster by vector:
+The key points are:
 
 ```js
 async () => {
@@ -213,7 +232,7 @@ async () => {
 };
 ```
 
-Or query by text:
+- Behind the scenes, BagelDB will run the text through its built-in neural network to generate an embedding vector.
 
 ```js
 async () => {
@@ -227,9 +246,9 @@ async () => {
 };
 ```
 
-### Delete Data
+This allows you to easily index and search text without having to generate embeddings yourself. BagelDB handles it automatically.
 
-Delete data from a cluster:
+Let me know if this helps explain the full end-to-end flow!
 
 ```js
 async () => {
