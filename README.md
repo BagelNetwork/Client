@@ -1,6 +1,6 @@
 # BagelDB Developer Documentation 🥯
 
-Welcome to the BagelDB client hub! It's a thrill to see you excited about stepping into the future with us.
+Welcome to the BagelDB client hub! It's a thrill to see you stepping into the future with us.
 
 Driven by purpose, our mission is to empower resource-limited teams, to craft state-of-the-art AI models and apps. We envision a world where, even without vast capital, teams can rival tech titans like Google and OpenAI. Together, let's democratize the AI frontier.
 
