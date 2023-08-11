@@ -29,7 +29,7 @@ class API {
                 return "pong";
             }
         } catch (error) {
-            console.error("Error:", error.response.data.error);
+            console.error("Error:", error);
         }
     };
 
@@ -44,7 +44,7 @@ class API {
             return response.data;
         }
         catch (error) {
-            console.error("Error:", error.response.data.error);
+            console.error("Error:", error);
         }
     };
 
@@ -60,7 +60,7 @@ class API {
             const clusters = json_clusters.map(json_cluster => new Cluster(this, json_cluster));
             return clusters;
         } catch (error) {
-            console.error("Error:", error.response.data.error);
+            console.error("Error:", error);
         }
     };
 
@@ -78,7 +78,7 @@ class API {
         }
         return new Cluster(this, response.data);
     } catch (error) {
-        console.error("Error:", error.response.data.error);
+        console.error("Error:", error);
         // throw error;
         }
     };
@@ -109,7 +109,7 @@ class API {
                 console.log(`Cluster with name ${name} deleted successfully`);
             }
         } catch (error) {
-            if(error.response.data.error == "IndexError('list index out of range')"){
+            if(error == "IndexError('list index out of range')"){
                 console.error("Error", "Cluster does not exist");
             }
         }
@@ -121,7 +121,7 @@ class API {
         try {
             await axios.post(this._api_url + "/reset");
         } catch (error) {
-            console.error("Error:", error.response.data.error);
+            console.error("Error:", error);
         }
     };
 
@@ -131,7 +131,7 @@ class API {
         try {
             await axios.post(this._api_url + "/persist");
         } catch (error) {
-            console.error("Error:", error.response.data.error);
+            console.error("Error:", error);
         }
     };
 
@@ -149,7 +149,7 @@ class API {
             }
             return response.data;
         } catch (error) {
-            console.error("Error:", error.response.data.error);
+            console.error("Error:", error);
         }
     };
 
@@ -164,7 +164,7 @@ class API {
             }
             return parseInt(response.data);
         } catch (error) {
-            console.error("Error:", error.response.data.error);
+            console.error("Error:", error);
         }
     };
 
@@ -201,7 +201,7 @@ class API {
                 documents: documents ? documents : null
             };
         } catch (error) {
-            console.error("Error:", error.response.data.error);
+            console.error("Error:", error);
         }
     };
 
@@ -234,7 +234,7 @@ class API {
             );
             return 'success';
         } catch (error) {
-            console.error("Error:", error.response.data.error);
+            console.error("Error:", error);
         }
     };
 
@@ -259,7 +259,7 @@ class API {
             //console.log(response.data);
             return response.data;
         } catch (error) {
-            console.error("Error:", error.response.data.error);
+            console.error("Error:", error);
         }
     }
 
@@ -277,7 +277,7 @@ class API {
             const response = await fetch(url, requestOpts);
             return response.json();
         } catch (error) {
-            console.error("Error:", error.response.data.error);
+            console.error("Error:", error);
         }
     };
 
