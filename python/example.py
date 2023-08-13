@@ -37,7 +37,7 @@ def create_add_get(api):
     cluster = api.get_or_create_cluster(name)
 
     # Add documents to the cluster
-    resp = cluster.add(
+    _ = cluster.add(
         documents=[
             "This is document1",
             "This is bidhan",
@@ -56,7 +56,7 @@ def create_add_get(api):
     first_item = cluster.peek(1)
     if first_item:
         print("get 1st item")
-
+    api.delete_cluster(name)
     print(">> create_add_get done !\n")
 
 
@@ -94,7 +94,7 @@ def create_add_find(api):
         where={"source": "notion"},
         where_document={"$contains": "is"}
     )
-
+    api.delete_cluster(name)
     print(results)
     print(">> create_add_find done  !\n")
 
@@ -144,7 +144,7 @@ def create_add_find_em(api):
         query_embeddings=[[1.1, 2.3, 3.2]],
         n_results=5
     )
-
+    api.delete_cluster(name)
     print("find result:", results)
     print(">> create_add_find_em done  !\n")
 
@@ -197,7 +197,7 @@ def create_add_modify_update(api):
     # Retrieve document metadata after updating
     print("After update source:")
     print(cluster.get(ids=["id1"]))
-
+    api.delete_cluster(name)
     print(">> create_add_modify_update done !\n")
 
 
@@ -244,6 +244,7 @@ def create_upsert(api):
         ids=["id1", "id3"]
     )
 
+    api.delete_cluster(name)
     # Print the count of documents in the cluster
     print("Count of documents:", cluster.count())
     print(">> create_upsert done !\n")
