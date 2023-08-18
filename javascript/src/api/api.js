@@ -138,20 +138,20 @@ class API {
 
 
     // use raw sql to query the database
-    async raw_sql(sql) {
-        try {
-            const response = await axios.post(
-                this._api_url + "/raw_sql",
-                { raw_sql: sql }
-            );
-            if (!response.data) {
-                throw new Error("Empty response data received");
-            }
-            return response.data;
-        } catch (error) {
-            console.error("Error:", error);
-        }
-    };
+    //async raw_sql(sql) {
+    //    try {
+    //        const response = await axios.post(
+    //            this._api_url + "/raw_sql",
+    //            { raw_sql: sql }
+    //        );
+    //        if (!response.data) {
+    //            throw new Error("Empty response data received");
+    //        }
+    //        return response.data;
+    //    } catch (error) {
+    //        console.error("Error:", error);
+    //    }
+    //};
 
 
 
