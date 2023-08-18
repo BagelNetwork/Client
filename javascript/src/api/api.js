@@ -9,7 +9,7 @@ class API {
     // Constructor
     constructor(settings) {
         const urlPrefix = settings.bagel_server_ssl_enabled ? "https" : "http";
-        if(!settings.bagel_server_host || !settings.bagel_server_http_port) {
+        if (!settings.bagel_server_host || !settings.bagel_server_http_port) {
             throw new Error("Missing required config values 'bagel_server_host' and/or 'bagel_server_http_port'");
         }
         this._api_url = `${urlPrefix}://${settings.bagel_server_host}:${settings.bagel_server_http_port}/api/v1`;
@@ -25,7 +25,7 @@ class API {
             if (!response.data) {
                 throw new Error("Empty response data received");
             }
-            if(parseInt(response.data["nanosecond heartbeat"]) > 0) {
+            if (parseInt(response.data["nanosecond heartbeat"]) > 0) {
                 return "pong";
             }
         } catch (error) {
@@ -68,18 +68,18 @@ class API {
 
     // create a cluster
     async create_cluster(name, metadata = null, get_or_create = false) {
-    try {
-        const response = await axios.post(
-            this._api_url + "/clusters",
-            { name, metadata, get_or_create }
-        );
-        if (!response.data) {
-            throw new Error("Empty response data received");
-        }
-        return new Cluster(this, response.data);
-    } catch (error) {
-        console.error("Error:", error);
-        // throw error;
+        try {
+            const response = await axios.post(
+                this._api_url + "/clusters",
+                { name, metadata, get_or_create }
+            );
+            if (!response.data) {
+                throw new Error("Empty response data received");
+            }
+            return new Cluster(this, response.data);
+        } catch (error) {
+            console.error("Error:", error);
+            // throw error;
         }
     };
 
@@ -105,11 +105,11 @@ class API {
     async delete_cluster(name) {
         try {
             const resp = await axios.delete(this._api_url + "/clusters/" + name);
-            if(resp.status == 200){
+            if (resp.status == 200) {
                 console.log(`Cluster with name ${name} deleted successfully`);
             }
         } catch (error) {
-            if(error == "IndexError('list index out of range')"){
+            if (error == "IndexError('list index out of range')") {
                 console.error("Error", "Cluster does not exist");
             }
         }
@@ -138,20 +138,20 @@ class API {
 
 
     // use raw sql to query the database
-    async raw_sql(sql) {
-        try {
-            const response = await axios.post(
-                this._api_url + "/raw_sql",
-                { raw_sql: sql }
-            );
-            if (!response.data) {
-                throw new Error("Empty response data received");
-            }
-            return response.data;
-        } catch (error) {
-            console.error("Error:", error);
-        }
-    };
+    // async raw_sql(sql) {
+    //     try {
+    //         const response = await axios.post(
+    //             this._api_url + "/raw_sql",
+    //             { raw_sql: sql }
+    //         );
+    //         if (!response.data) {
+    //             throw new Error("Empty response data received");
+    //         }
+    //         return response.data;
+    //     } catch (error) {
+    //         console.error("Error:", error);
+    //     }
+    // };
 
 
 
@@ -230,7 +230,7 @@ class API {
             const response = await axios.put(
                 this._api_url + "/clusters/" + cluster_id,
                 { "new_metadata": new_metadata, "new_name": new_name },
-                { headers: { "Content-Type": "application/json" }}
+                { headers: { "Content-Type": "application/json" } }
             );
             return 'success';
         } catch (error) {
@@ -241,7 +241,7 @@ class API {
 
 
     // add data to a cluster
-    async _add(cluster_id, ids, embeddings, metadatas=null, documents=null, increment_index=true) {
+    async _add(cluster_id, ids, embeddings, metadatas = null, documents = null, increment_index = true) {
         try {
             const response = await axios.post(
                 this._api_url + "/clusters/" + cluster_id + "/add",
@@ -283,7 +283,7 @@ class API {
 
 
     // update data in a cluster
-    async _update(cluster_id, ids, embeddings=null, metadatas=null, documents=null) {
+    async _update(cluster_id, ids, embeddings = null, metadatas = null, documents = null) {
         try {
             const response = await axios.post(
                 this._api_url + "/clusters/" + cluster_id + "/update",
@@ -301,7 +301,7 @@ class API {
 
 
     // upsert data in a cluster
-    async _upsert(cluster_id, ids, embeddings=null, metadatas=null, documents=null, increment_index=true) {
+    async _upsert(cluster_id, ids, embeddings = null, metadatas = null, documents = null, increment_index = true) {
         try {
             const response = await axios.post(
                 this._api_url + "/clusters/" + cluster_id + "/upsert",
@@ -336,7 +336,7 @@ class API {
             if (!response.data) {
                 throw new Error("Empty response data received");
             }
-            const {ids, embeddings, documents, metadatas, distances} = JSON.parse(JSON.stringify(response.data));
+            const { ids, embeddings, documents, metadatas, distances } = JSON.parse(JSON.stringify(response.data));
             return {
                 ids: ids,
                 embeddings: embeddings ? embeddings : null,
@@ -349,7 +349,7 @@ class API {
             throw error;
         }
     };
-    
+
 
     // create index for a cluster
     async _create_index(cluster_name) {

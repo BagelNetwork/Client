@@ -85,10 +85,10 @@ The official BagelDB endpoint is `api.bageldb.ai`. Feel free to give it a whirl!
     - **Description:** Make sure your data stays put by persisting the database.
     - **Returns:** True if successful.
 
-16. **`/api/v1/raw_sql`**: 
+<!-- 16. **`/api/v1/raw_sql`**: 
     - **Method:** POST
     - **Description:** Run a raw SQL query against the database. (For the SQL wizards out there!)
-    - **Returns:** A DataFrame with the result of the SQL query.
+    - **Returns:** A DataFrame with the result of the SQL query. -->
 
 17. **`/api/v1/clusters/{cluster_name}/create_index`**: 
     - **Method:** POST

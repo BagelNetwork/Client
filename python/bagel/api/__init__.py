@@ -310,18 +310,18 @@ class API(Component, ABC):
         """
         pass
 
-    @abstractmethod
-    def raw_sql(self, sql: str) -> pd.DataFrame:
-        """Runs a raw SQL query against the database
-        ⚠️ This method should not be used directly.
+    # @abstractmethod
+    # def raw_sql(self, sql: str) -> pd.DataFrame:
+    #     """Runs a raw SQL query against the database
+    #     ⚠️ This method should not be used directly.
 
-        Args:
-            sql: The SQL query to run
+    #     Args:
+    #         sql: The SQL query to run
 
-        Returns:
-            pd.DataFrame: A pandas dataframe containing the results of the query
-        """
-        pass
+    #     Returns:
+    #         pd.DataFrame: A pandas dataframe containing the results of the query
+    #     """
+    #     pass
 
     @abstractmethod
     def create_index(self, cluster_name: str) -> bool:

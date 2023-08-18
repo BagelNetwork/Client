@@ -352,14 +352,14 @@ class FastAPI(API):
         raise_bagel_error(resp)
         return cast(bool, resp.json())
 
-    @override
-    def raw_sql(self, sql: str) -> pd.DataFrame:
-        """Runs a raw SQL query against the database"""
-        resp = requests.post(
-            self._api_url + "/raw_sql", data=json.dumps({"raw_sql": sql})
-        )
-        raise_bagel_error(resp)
-        return pd.DataFrame.from_dict(resp.json())
+    # @override
+    # def raw_sql(self, sql: str) -> pd.DataFrame:
+    #     """Runs a raw SQL query against the database"""
+    #     resp = requests.post(
+    #         self._api_url + "/raw_sql", data=json.dumps({"raw_sql": sql})
+    #     )
+    #     raise_bagel_error(resp)
+    #     return pd.DataFrame.from_dict(resp.json())
 
     @override
     def create_index(self, cluster_name: str) -> bool:
