@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Sequence, Optional, Dict
+from typing import Sequence, Optional, Dict, Any
 import pandas as pd
 from uuid import UUID
 from bagel.api.Cluster import Cluster
@@ -349,5 +349,11 @@ class API(Component, ABC):
         Returns:
             str: The version of Bagel
 
+        """
+        pass
+
+    @abstractmethod
+    def add_image(self) -> Any:
+        """Add image to BagelDB.
         """
         pass
