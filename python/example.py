@@ -1,3 +1,4 @@
+import time
 import uuid
 import bagel
 from bagel.config import Settings
@@ -42,11 +43,8 @@ def create_add_get(api):
             "This is document1",
             "This is bidhan",
         ],
-        metadatas=[
-            {"source": "google"},
-            {"source": "notion"}
-        ],
-        ids=[str(uuid.uuid4()), str(uuid.uuid4())]
+        metadatas=[{"source": "google"}, {"source": "notion"}],
+        ids=[str(uuid.uuid4()), str(uuid.uuid4())],
     )
 
     # Print count
@@ -81,9 +79,11 @@ def create_add_find(api):
             "This is Towhid",
             "This is text",
         ],
-        metadatas=[{"source": "notion"},
-                   {"source": "notion"},
-                   {"source": "google-doc"},],
+        metadatas=[
+            {"source": "notion"},
+            {"source": "notion"},
+            {"source": "google-doc"},
+        ],
         ids=[str(uuid.uuid4()), str(uuid.uuid4()), str(uuid.uuid4())],
     )
 
@@ -92,7 +92,7 @@ def create_add_find(api):
         query_texts=["This"],
         n_results=5,
         where={"source": "notion"},
-        where_document={"$contains": "is"}
+        where_document={"$contains": "is"},
     )
 
     print(results)
@@ -140,10 +140,7 @@ def create_add_find_em(api):
     )
 
     # Query the cluster for results
-    results = cluster.find(
-        query_embeddings=[[1.1, 2.3, 3.2]],
-        n_results=5
-    )
+    results = cluster.find(query_embeddings=[[1.1, 2.3, 3.2]], n_results=5)
 
     print("find result:", results)
     print(">> create_add_find_em done  !\n")
@@ -175,11 +172,8 @@ def create_add_modify_update(api):
             "This is document1",
             "This is bidhan",
         ],
-        metadatas=[
-            {"source": "notion"},
-            {"source": "google"}
-        ],
-        ids=["id1", "id2"]
+        metadatas=[{"source": "notion"}, {"source": "google"}],
+        ids=["id1", "id2"],
     )
 
     # Retrieve document metadata before updating
@@ -187,12 +181,7 @@ def create_add_modify_update(api):
     print(cluster.get(ids=["id1"]))
 
     # Update document metadata
-    cluster.update(
-        ids=["id1"],
-        metadatas=[
-            {"source": "google"}
-        ]
-    )
+    cluster.update(ids=["id1"], metadatas=[{"source": "google"}])
 
     # Retrieve document metadata after updating
     print("After update source:")
@@ -224,11 +213,8 @@ def create_upsert(api):
             "This is document1",
             "This is bidhan",
         ],
-        metadatas=[
-            {"source": "notion"},
-            {"source": "google"}
-        ],
-        ids=["id1", "id2"]
+        metadatas=[{"source": "notion"}, {"source": "google"}],
+        ids=["id1", "id2"],
     )
 
     # Upsert documents in the cluster
@@ -237,11 +223,8 @@ def create_upsert(api):
             "This is document",
             "This is google",
         ],
-        metadatas=[
-            {"source": "notion"},
-            {"source": "google"}
-        ],
-        ids=["id1", "id3"]
+        metadatas=[{"source": "notion"}, {"source": "google"}],
+        ids=["id1", "id3"],
     )
 
     # Print the count of documents in the cluster
@@ -249,7 +232,40 @@ def create_upsert(api):
     print(">> create_upsert done !\n")
 
 
+def add_image_find(api):
+    """
+    Create and add image and find
+    """
+    # Generate a unique cluster name using UUID
+    name = "image_add_test"
+
+    # Get or create a cluster
+    cluster = api.get_or_create_cluster(name)
+    img_file_list = ["test.jpg", "test2.jpg"]  # add image path to the list
+    for filename in img_file_list:
+        resp = cluster.add_image(filename)
+        print("---------------\n", resp.json())
+
+    # Print count
+    print("count of images:", cluster.count())
+    # Get the first item
+    first_item = cluster.peek(1)
+    embeddings = first_item.get("embeddings")[0]  # replace with your embedding
+
+    # Query the cluster for similar results
+    results = cluster.find(
+        query_embeddings=embeddings,
+        n_results=5
+    )
+
+    print(results)
+    # Delete it
+    api.delete_cluster(name)
+    print(">> add_image_find done !\n")
+
+
 def main():
+    start_time = time.time()  # Record the start time
     # Bagel server settings
     server_settings = Settings(
         bagel_api_impl="rest",
@@ -266,13 +282,17 @@ def main():
     print("version: ", client.get_version())
 
     # calling all functions
-    check_emaillist(client)
-    create_and_delete(client)
-    create_add_get(client)
-    create_add_find(client)
-    create_add_find_em(client)
-    create_add_modify_update(client)
-    create_upsert(client)
+    # check_emaillist(client)
+    # create_and_delete(client)
+    # create_add_get(client)
+    # create_add_find(client)
+    # create_add_find_em(client)
+    # create_add_modify_update(client)
+    # create_upsert(client)
+    add_image_find(client)
+    end_time = time.time()  # Record the end time
+    execution_time = end_time - start_time  # Calculate the execution time
+    print(f"Total execution time: {execution_time:.2f} seconds")
 
 
 if __name__ == "__main__":
