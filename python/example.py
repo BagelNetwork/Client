@@ -241,7 +241,7 @@ def add_image_find(api):
 
     # Get or create a cluster
     cluster = api.get_or_create_cluster(name)
-    img_file_list = ["test.jpg", "test2.jpg"]  # add image path to the list
+    img_file_list = ["image_emb/test.jpg", "image_emb/test.png"]  # add image path to the list
     for filename in img_file_list:
         resp = cluster.add_image(filename)
         print("---------------\n", resp.json())
@@ -281,14 +281,14 @@ def main():
     # Get the Bagel server version
     print("version: ", client.get_version())
 
-    # calling all functions
-    # check_emaillist(client)
-    # create_and_delete(client)
-    # create_add_get(client)
-    # create_add_find(client)
-    # create_add_find_em(client)
-    # create_add_modify_update(client)
-    # create_upsert(client)
+    # # calling all functions
+    check_emaillist(client)
+    create_and_delete(client)
+    create_add_get(client)
+    create_add_find(client)
+    create_add_find_em(client)
+    create_add_modify_update(client)
+    create_upsert(client)
     add_image_find(client)
     end_time = time.time()  # Record the end time
     execution_time = end_time - start_time  # Calculate the execution time
