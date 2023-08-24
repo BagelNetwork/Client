@@ -1,4 +1,4 @@
-from typing import Optional, cast
+from typing import Optional, cast, Any
 from bagel.api import API
 from bagel.config import System
 from bagel.api.types import (
@@ -23,7 +23,10 @@ from bagel.api.Cluster import Cluster
 import bagel.errors as errors
 from uuid import UUID
 from overrides import override
-
+import base64
+from io import BytesIO
+import os
+import uuid
 
 class FastAPI(API):
     def __init__(self, system: System):
@@ -211,6 +214,30 @@ class FastAPI(API):
         return cast(IDs, resp.json())
 
     @override
+    def _add_image(self, cluster_id: UUID, filename: str) -> Any:
+        """Add image to BagelDB.
+        """
+        image_name = os.path.basename(filename)
+        uid = str(uuid.uuid4())
+        with open(filename, "rb") as i:
+            image_data = base64.b64encode(i.read())
+
+        data = {
+            "metadata": [{"filename": str(image_name)}],
+            "ids": [uid],
+            "increment_index": True,
+        }
+        resp = requests.post(
+            self._api_url + "/clusters/" + str(cluster_id) + "/add_image",
+            files={
+                "image": (str(image_name), image_data, "image/jpeg"),
+                "data": (None, json.dumps(data), "application/json"),
+            },
+        )
+        raise_bagel_error(resp)
+        return resp
+
+    @override
     def _add(
         self,
         ids: IDs,
@@ -225,7 +252,7 @@ class FastAPI(API):
         - pass in column oriented data lists
         - by default, the index is progressively built up as you add more data. If for ingestion performance reasons you want to disable this, set increment_index to False
         -     and then manually create the index yourself with cluster.create_index()
-        """ 
+        """
         resp = requests.post(
             self._api_url + "/clusters/" + str(cluster_id) + "/add",
             data=json.dumps(

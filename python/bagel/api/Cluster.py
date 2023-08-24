@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Optional, Tuple, cast, List
+from typing import TYPE_CHECKING, Optional, Tuple, cast, List, Any
 from pydantic import BaseModel, PrivateAttr
 from uuid import UUID
 
@@ -60,6 +60,11 @@ class Cluster(BaseModel):
 
         """
         return self._client._count(cluster_id=self.id)
+
+    def add_image(self, filename: str) -> Any:
+        """Add image to BagelDB.
+        """
+        return self._client._add_image(cluster_id=self.id, filename=filename)
 
     def add(
         self,
