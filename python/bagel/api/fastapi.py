@@ -215,7 +215,27 @@ class FastAPI(API):
 
     @override
     def _add_image(self, cluster_id: UUID, filename: str) -> Any:
-        """Add image to BagelDB.
+        """
+        Add an image to the BagelDB.
+
+        Args:
+            cluster_id (UUID):
+                The UUID of the cluster to which the image should be added.
+            filename (str):
+                The path to the image file to be added.
+
+        Returns:
+            Any:
+                The response from the API call.
+
+        Raises:
+            Exception:
+                Raises an exception if there's an issue with the API call.
+
+        Note:
+            This method reads the image file, encodes it in base64, and sends
+            the image along with metadata to the BagelDB API for addition to
+            the specified cluster.
         """
         image_name = os.path.basename(filename)
         uid = str(uuid.uuid4())
