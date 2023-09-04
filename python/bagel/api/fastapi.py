@@ -244,9 +244,9 @@ class FastAPI(API):
             image_data = base64.b64encode(i.read())
 
         if metadata is None:
-            metadata = [{"filename": str(image_name)}]
+            metadata = {"filename": str(image_name)}
         data = {
-            "metadata": metadata,
+            "metadata": [metadata],
             "ids": [uid],
             "increment_index": True,
         }

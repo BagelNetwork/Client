@@ -354,7 +354,8 @@ class API(Component, ABC):
         pass
 
     @abstractmethod
-    def _add_image(self, cluster_id: UUID, filename: str, metadata: Optional[Metadata]) -> Any:
-        """Add image to BagelDB.
-        """
+    def _add_image(
+        self, cluster_id: UUID, filename: str, metadata: Optional[Metadata]
+    ) -> Any:
+        """Add image to BagelDB."""
         pass
