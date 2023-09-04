@@ -8,6 +8,7 @@ from bagel.api.types import (
     IDs,
     Include,
     Metadatas,
+    Metadata,
     Where,
     WhereDocument,
     GetResult,
@@ -214,7 +215,7 @@ class FastAPI(API):
         return cast(IDs, resp.json())
 
     @override
-    def _add_image(self, cluster_id: UUID, filename: str) -> Any:
+    def _add_image(self, cluster_id: UUID, filename: str, metadata: Optional[Metadata] = None) -> Any:
         """
         Add an image to the BagelDB.
 
@@ -242,8 +243,10 @@ class FastAPI(API):
         with open(filename, "rb") as i:
             image_data = base64.b64encode(i.read())
 
+        if metadata is None:
+            metadata = {"filename": str(image_name)}
         data = {
-            "metadata": [{"filename": str(image_name)}],
+            "metadata": [metadata],
             "ids": [uid],
             "increment_index": True,
         }

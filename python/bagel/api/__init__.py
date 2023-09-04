@@ -12,6 +12,7 @@ from bagel.api.types import (
     IDs,
     Include,
     Metadatas,
+    Metadata,
     Where,
     QueryResult,
     GetResult,
@@ -353,7 +354,8 @@ class API(Component, ABC):
         pass
 
     @abstractmethod
-    def _add_image(self, cluster_id: UUID, filename: str) -> Any:
-        """Add image to BagelDB.
-        """
+    def _add_image(
+        self, cluster_id: UUID, filename: str, metadata: Optional[Metadata]
+    ) -> Any:
+        """Add image to BagelDB."""
         pass
