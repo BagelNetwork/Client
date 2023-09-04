@@ -3,7 +3,6 @@ import uuid
 import bagel
 from bagel.config import Settings
 
-
 def check_emaillist(api):
     """
     Email waitlist test
@@ -38,7 +37,7 @@ def create_add_get(api):
     cluster = api.get_or_create_cluster(name)
 
     # Add documents to the cluster
-    resp = cluster.add(
+    _ = cluster.add(
         documents=[
             "This is document1",
             "This is bidhan",
@@ -54,7 +53,8 @@ def create_add_get(api):
     first_item = cluster.peek(1)
     if first_item:
         print("get 1st item")
-
+    # detete after test
+    api.delete_cluster(name)
     print(">> create_add_get done !\n")
 
 
@@ -96,6 +96,8 @@ def create_add_find(api):
     )
 
     print(results)
+    # detete after test
+    api.delete_cluster(name)
     print(">> create_add_find done  !\n")
 
 
@@ -108,41 +110,43 @@ def create_add_find_em(api):
         _description_
     """
     name = "testing_embeddings"
-    # Reset the Bagel server
-    api.reset()
 
     # Get or create a cluster
     cluster = api.get_or_create_cluster(name)
     # Add embeddings and other data to the cluster
-    cluster.add(
-        embeddings=[
-            [1.1, 2.3, 3.2],
-            [4.5, 6.9, 4.4],
-            [1.1, 2.3, 3.2],
-            [4.5, 6.9, 4.4],
-            [1.1, 2.3, 3.2],
-            [4.5, 6.9, 4.4],
-            [1.1, 2.3, 3.2],
-            [4.5, 6.9, 4.4],
-        ],
-        metadatas=[
-            {"uri": "img1.png", "style": "style1"},
-            {"uri": "img2.png", "style": "style2"},
-            {"uri": "img3.png", "style": "style1"},
-            {"uri": "img4.png", "style": "style1"},
-            {"uri": "img5.png", "style": "style1"},
-            {"uri": "img6.png", "style": "style1"},
-            {"uri": "img7.png", "style": "style1"},
-            {"uri": "img8.png", "style": "style1"},
-        ],
-        documents=["doc1", "doc2", "doc3", "doc4", "doc5", "doc6", "doc7", "doc8"],
-        ids=["id1", "id2", "id3", "id4", "id5", "id6", "id7", "id8"],
-    )
-
+    try:
+        cluster.add(
+            embeddings=[
+                [1.1, 2.3, 3.2],
+                [4.5, 6.9, 4.4],
+                [1.1, 2.3, 3.2],
+                [4.5, 6.9, 4.4],
+                [1.1, 2.3, 3.2],
+                [4.5, 6.9, 4.4],
+                [1.1, 2.3, 3.2],
+                [4.5, 6.9, 4.4],
+            ],
+            metadatas=[
+                {"uri": "img1.png", "style": "style1"},
+                {"uri": "img2.png", "style": "style2"},
+                {"uri": "img3.png", "style": "style1"},
+                {"uri": "img4.png", "style": "style1"},
+                {"uri": "img5.png", "style": "style1"},
+                {"uri": "img6.png", "style": "style1"},
+                {"uri": "img7.png", "style": "style1"},
+                {"uri": "img8.png", "style": "style1"},
+            ],
+            documents=["doc1", "doc2", "doc3", "doc4", "doc5", "doc6", "doc7", "doc8"],
+            ids=["id1", "id2", "id3", "id4", "id5", "id6", "id7", "id8"],
+        )
+    except Exception as exc:  # pylint: disable=W0718
+        print(exc)
     # Query the cluster for results
     results = cluster.find(query_embeddings=[[1.1, 2.3, 3.2]], n_results=5)
 
     print("find result:", results)
+    # detete after test
+    api.delete_cluster(name)
     print(">> create_add_find_em done  !\n")
 
 
@@ -163,7 +167,11 @@ def create_add_modify_update(api):
 
     # Modify the cluster name
     print("Before:", cluster.name)
-    cluster.modify(name=new_name)
+    try:
+        cluster.modify(name=new_name)
+    except Exception as exc:  # pylint: disable=W0718
+        print(exc)
+
     print("After:", cluster.name)
 
     # Add documents to the cluster
@@ -186,7 +194,8 @@ def create_add_modify_update(api):
     # Retrieve document metadata after updating
     print("After update source:")
     print(cluster.get(ids=["id1"]))
-
+    # detete after test
+    api.delete_cluster(new_name)
     print(">> create_add_modify_update done !\n")
 
 
@@ -199,36 +208,39 @@ def create_upsert(api):
     api : _type_
         _description_
     """
-    # Reset the Bagel server
-    api.reset()
-
     name = "testing"
 
     # Get or create a cluster
     cluster = api.get_or_create_cluster(name)
 
     # Add documents to the cluster
-    cluster.add(
-        documents=[
-            "This is document1",
-            "This is bidhan",
-        ],
-        metadatas=[{"source": "notion"}, {"source": "google"}],
-        ids=["id1", "id2"],
-    )
-
+    try:
+        cluster.add(
+            documents=[
+                "This is document1",
+                "This is bidhan",
+            ],
+            metadatas=[{"source": "notion"}, {"source": "google"}],
+            ids=["id1", "id2"],
+        )
+    except Exception as exc:  # pylint: disable=W0718
+        print("add warning: ", exc)
     # Upsert documents in the cluster
-    cluster.upsert(
-        documents=[
-            "This is document",
-            "This is google",
-        ],
-        metadatas=[{"source": "notion"}, {"source": "google"}],
-        ids=["id1", "id3"],
-    )
-
+    try:
+        cluster.upsert(
+            documents=[
+                "This is document",
+                "This is google",
+            ],
+            metadatas=[{"source": "notion"}, {"source": "google"}],
+            ids=["id1", "id3"],
+        )
+    except Exception as exc:  # pylint: disable=W0718
+        print("upsert warning: ", exc)
     # Print the count of documents in the cluster
-    print("Count of documents:", cluster.count())
+    print("Count of documents :", cluster.count())
+    # detete after test
+    api.delete_cluster(name)
     print(">> create_upsert done !\n")
 
 
