@@ -1,14 +1,14 @@
 // imports
-const {Settings, Client} = require('./BagelDB.js');
+const { Settings, Client } = require('./BagelDB.js');
 
 
 // example for new javascript api
 const ping_version_example = async () => {
     // create settings
     const settings = new Settings({
-        bagel_api_impl:"rest",
-        bagel_server_host:"api.bageldb.ai",
-        bagel_server_http_port:80,
+        bagel_api_impl: "rest",
+        bagel_server_host: "api.bageldb.ai",
+        bagel_server_http_port: 80,
     });
 
     // create api
@@ -28,9 +28,9 @@ const ping_version_example = async () => {
 const get_all_clusters_example = async () => {
     // create settings
     const settings = new Settings({
-        bagel_api_impl:"rest",
-        bagel_server_host:"api.bageldb.ai",
-        bagel_server_http_port:80,
+        bagel_api_impl: "rest",
+        bagel_server_host: "api.bageldb.ai",
+        bagel_server_http_port: 80,
     });
 
     // create api
@@ -46,9 +46,9 @@ const get_all_clusters_example = async () => {
 const create_delete_get_or_create_cluster_example = async () => {
     // create settings
     const settings = new Settings({
-        bagel_api_impl:"rest",
-        bagel_server_host:"api.bageldb.ai",
-        bagel_server_http_port:80,
+        bagel_api_impl: "rest",
+        bagel_server_host: "api.bageldb.ai",
+        bagel_server_http_port: 80,
     });
 
     // create api
@@ -57,7 +57,7 @@ const create_delete_get_or_create_cluster_example = async () => {
     // create a new cluster
     const name = 'my_test_cluster_200000'
     await api.create_cluster(name).then((res) => {
-        if(res.name === name) {
+        if (res.name === name) {
             console.log(`Cluster with name ${name} created successfully`);
         }
     }).catch((err) => {
@@ -84,9 +84,9 @@ const create_delete_get_or_create_cluster_example = async () => {
 const add_data_to_cluster_without_embedding_example = async () => {
     // create settings
     const settings = new Settings({
-        bagel_api_impl:"rest",
-        bagel_server_host:"api.bageldb.ai",
-        bagel_server_http_port:80,
+        bagel_api_impl: "rest",
+        bagel_server_host: "api.bageldb.ai",
+        bagel_server_http_port: 80,
     });
 
     // create api
@@ -112,7 +112,7 @@ const add_data_to_cluster_without_embedding_example = async () => {
             "This is text",
         ],
     ).then((res) => {
-        if(res){
+        if (res) {
             console.log("Data added successfully");
         }
     }).catch((err) => {
@@ -147,9 +147,9 @@ const add_data_to_cluster_without_embedding_example = async () => {
 const add_data_to_cluster_with_embedding_example = async () => {
     // create settings
     const settings = new Settings({
-        bagel_api_impl:"rest",
-        bagel_server_host:"api.bageldb.ai",
-        bagel_server_http_port:80,
+        bagel_api_impl: "rest",
+        bagel_server_host: "api.bageldb.ai",
+        bagel_server_http_port: 80,
     });
 
     // create api
@@ -164,10 +164,10 @@ const add_data_to_cluster_with_embedding_example = async () => {
     await cluster.add(
         ids = ["id1", "id2"],
         embeddings = [[1.1, 2.3], [4.5, 6.9]],
-        metadatas = [{"info": "M1"}, {"info": "M1"}],
+        metadatas = [{ "info": "M1" }, { "info": "M1" }],
         documents = ["doc1", "doc2"]
     ).then((res) => {
-        if(res){
+        if (res) {
             console.log("Data added successfully");
         }
     }).catch((err) => {
@@ -201,9 +201,9 @@ const add_data_to_cluster_with_embedding_example = async () => {
 const delete_data_from_cluster_example = async () => {
     // create settings
     const settings = new Settings({
-        bagel_api_impl:"rest",
-        bagel_server_host:"api.bageldb.ai",
-        bagel_server_http_port:80,
+        bagel_api_impl: "rest",
+        bagel_server_host: "api.bageldb.ai",
+        bagel_server_http_port: 80,
     });
 
     // create api
@@ -218,10 +218,10 @@ const delete_data_from_cluster_example = async () => {
     await cluster.add(
         ids = ["id1", "id2"],
         embeddings = [[1.1, 2.3], [4.5, 6.9]],
-        metadatas = [{"info": "M1"}, {"info": "M1"}],
+        metadatas = [{ "info": "M1" }, { "info": "M1" }],
         documents = ["doc1", "doc2"]
     ).then((res) => {
-        if(res){
+        if (res) {
             console.log("Data added successfully");
         }
     }).catch((err) => {
@@ -235,7 +235,7 @@ const delete_data_from_cluster_example = async () => {
         where = {},
         where_document = {}
     ).then((res) => {
-        if(res){
+        if (res) {
             console.log("Data deleted successfully");
         }
     }).catch((err) => {
@@ -258,9 +258,9 @@ const delete_data_from_cluster_example = async () => {
 const update_data_in_cluster_example = async () => {
     // create settings
     const settings = new Settings({
-        bagel_api_impl:"rest",
-        bagel_server_host:"api.bageldb.ai",
-        bagel_server_http_port:80,
+        bagel_api_impl: "rest",
+        bagel_server_host: "api.bageldb.ai",
+        bagel_server_http_port: 80,
     });
 
     // create api
@@ -275,10 +275,10 @@ const update_data_in_cluster_example = async () => {
     await cluster.add(
         ids = ["id1", "id2"],
         embeddings = [[1.1, 2.3], [4.5, 6.9]],
-        metadatas = [{"info": "M1"}, {"info": "M1"}],
+        metadatas = [{ "info": "M1" }, { "info": "M1" }],
         documents = ["doc1", "doc2"]
     ).then((res) => {
-        if(res){
+        if (res) {
             console.log("Data added successfully");
         }
     }).catch((err) => {
@@ -290,10 +290,10 @@ const update_data_in_cluster_example = async () => {
     await cluster.update(
         ids = ["id1"],
         embeddings = [[10.1, 20.3]],
-        metadatas = [{"info": "M1"}],
+        metadatas = [{ "info": "M1" }],
         documents = ["doc1"]
     ).then((res) => {
-        if(res){
+        if (res) {
             console.log("Data updated successfully");
         }
     }
@@ -317,9 +317,9 @@ const update_data_in_cluster_example = async () => {
 const upsert_data_in_cluster_example = async () => {
     // create settings
     const settings = new Settings({
-        bagel_api_impl:"rest",
-        bagel_server_host:"api.bageldb.ai",
-        bagel_server_http_port:80,
+        bagel_api_impl: "rest",
+        bagel_server_host: "api.bageldb.ai",
+        bagel_server_http_port: 80,
     });
 
     // create api
@@ -334,10 +334,10 @@ const upsert_data_in_cluster_example = async () => {
     await cluster.add(
         ids = ["id1", "id2"],
         embeddings = [[1.1, 2.3], [4.5, 6.9]],
-        metadatas = [{"info": "M1"}, {"info": "M1"}],
+        metadatas = [{ "info": "M1" }, { "info": "M1" }],
         documents = ["doc1", "doc2"]
     ).then((res) => {
-        if(res){
+        if (res) {
             console.log("Data added successfully");
         }
     }).catch((err) => {
@@ -349,10 +349,10 @@ const upsert_data_in_cluster_example = async () => {
     await cluster.upsert(
         ids = ["id1", "id3"],
         embeddings = [[15.1, 25.3], [30.1, 40.3]],
-        metadatas = [{"info": "M1"}, {"info": "M1"}],
+        metadatas = [{ "info": "M1" }, { "info": "M1" }],
         documents = ["doc1", "doc3"]
     ).then((res) => {
-        if(res){
+        if (res) {
             console.log("Data upserted successfully");
         }
     }
@@ -376,9 +376,9 @@ const upsert_data_in_cluster_example = async () => {
 const modify_cluster_name_and_metadata_example = async () => {
     // create settings
     const settings = new Settings({
-        bagel_api_impl:"rest",
-        bagel_server_host:"api.bageldb.ai",
-        bagel_server_http_port:80,
+        bagel_api_impl: "rest",
+        bagel_server_host: "api.bageldb.ai",
+        bagel_server_http_port: 80,
     });
 
     // create api
@@ -393,10 +393,10 @@ const modify_cluster_name_and_metadata_example = async () => {
     await cluster.add(
         ids = ["id1", "id2"],
         embeddings = [[1.1, 2.3], [4.5, 6.9]],
-        metadatas = [{"info": "M1"}, {"info": "M1"}],
+        metadatas = [{ "info": "M1" }, { "info": "M1" }],
         documents = ["doc1", "doc2"]
     ).then((res) => {
-        if(res){
+        if (res) {
             console.log("Data added successfully");
         }
     }).catch((err) => {
@@ -408,9 +408,9 @@ const modify_cluster_name_and_metadata_example = async () => {
     // modify cluster name and metadata
     await cluster.modify(
         name = modified_name,
-        metadata = {"info": "M2"}
+        metadata = { "info": "M2" }
     ).then((res) => {
-        if(res){
+        if (res) {
             console.log("Cluster modified successfully");
         }
     }
@@ -427,6 +427,43 @@ const modify_cluster_name_and_metadata_example = async () => {
     // delete the cluster
     await api.delete_cluster(modified_name);
 }
+
+
+// example for adding images to the cluster
+const add_images_to_cluster_example = async () => {
+    // create settings
+    const settings = new Settings({
+        bagel_api_impl: "rest",
+        bagel_server_host: "api.bageldb.ai",
+        bagel_server_http_port: 80,
+    });
+
+    // create api
+    const api = new Client(settings);
+
+    // get or create a cluster
+    const newName = "image_add_test";
+
+
+    const cluster = await api.get_or_create_cluster(newName);
+
+
+    // add image to the cluster
+    const image_path = ["./image_emb/test.jpg", "./image_emb/test.png", "./image_emb/2.png", "./image_emb/BagelImage3.png"];
+    for (image of image_path) {
+        await cluster.add_image(image).then((res) => {
+            if (res) {
+                console.log("Image added successfully");
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
+    }
+
+
+};
+
+
 
 
 
@@ -461,7 +498,11 @@ const run_examples = async () => {
     console.log("modifying cluster name and metadata...");
     await modify_cluster_name_and_metadata_example();
     console.log("====================================");
+    console.log("adding images to the cluster...");
+    await add_images_to_cluster_example();
+    console.log("====================================");
     console.log("Finished running examples...");
+
 }
 
 
