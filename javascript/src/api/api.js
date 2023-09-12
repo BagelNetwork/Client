@@ -2,7 +2,7 @@
 const axios = require('axios');
 const fetch = require('node-fetch');
 const { Cluster } = require('../model/cluster.js');
-const fs = require('fs');
+const fs = require('fs-extra');
 const { v4: uuidv4 } = require('uuid');
 const FormData = require('form-data');
 
