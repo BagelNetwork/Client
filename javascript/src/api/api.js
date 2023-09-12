@@ -2,7 +2,6 @@
 const axios = require('axios');
 const fetch = require('node-fetch');
 const { Cluster } = require('../model/cluster.js');
-const fs = require('fs-extra');
 const { v4: uuidv4 } = require('uuid');
 const FormData = require('form-data');
 
@@ -374,14 +373,11 @@ class API {
     }
 
 
-
     // add image to a cluster
-    async _add_image(cluster_id, image_path) {
-        const image_name = image_path.split("/").pop();
+    async _add_image(cluster_id, image_name, image_file_buffer) {
         const uid = uuidv4();
 
-        const image_data = fs.readFileSync(image_path);
-        const base64_image = Buffer.from(image_data).toString('base64');
+        const base64_image = Buffer.from(image_file_buffer).toString('base64');
 
         const data = {
             "metadata": [{ "filename": image_name.toString() }],

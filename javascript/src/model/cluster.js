@@ -83,8 +83,8 @@ class Cluster {
 
 
     // add image to the cluster
-    add_image(image_path) {
-        return this._client._add_image(this.id, image_path);
+    add_image(image_name, image_file) {
+        return this._client._add_image(this.id, image_name, image_file);
     };
 
 }

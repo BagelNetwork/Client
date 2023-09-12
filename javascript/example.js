@@ -1,5 +1,6 @@
 // imports
 const { Settings, Client } = require('./BagelDB.js');
+const fs = require('fs');
 
 
 // example for new javascript api
@@ -451,7 +452,9 @@ const add_images_to_cluster_example = async () => {
     // add image to the cluster
     const image_path = ["./image_emb/test.jpg", "./image_emb/test.png", "./image_emb/2.png", "./image_emb/BagelImage3.png"];
     for (image of image_path) {
-        await cluster.add_image(image).then((res) => {
+        const image_file = fs.readFileSync(image);
+        const image_name = image.split("/").pop();
+        await cluster.add_image(image_name, image_file).then((res) => {
             if (res) {
                 console.log("Image added successfully");
             }
@@ -461,6 +464,9 @@ const add_images_to_cluster_example = async () => {
     }
 
 
+    // peek into the cluster
+    const peeks = await cluster.peek(10);
+    console.log('peek result: ', peeks);
 };
 
 
