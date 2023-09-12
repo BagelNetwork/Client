@@ -2,6 +2,9 @@
 const axios = require('axios');
 const fetch = require('node-fetch');
 const { Cluster } = require('../model/cluster.js');
+const fs = require('fs');
+const { v4: uuidv4 } = require('uuid');
+const FormData = require('form-data');
 
 
 // Class to interact with the Bagel API
@@ -9,10 +12,19 @@ class API {
     // Constructor
     constructor(settings) {
         const urlPrefix = settings.bagel_server_ssl_enabled ? "https" : "http";
-        if(!settings.bagel_server_host || !settings.bagel_server_http_port) {
+        if (!settings.bagel_server_host) {
             throw new Error("Missing required config values 'bagel_server_host' and/or 'bagel_server_http_port'");
         }
-        this._api_url = `${urlPrefix}://${settings.bagel_server_host}:${settings.bagel_server_http_port}/api/v1`;
+        let port;
+        if (settings.bagel_server_http_port) {
+            port = settings.bagel_server_http_port;
+        } else if (settings.bagel_server_ssl_enabled && settings.bagel_server_https_port) {
+            port = settings.bagel_server_https_port;
+        } else {
+            port = 80;
+        }
+
+        this._api_url = `${urlPrefix}://${settings.bagel_server_host}:${port}/api/v1`;
     };
 
 
@@ -25,7 +37,7 @@ class API {
             if (!response.data) {
                 throw new Error("Empty response data received");
             }
-            if(parseInt(response.data["nanosecond heartbeat"]) > 0) {
+            if (parseInt(response.data["nanosecond heartbeat"]) > 0) {
                 return "pong";
             }
         } catch (error) {
@@ -68,18 +80,18 @@ class API {
 
     // create a cluster
     async create_cluster(name, metadata = null, get_or_create = false) {
-    try {
-        const response = await axios.post(
-            this._api_url + "/clusters",
-            { name, metadata, get_or_create }
-        );
-        if (!response.data) {
-            throw new Error("Empty response data received");
-        }
-        return new Cluster(this, response.data);
-    } catch (error) {
-        console.error("Error:", error);
-        // throw error;
+        try {
+            const response = await axios.post(
+                this._api_url + "/clusters",
+                { name, metadata, get_or_create }
+            );
+            if (!response.data) {
+                throw new Error("Empty response data received");
+            }
+            return new Cluster(this, response.data);
+        } catch (error) {
+            console.error("Error:", error);
+            // throw error;
         }
     };
 
@@ -105,11 +117,11 @@ class API {
     async delete_cluster(name) {
         try {
             const resp = await axios.delete(this._api_url + "/clusters/" + name);
-            if(resp.status == 200){
+            if (resp.status == 200) {
                 console.log(`Cluster with name ${name} deleted successfully`);
             }
         } catch (error) {
-            if(error == "IndexError('list index out of range')"){
+            if (error == "IndexError('list index out of range')") {
                 console.error("Error", "Cluster does not exist");
             }
         }
@@ -230,7 +242,7 @@ class API {
             const response = await axios.put(
                 this._api_url + "/clusters/" + cluster_id,
                 { "new_metadata": new_metadata, "new_name": new_name },
-                { headers: { "Content-Type": "application/json" }}
+                { headers: { "Content-Type": "application/json" } }
             );
             return 'success';
         } catch (error) {
@@ -241,7 +253,7 @@ class API {
 
 
     // add data to a cluster
-    async _add(cluster_id, ids, embeddings, metadatas=null, documents=null, increment_index=true) {
+    async _add(cluster_id, ids, embeddings, metadatas = null, documents = null, increment_index = true) {
         try {
             const response = await axios.post(
                 this._api_url + "/clusters/" + cluster_id + "/add",
@@ -283,7 +295,7 @@ class API {
 
 
     // update data in a cluster
-    async _update(cluster_id, ids, embeddings=null, metadatas=null, documents=null) {
+    async _update(cluster_id, ids, embeddings = null, metadatas = null, documents = null) {
         try {
             const response = await axios.post(
                 this._api_url + "/clusters/" + cluster_id + "/update",
@@ -301,7 +313,7 @@ class API {
 
 
     // upsert data in a cluster
-    async _upsert(cluster_id, ids, embeddings=null, metadatas=null, documents=null, increment_index=true) {
+    async _upsert(cluster_id, ids, embeddings = null, metadatas = null, documents = null, increment_index = true) {
         try {
             const response = await axios.post(
                 this._api_url + "/clusters/" + cluster_id + "/upsert",
@@ -336,7 +348,7 @@ class API {
             if (!response.data) {
                 throw new Error("Empty response data received");
             }
-            const {ids, embeddings, documents, metadatas, distances} = JSON.parse(JSON.stringify(response.data));
+            const { ids, embeddings, documents, metadatas, distances } = JSON.parse(JSON.stringify(response.data));
             return {
                 ids: ids,
                 embeddings: embeddings ? embeddings : null,
@@ -349,7 +361,7 @@ class API {
             throw error;
         }
     };
-    
+
 
     // create index for a cluster
     async _create_index(cluster_name) {
@@ -361,8 +373,39 @@ class API {
         }
     }
 
-};
 
+
+    // add image to a cluster
+    async _add_image(cluster_id, image_path) {
+        const image_name = image_path.split("/").pop();
+        const uid = uuidv4();
+
+        const image_data = fs.readFileSync(image_path);
+        const base64_image = Buffer.from(image_data).toString('base64');
+
+        const data = {
+            "metadata": [{ "filename": image_name.toString() }],
+            "ids": [String(uid)],
+            "increment_index": true,
+        }
+
+        const formData = new FormData();
+        formData.append("image", base64_image, { filename: image_name.toString(), contentType: "image/jpeg" });
+        formData.append("data", JSON.stringify(data), { contentType: "application/json" });
+
+        // Send the POST request
+        await fetch(this._api_url + "/clusters/" + cluster_id + "/add_image", {
+            method: 'POST',
+            body: formData,
+        }).then(response => response.json()).then(data => {
+            return data;
+        }).catch((error) => {
+            console.error('Error:', error);
+        });
+    };
+
+
+};
 
 
 module.exports = { API };

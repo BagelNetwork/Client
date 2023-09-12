@@ -36,7 +36,7 @@ class Cluster {
 
 
     // adding data to the cluster
-    add(ids, embeddings=null, metadatas=null, documents=null, increment_index=true) {
+    add(ids, embeddings = null, metadatas = null, documents = null, increment_index = true) {
         return this._client._add(this.id, ids, embeddings, metadatas, documents, increment_index);
     };
 
@@ -48,13 +48,13 @@ class Cluster {
 
 
     // updating data in the cluster
-    update(ids, embeddings=null, metadatas=null, documents=null) {
+    update(ids, embeddings = null, metadatas = null, documents = null) {
         return this._client._update(this.id, ids, embeddings, metadatas, documents);
     };
 
 
     // upserting data in the cluster
-    upsert(ids, embeddings=null, metadatas=null, documents=null) {
+    upsert(ids, embeddings = null, metadatas = null, documents = null) {
         return this._client._upsert(this.id, ids, embeddings, metadatas, documents);
     }
 
@@ -72,7 +72,7 @@ class Cluster {
         if (where_document === null) {
             where_document = {};
         }
-        
+
         return this._client._query(this.id, query_embeddings, n_results, where, where_document, include, query_texts);
     }
 
@@ -80,6 +80,12 @@ class Cluster {
     create_index() {
         return this._client._create_index(this.name);
     }
+
+
+    // add image to the cluster
+    add_image(image_path) {
+        return this._client._add_image(this.id, image_path);
+    };
 
 }
 
