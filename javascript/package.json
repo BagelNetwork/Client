@@ -1,6 +1,6 @@
 {
   "name": "bageldb-beta",
-  "version": "1.0.21",
+  "version": "1.0.22",
   "description": "A npm client for BagelDB.",
   "main": "BagelDB.js",
   "scripts": {
