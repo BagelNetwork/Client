@@ -282,7 +282,7 @@ class API {
         try {
             const url = this._api_url + "/clusters/" + cluster_id + "/delete";
             const requestOpts = {
-                method: "DELETE",
+                method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ ids, where, where_document })
             };
