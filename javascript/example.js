@@ -453,8 +453,10 @@ const add_images_to_cluster_example = async () => {
     const image_path = ["./image_emb/test.jpg", "./image_emb/test.png", "./image_emb/2.png", "./image_emb/BagelImage3.png"];
     for (image of image_path) {
         const image_file = fs.readFileSync(image);
+        const image_data = Buffer.from(image_file).toString('base64');
+        console.log(image_data);
         const image_name = image.split("/").pop();
-        await cluster.add_image(image_name, image_file).then((res) => {
+        await cluster.add_image(image_name, image_data).then((res) => {
             if (res) {
                 console.log("Image added successfully");
             }

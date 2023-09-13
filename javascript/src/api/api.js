@@ -4,6 +4,7 @@ const fetch = require('node-fetch');
 const { Cluster } = require('../model/cluster.js');
 const { v4: uuidv4 } = require('uuid');
 const FormData = require('form-data');
+const Buffer = require('buffer').Buffer;
 
 
 // Class to interact with the Bagel API
@@ -374,10 +375,9 @@ class API {
 
 
     // add image to a cluster
-    async _add_image(cluster_id, image_name, image_file_buffer) {
+    async _add_image(cluster_id, image_name, image_data) {
+        console.log("add_image", image_data);
         const uid = uuidv4();
-
-        const base64_image = Buffer.from(image_file_buffer).toString('base64');
 
         const data = {
             "metadata": [{ "filename": image_name.toString() }],
@@ -386,7 +386,7 @@ class API {
         }
 
         const formData = new FormData();
-        formData.append("image", base64_image, { filename: image_name.toString(), contentType: "image/jpeg" });
+        formData.append("image", image_data);
         formData.append("data", JSON.stringify(data), { contentType: "application/json" });
 
         // Send the POST request
@@ -400,6 +400,19 @@ class API {
         });
     };
 
+
+
+    // add images to a cluster via web form
+    async _add_image_web(cluster_id, formData) {
+        await fetch(this._api_url + "/clusters/" + cluster_id + "/add_image", {
+            method: 'POST',
+            body: formData,
+        }).then(response => response.json()).then(data => {
+            return data;
+        }).catch((error) => {
+            console.error('Error:', error);
+        });
+    };
 
 };
 
