@@ -404,14 +404,17 @@ class API {
 
     // add images to a cluster via web form
     async _add_image_web(cluster_id, formData) {
-        await fetch(this._api_url + "/clusters/" + cluster_id + "/add_image", {
+        console.log("add_image_web", formData);
+        const resp = await fetch(this._api_url + "/clusters/" + cluster_id + "/add_image", {
             method: 'POST',
             body: formData,
         }).then(response => response.json()).then(data => {
             return data;
-        }).catch((error) => {
+        }
+        ).catch((error) => {
             console.error('Error:', error);
-        });
+        }
+        );
     };
 
 };
