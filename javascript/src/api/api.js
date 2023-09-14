@@ -386,7 +386,7 @@ class API {
         }
 
         const formData = new FormData();
-        formData.append("image", image_data);
+        formData.append("image", image_data, { contentType: "image/jpeg", filename: image_name.toString() });
         formData.append("data", JSON.stringify(data), { contentType: "application/json" });
 
         // Send the POST request
