@@ -2,9 +2,9 @@
 const axios = require('axios');
 const fetch = require('node-fetch');
 const { Cluster } = require('../model/cluster.js');
-const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const FormData = require('form-data');
+const Buffer = require('buffer').Buffer;
 
 
 // Class to interact with the Bagel API
@@ -282,7 +282,7 @@ class API {
         try {
             const url = this._api_url + "/clusters/" + cluster_id + "/delete";
             const requestOpts = {
-                method: "DELETE",
+                method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ ids, where, where_document })
             };
@@ -374,14 +374,10 @@ class API {
     }
 
 
-
     // add image to a cluster
-    async _add_image(cluster_id, image_path) {
-        const image_name = image_path.split("/").pop();
+    async _add_image(cluster_id, image_name, image_data) {
+        console.log("add_image", image_data);
         const uid = uuidv4();
-
-        const image_data = fs.readFileSync(image_path);
-        const base64_image = Buffer.from(image_data).toString('base64');
 
         const data = {
             "metadata": [{ "filename": image_name.toString() }],
@@ -390,7 +386,7 @@ class API {
         }
 
         const formData = new FormData();
-        formData.append("image", base64_image, { filename: image_name.toString(), contentType: "image/jpeg" });
+        formData.append("image", image_data);
         formData.append("data", JSON.stringify(data), { contentType: "application/json" });
 
         // Send the POST request
@@ -404,6 +400,22 @@ class API {
         });
     };
 
+
+
+    // add images to a cluster via web form
+    async _add_image_web(cluster_id, formData) {
+        console.log("add_image_web", formData);
+        const resp = await fetch(this._api_url + "/clusters/" + cluster_id + "/add_image", {
+            method: 'POST',
+            body: formData,
+        }).then(response => response.json()).then(data => {
+            return data;
+        }
+        ).catch((error) => {
+            console.error('Error:', error);
+        }
+        );
+    };
 
 };
 

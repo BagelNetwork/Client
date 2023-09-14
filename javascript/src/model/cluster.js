@@ -83,10 +83,22 @@ class Cluster {
 
 
     // add image to the cluster
-    add_image(image_path) {
-        return this._client._add_image(this.id, image_path);
+    add_image(image_name, image_data) {
+        console.log("add_image", image_data);
+        return this._client._add_image(this.id, image_name, image_data);
     };
 
+
+    // add images to the cluster via web form
+    add_image_web(formData) {
+        return this._client._add_image_web(this.id, formData);
+    };
+
+
+    // add images
+    add_imagess(image_names, image_datas) {
+        return this._client._add_imagess(this.id, image_names, image_datas);
+    }
 }
 
 
