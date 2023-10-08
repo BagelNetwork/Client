@@ -86,6 +86,7 @@ class FastAPI(API):
             id=resp_json["id"],
             name=resp_json["name"],
             metadata=resp_json["metadata"],
+            cluster_size=resp_json["cluster_size"],
         )
 
     @override
@@ -102,6 +103,7 @@ class FastAPI(API):
             name=resp_json["name"],
             id=resp_json["id"],
             metadata=resp_json["metadata"],
+            cluster_size=resp_json["cluster_size"]
         )
 
     @override

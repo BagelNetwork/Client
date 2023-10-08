@@ -36,6 +36,7 @@ if TYPE_CHECKING:
 class Cluster(BaseModel):
     name: str
     id: UUID
+    cluster_size: float
     metadata: Optional[ClusterMetadata] = None
     _client: "API" = PrivateAttr()
 
@@ -44,10 +45,11 @@ class Cluster(BaseModel):
         client: "API",
         name: str,
         id: UUID,
+        cluster_size: float,
         metadata: Optional[ClusterMetadata] = None,
     ):
         self._client = client
-        super().__init__(name=name, metadata=metadata, id=id)
+        super().__init__(name=name, metadata=metadata, id=id, cluster_size=cluster_size)
 
     def __repr__(self) -> str:
         return f"Cluster(name={self.name})"
