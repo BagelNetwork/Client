@@ -1,4 +1,4 @@
-from typing import Optional, cast, Any
+from typing import Optional, cast, Any, List
 from bagel.api import API
 from bagel.config import System
 from bagel.api.types import (
@@ -428,6 +428,34 @@ class FastAPI(API):
         resp = requests.get(self._api_url + "/version")
         raise_bagel_error(resp)
         return cast(str, resp.json())
+
+    @override
+    def _add_image_urls(
+        self,
+        cluster_id: UUID,
+        ids: IDs,
+        urls: List[str],
+        metadatas: Optional[Metadatas] = None,
+        increment_index: bool = True,
+    ) -> Any:
+        """Add image by urls to BagelDB."""
+        if metadatas is None:
+            metadatas = [{"url": str(url)} for url in urls]
+
+        resp = requests.post(
+            self._api_url + "/clusters/" + str(cluster_id) + "/add_image_url",
+            data=json.dumps(
+                {
+                    "ids": ids,
+                    "image_urls": urls,
+                    "metadatas": metadatas,
+                    "increment_index": increment_index,
+                }
+            ),
+        )
+
+        raise_bagel_error(resp)
+        return resp.json()
 
 
 def raise_bagel_error(resp: requests.Response) -> None:
