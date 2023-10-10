@@ -369,5 +369,22 @@ class API(Component, ABC):
         metadatas: Optional[Metadatas] = None,
         increment_index: bool = True,
     ) -> Any:
-        """Add image by urls to BagelDB."""
+        """
+        Add images by URLs to BagelDB.
+        If metadatas is not provided, it will be generated with default values.
+
+        Args:
+            cluster_id (UUID): The unique identifier of the cluster.
+            ids (IDs): Identifier(s) associated with the image(s).
+            urls (List[str]): List of URLs for the images to be added.
+            metadatas (Optional[Metadatas]): Optional metadata for the image(s).
+            increment_index (bool): Flag indicating whether to increment the cluster index.
+
+        Returns:
+            Any: Result of the image addition operation.
+
+        Raises:
+            HTTPException: If there is an error in the HTTP request.
+
+        """
         pass
