@@ -3,6 +3,7 @@ import uuid
 import bagel
 from bagel.config import Settings
 
+
 def check_emaillist(api):
     """
     Email waitlist test
@@ -20,7 +21,9 @@ def create_and_delete(api):
     print(name)
 
     # Create a cluster
-    _ = api.create_cluster(name)
+    cluster = api.create_cluster(name)
+    print(f"cluster size {cluster.cluster_size} mb")
+    print()
 
     # Delete it
     api.delete_cluster(name)
