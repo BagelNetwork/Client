@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Sequence, Optional, Dict, Any
+from typing import Sequence, Optional, Dict, Any, List
 import pandas as pd
 from uuid import UUID
 from bagel.api.Cluster import Cluster
@@ -358,4 +358,33 @@ class API(Component, ABC):
         self, cluster_id: UUID, filename: str, metadata: Optional[Metadata]
     ) -> Any:
         """Add image to BagelDB."""
+        pass
+
+    @abstractmethod
+    def _add_image_urls(
+        self,
+        cluster_id: UUID,
+        ids: IDs,
+        urls: List[str],
+        metadatas: Optional[Metadatas] = None,
+        increment_index: bool = True,
+    ) -> Any:
+        """
+        Add images by URLs to BagelDB.
+        If metadatas is not provided, it will be generated with default values.
+
+        Args:
+            cluster_id (UUID): The unique identifier of the cluster.
+            ids (IDs): Identifier(s) associated with the image(s).
+            urls (List[str]): List of URLs for the images to be added.
+            metadatas (Optional[Metadatas]): Optional metadata for the image(s).
+            increment_index (bool): Flag indicating whether to increment the cluster index.
+
+        Returns:
+            Any: Result of the image addition operation.
+
+        Raises:
+            HTTPException: If there is an error in the HTTP request.
+
+        """
         pass

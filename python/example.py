@@ -279,6 +279,42 @@ def add_image_find(api):
     print(">> add_image_find done !\n")
 
 
+def add_image_urls_find(api):
+    """
+    Create and add images by urls
+    """
+    # Generate a unique cluster name using UUID
+    name = "image_add_urls_tesing"
+
+    # Get or create a cluster
+    cluster = api.get_or_create_cluster(name)
+    urls = [
+        "https://bagel-public-models-s3-download.s3.eu-north-1.amazonaws.com/cat/60de145c79609acaba3bbe08974a9ff5.jpg",
+        "https://bagel-public-models-s3-download.s3.eu-north-1.amazonaws.com/cat/black-white-cat-wallpaper.jpg",
+        "https://bagel-public-models-s3-download.s3.eu-north-1.amazonaws.com/cat/cat-10-e1573844975155.jpg",
+        "https://bagel-public-models-s3-download.s3.eu-north-1.amazonaws.com/dog/thumb-1920-454156.jpg",
+        "https://bagel-public-models-s3-download.s3.eu-north-1.amazonaws.com/dog/istockphoto-1181270413-170667a.jpg",
+    ]
+    ids = [str(uuid.uuid4()) for i in range(len(urls))]
+    resp = cluster.add_image_urls(ids=ids, urls=urls)
+    print("count of images:", cluster.count())
+
+    # Get the first item
+    first_item = cluster.peek(1)
+    embeddings = first_item.get("embeddings")[0]  # replace with your embedding
+
+    # Query the cluster for similar results
+    results = cluster.find(
+        query_embeddings=embeddings,
+        n_results=5
+    )
+
+    print(results)
+    # Delete it
+    api.delete_cluster(name)
+    print(">> add_image_urls_find done !\n")
+
+
 def main():
     start_time = time.time()  # Record the start time
     # Bagel server settings
@@ -305,6 +341,7 @@ def main():
     create_add_modify_update(client)
     create_upsert(client)
     add_image_find(client)
+    add_image_urls_find(client)
     end_time = time.time()  # Record the end time
     execution_time = end_time - start_time  # Calculate the execution time
     print(f"Total execution time: {execution_time:.2f} seconds")

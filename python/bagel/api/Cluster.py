@@ -69,6 +69,27 @@ class Cluster(BaseModel):
             cluster_id=self.id, filename=filename, metadata=metadata
         )
 
+    def add_image_urls(
+        self,
+        ids: OneOrMany[ID],
+        urls: List[str],
+        metadatas: Optional[OneOrMany[Metadata]] = None,
+    ) -> Any:
+        """
+        Add images by URLs to BagelDB.
+
+        Args:
+            ids (OneOrMany[ID]): Identifier(s) associated with the image(s).
+            urls (List[str]): List of URLs for the images to be added.
+            metadatas (Optional[OneOrMany[Metadata]]): Optional metadata for the image(s).
+
+        Returns:
+            Any: Result of the image addition operation.
+        """
+        return self._client._add_image_urls(
+            cluster_id=self.id, ids=ids, urls=urls, metadatas=metadatas
+        )
+
     def add(
         self,
         ids: OneOrMany[ID],
