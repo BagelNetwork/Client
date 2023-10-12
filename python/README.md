@@ -161,6 +161,17 @@ urls = [
 ids = [str(uuid.uuid4()) for i in range(len(urls))]
 resp = cluster.add_image_urls(ids=ids, urls=urls)
 ```
+## Tutorials
+
+Explore additional tutorials for more insights.
+
+- [Python Client Example](https://colab.research.google.com/drive/1PXRoP4vIsqQqsD9AGUrQ90D3x0x79F_w)
+- [Using BagelDB with Llama Index](https://colab.research.google.com/drive/13F3PxNgF10ZGlpZS20hQtwwkd8BiMcTS)
+- [Using BagelDB with Langchain](https://colab.research.google.com/drive/1UBWkuihFHvxbzeP61HT1-ttTsURcEXIS?usp=sharing)
+- [Build an image search engine in 10 minutes using BagelDB](https://colab.research.google.com/drive/1J_QlpqvnVloWHg_Q87s-hbp_VGq4wLQz)
+
+<br>
+
 Need more dough-tails? See the [example code](example.py) for a more comprehensive guide on using the BagelDB Python client.
 
 Happy coding and enjoy your fresh Bagels! 🥯👩‍💻👨‍💻
