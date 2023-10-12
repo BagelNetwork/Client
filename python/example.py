@@ -23,6 +23,7 @@ def create_and_delete(api):
     # Create a cluster
     cluster = api.create_cluster(name)
     print(f"cluster size {cluster.cluster_size} mb")
+    print(f"embedding size {cluster.embedding_size} ")
     print()
 
     # Delete it
@@ -333,7 +334,6 @@ def main():
     print("version: ", client.get_version())
 
     # # calling all functions
-    check_emaillist(client)
     create_and_delete(client)
     create_add_get(client)
     create_add_find(client)

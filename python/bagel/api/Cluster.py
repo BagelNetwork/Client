@@ -37,6 +37,7 @@ class Cluster(BaseModel):
     name: str
     id: UUID
     cluster_size: float
+    embedding_size: Optional[int] = None
     metadata: Optional[ClusterMetadata] = None
     _client: "API" = PrivateAttr()
 
@@ -46,10 +47,17 @@ class Cluster(BaseModel):
         name: str,
         id: UUID,
         cluster_size: float,
+        embedding_size: Optional[int] = None,
         metadata: Optional[ClusterMetadata] = None,
     ):
         self._client = client
-        super().__init__(name=name, metadata=metadata, id=id, cluster_size=cluster_size)
+        super().__init__(
+            name=name,
+            metadata=metadata,
+            id=id,
+            cluster_size=cluster_size,
+            embedding_size=embedding_size,
+        )
 
     def __repr__(self) -> str:
         return f"Cluster(name={self.name})"
@@ -241,7 +249,7 @@ class Cluster(BaseModel):
             where=where,
             where_document=where_document,
             include=include,
-            query_texts=query_texts
+            query_texts=query_texts,
         )
 
     def modify(
