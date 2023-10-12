@@ -8,7 +8,7 @@ One of the perks? **No need to call the OpenAI Embeddings method or any other mo
 
 - Python 3.6+
 - pip package manager
-- BagelDB account and API key
+- Cluster size limit 500MB (*Create a new issue if you want to increase the limit)
 
 ## Installation
 
@@ -111,6 +111,26 @@ cluster.upsert(documents=["new doc"],
                ids=["doc1"])
 ```
 
+12. **Get cluster size:**
+```python
+cluster = client.get_or_create_cluster("new_testing")
+print(f"cluster size {cluster.cluster_size} mb")
+```
+13. **Add image:**
+```python
+filename = "your_img.png"
+resp = cluster.add_image(filename)
+```
+14. **Add image by image download urls:**
+```python
+cluster = api.get_or_create_cluster("new_testing")
+urls = [
+    "https://bagel-public-models-s3-download.s3.eu-north-1.amazonaws.com/cat/60de145c79609acaba3bbe08974a9ff5.jpg",
+    "https://bagel-public-models-s3-download.s3.eu-north-1.amazonaws.com/cat/black-white-cat-wallpaper.jpg",
+]
+ids = [str(uuid.uuid4()) for i in range(len(urls))]
+resp = cluster.add_image_urls(ids=ids, urls=urls)
+```
 Need more dough-tails? See the [example code](example.py) for a more comprehensive guide on using the BagelDB Python client.
 
 Happy coding and enjoy your fresh Bagels! 🥯👩‍💻👨‍💻
