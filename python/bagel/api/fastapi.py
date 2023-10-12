@@ -29,6 +29,7 @@ from io import BytesIO
 import os
 import uuid
 
+
 class FastAPI(API):
     def __init__(self, system: System):
         super().__init__(system)
@@ -87,6 +88,7 @@ class FastAPI(API):
             name=resp_json["name"],
             metadata=resp_json["metadata"],
             cluster_size=resp_json["cluster_size"],
+            embedding_size=resp_json["embedding_size"],
         )
 
     @override
@@ -103,7 +105,8 @@ class FastAPI(API):
             name=resp_json["name"],
             id=resp_json["id"],
             metadata=resp_json["metadata"],
-            cluster_size=resp_json["cluster_size"]
+            cluster_size=resp_json["cluster_size"],
+            embedding_size=resp_json["embedding_size"],
         )
 
     @override
@@ -114,9 +117,7 @@ class FastAPI(API):
     ) -> Cluster:
         """Get a cluster, or return it if it exists"""
 
-        return self.create_cluster(
-            name, metadata, get_or_create=True
-        )
+        return self.create_cluster(name, metadata, get_or_create=True)
 
     @override
     def _modify(
@@ -217,7 +218,9 @@ class FastAPI(API):
         return cast(IDs, resp.json())
 
     @override
-    def _add_image(self, cluster_id: UUID, filename: str, metadata: Optional[Metadata] = None) -> Any:
+    def _add_image(
+        self, cluster_id: UUID, filename: str, metadata: Optional[Metadata] = None
+    ) -> Any:
         """
         Add an image to the BagelDB.
 
