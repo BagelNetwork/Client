@@ -56,7 +56,7 @@ print(client.ping())
 
 This checks the connectivity to the BagelDB server.
 
-1. **Get the BagelDB server version:**
+5. **Get the BagelDB server version:**
 
 ```python
 print(client.get_version())
