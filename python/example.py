@@ -140,7 +140,16 @@ def create_add_find_em(api):
                 {"uri": "img7.png", "style": "style1"},
                 {"uri": "img8.png", "style": "style1"},
             ],
-            documents=["doc1", "doc2", "doc3", "doc4", "doc5", "doc6", "doc7", "doc8"],
+            documents=[
+                "doc1",
+                "doc2",
+                "doc3",
+                "doc4",
+                "doc5",
+                "doc6",
+                "doc7",
+                "doc8",
+            ],
             ids=["id1", "id2", "id3", "id4", "id5", "id6", "id7", "id8"],
         )
     except Exception as exc:  # pylint: disable=W0718

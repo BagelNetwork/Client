@@ -71,7 +71,9 @@ class Cluster(BaseModel):
         """
         return self._client._count(cluster_id=self.id)
 
-    def add_image(self, filename: str, metadata: Optional[Metadata] = None) -> Any:
+    def add_image(
+        self, filename: str, metadata: Optional[Metadata] = None
+    ) -> Any:
         """Add image to BagelDB."""
         return self._client._add_image(
             cluster_id=self.id, filename=filename, metadata=metadata
@@ -223,7 +225,9 @@ class Cluster(BaseModel):
             else None
         )
         query_texts = (
-            maybe_cast_one_to_many(query_texts) if query_texts is not None else None
+            maybe_cast_one_to_many(query_texts)
+            if query_texts is not None
+            else None
         )
         include = validate_include(include, allow_distances=True)
         n_results = validate_n_results(n_results)
@@ -253,7 +257,9 @@ class Cluster(BaseModel):
         )
 
     def modify(
-        self, name: Optional[str] = None, metadata: Optional[ClusterMetadata] = None
+        self,
+        name: Optional[str] = None,
+        metadata: Optional[ClusterMetadata] = None,
     ) -> None:
         """Modify the cluster name or metadata
 
@@ -290,7 +296,11 @@ class Cluster(BaseModel):
         """
 
         ids, embeddings, metadatas, documents = self._validate_embedding_set(
-            ids, embeddings, metadatas, documents, require_embeddings_or_documents=False
+            ids,
+            embeddings,
+            metadatas,
+            documents,
+            require_embeddings_or_documents=False,
         )
 
         self._client._update(self.id, ids, embeddings, metadatas, documents)
@@ -378,7 +388,9 @@ class Cluster(BaseModel):
             if metadatas is not None
             else None
         )
-        documents = maybe_cast_one_to_many(documents) if documents is not None else None
+        documents = (
+            maybe_cast_one_to_many(documents) if documents is not None else None
+        )
 
         # Check that one of embeddings or documents is provided
         if require_embeddings_or_documents:
