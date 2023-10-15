@@ -257,7 +257,10 @@ def add_image_find(api):
 
     # Get or create a cluster
     cluster = api.get_or_create_cluster(name)
-    img_file_list = ["image_emb/test.jpg", "image_emb/test.png"]  # add image path to the list
+    img_file_list = [
+        "image_emb/test.jpg",
+        "image_emb/test.png",
+    ]  # add image path to the list
     for filename in img_file_list:
         resp = cluster.add_image(filename)
         print("---------------\n", resp.json())
@@ -269,10 +272,7 @@ def add_image_find(api):
     embeddings = first_item.get("embeddings")[0]  # replace with your embedding
 
     # Query the cluster for similar results
-    results = cluster.find(
-        query_embeddings=embeddings,
-        n_results=5
-    )
+    results = cluster.find(query_embeddings=embeddings, n_results=5)
 
     print(results)
     # Delete it
@@ -305,10 +305,7 @@ def add_image_urls_find(api):
     embeddings = first_item.get("embeddings")[0]  # replace with your embedding
 
     # Query the cluster for similar results
-    results = cluster.find(
-        query_embeddings=embeddings,
-        n_results=5
-    )
+    results = cluster.find(query_embeddings=embeddings, n_results=5)
 
     print(results)
     # Delete it
