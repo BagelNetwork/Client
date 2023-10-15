@@ -6,6 +6,7 @@ from langchain.chains.question_answering import load_qa_chain
 from langchain.chains import RetrievalQA
 from termcolor import colored
 
+
 def fetch_content(url):
     with sync_playwright() as p:
         browser = p.chromium.launch()
@@ -13,7 +14,8 @@ def fetch_content(url):
         page.goto(url)
         content = page.content()
         browser.close()
-    return BeautifulSoup(content, 'html.parser').get_text()
+    return BeautifulSoup(content, "html.parser").get_text()
+
 
 if __name__ == "__main__":
     url = input("Enter the URL: ")
@@ -27,8 +29,8 @@ if __name__ == "__main__":
         input_query = input("your query: ")
         if input_query == "q":
             break
-        print(colored(qa.run(input_query), 'red'))
-        print("-"*40)
+        print(colored(qa.run(input_query), "red"))
+        print("-" * 40)
 
     cluster._client.delete_cluster("testing_langchain")
     print("Done!")
