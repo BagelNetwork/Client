@@ -6,6 +6,7 @@ from bagel.config import Settings
 
 CLUSTER_NAME = str(uuid.uuid4())
 
+
 @pytest.fixture
 def cluster():
     server_settings = Settings(
@@ -33,11 +34,28 @@ def test_get(cluster):
 
 
 def test_find(cluster):
-    resp = cluster.find(
-        query_texts=["test"],
-        n_results=1
-    )
+    resp = cluster.find(query_texts=["test"], n_results=1)
     assert resp.get("ids")[0] == ["id"]
+
+
+def test_upsert(cluster):
+    cluster.upsert(
+        documents=[
+            "test new",
+            "test upsert",
+        ],
+        metadatas=[{"source": "notion"}, {"source": "google"}],
+        ids=["id", "id3"],
+    )
+    assert cluster.count() == 2
+
+
+def test_img_url(cluster):
+    url = [
+        "https://bagel-public-models-s3-download.s3.eu-north-1.amazonaws.com/dog/thumb-1920-454156.jpg",
+    ]
+    cluster.add_image_urls(ids=["ids"], urls=url)
+    assert cluster.count() == 3
 
 
 def test_delete():
