@@ -148,7 +148,16 @@ In BagelDB we can add image also. Here is an example of adding image to cluster.
 filename = "your_img.png"
 resp = cluster.add_image(filename)
 ```
-14. **Add image by image download URLs:**
+14. **Embedding size:**
+
+```python
+print(f"Embedding size {cluster.embedding_size}")
+```
+
+Initially, if no data is added to the cluster, the value of `embedding_size` is None. After adding data, the `embedding_size` is set or assigned.
+
+
+15. **Add image by image download URLs:**
 
 Multiple images can be added to a BagelDB cluster using URLs. It's recommended to add fewer than 20 images at a time using this function. Upon execution, the function will return the URLs of successfully added images and those that failed. Here's an example:
 
