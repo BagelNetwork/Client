@@ -33,12 +33,16 @@ import uuid
 class FastAPI(API):
     def __init__(self, system: System):
         super().__init__(system)
-        url_prefix = "https" if system.settings.bagel_server_ssl_enabled else "http"
+        url_prefix = (
+            "https" if system.settings.bagel_server_ssl_enabled else "http"
+        )
         system.settings.require("bagel_server_host")
         if system.settings.bagel_server_http_port:
             self._api_url = f"{url_prefix}://{system.settings.bagel_server_host}:{system.settings.bagel_server_http_port}/api/v1"
         else:
-            self._api_url = f"{url_prefix}://{system.settings.bagel_server_host}/api/v1"
+            self._api_url = (
+                f"{url_prefix}://{system.settings.bagel_server_host}/api/v1"
+            )
 
     @override
     def ping(self) -> int:
@@ -77,7 +81,11 @@ class FastAPI(API):
         resp = requests.post(
             self._api_url + "/clusters",
             data=json.dumps(
-                {"name": name, "metadata": metadata, "get_or_create": get_or_create}
+                {
+                    "name": name,
+                    "metadata": metadata,
+                    "get_or_create": get_or_create,
+                }
             ),
         )
         raise_bagel_error(resp)
@@ -129,7 +137,9 @@ class FastAPI(API):
         """Updates a cluster"""
         resp = requests.put(
             self._api_url + "/clusters/" + str(id),
-            data=json.dumps({"new_metadata": new_metadata, "new_name": new_name}),
+            data=json.dumps(
+                {"new_metadata": new_metadata, "new_name": new_name}
+            ),
         )
         raise_bagel_error(resp)
 
@@ -142,7 +152,9 @@ class FastAPI(API):
     @override
     def _count(self, cluster_id: UUID) -> int:
         """Returns the number of embeddings in the database"""
-        resp = requests.get(self._api_url + "/clusters/" + str(cluster_id) + "/count")
+        resp = requests.get(
+            self._api_url + "/clusters/" + str(cluster_id) + "/count"
+        )
         raise_bagel_error(resp)
         return cast(int, resp.json())
 
@@ -219,7 +231,10 @@ class FastAPI(API):
 
     @override
     def _add_image(
-        self, cluster_id: UUID, filename: str, metadata: Optional[Metadata] = None
+        self,
+        cluster_id: UUID,
+        filename: str,
+        metadata: Optional[Metadata] = None,
     ) -> Any:
         """
         Add an image to the BagelDB.

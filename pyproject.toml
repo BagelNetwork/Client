@@ -1,0 +1,43 @@
+# pyproject.toml
+
+# ---------------------
+# BLACK: Code Formatter
+# ---------------------
+[tool.black]
+line-length = 80
+target-version = ['py38']
+include = '\\.pyi?$'
+exclude = '''(
+    \\.git
+  | \\.mypy_cache
+  | \\.tox
+  | \\.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | venv
+)'''
+skip-string-normalization = true
+
+# -------------------------
+# MYPY: Static Type Checker
+# -------------------------
+[tool.mypy]
+files = ["python/**/*.py"]
+python_version = "3.8"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+# ------------------------
+# FLAKE8: Linting and Style
+# ------------------------
+[tool.flake8]
+ignore = "E203, E266, E501, W503, F403, F401"
+max-line-length = 80
+max-complexity = 12
+plugins = ["flake8-docstrings", "flake8-bugbear"]
+select = "B,C,E,F,W,T4,B9,D"
+enable-extensions = "TOD0"
