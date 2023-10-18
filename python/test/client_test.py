@@ -50,12 +50,34 @@ def test_upsert(cluster):
     assert cluster.count() == 2
 
 
+def test_big_text(cluster):
+    cluster.add(
+        ids=["id4"],
+        documents=[
+            """Hello and a hearty welcome to the BagelDB client hub!
+            It's an absolute delight and thrill to have you join us
+            on this exciting journey into the future of BagelDB. As
+            we stand on the cusp of technological innovation,
+            embarking on this forward-thinking adventure, we
+            can't help but feel the exhilaration of what's to come.
+            Our team is committed to pushing the boundaries,
+            constantly innovating and evolving to stay ahead of
+            the curve and we are dedicated to providing you with
+            top-notch service and support, ensuring that your
+            experience with BagelDB is nothing short of exceptional.
+            """
+        ],
+        metadatas=[{"meta": "m1"}],
+    )
+    assert cluster.count() == 3
+
+
 def test_img_url(cluster):
     url = [
         "https://bagel-public-models-s3-download.s3.eu-north-1.amazonaws.com/dog/thumb-1920-454156.jpg",
     ]
     cluster.add_image_urls(ids=["ids"], urls=url)
-    assert cluster.count() == 3
+    assert cluster.count() == 4
 
 
 def test_delete():
