@@ -2,13 +2,21 @@
 
 ## Table of Contents
 
-- [Installation](#installation)
-- [Client](#client)
-- [Settings](#settings)  
-- [Usage](#usage)
-- [API Methods](#api-methods)
-- [Cluster Methods](#cluster-methods)
-- [Full Example](#full-example)
+- [BagelDB JavaScript Client 🥯](#bageldb-javascript-client-)
+  - [Table of Contents](#table-of-contents)
+  - [Installation](#installation)
+  - [Overview](#overview)
+  - [Client](#client)
+  - [Settings](#settings)
+  - [Usage](#usage)
+  - [API Methods](#api-methods)
+    - [Ping API](#ping-api)
+    - [Get API Version](#get-api-version)
+    - [Create Cluster](#create-cluster)
+    - [Get Cluster](#get-cluster)
+    - [Delete Cluster](#delete-cluster)
+  - [Cluster Methods](#cluster-methods)
+  - [Full Example](#full-example)
 
 ## Installation
 
@@ -29,21 +37,18 @@ See `example.js` for complete usage examples.
 
 ## Client
 
-```js
-const { Client } = require('bageldb-beta');
-
-const client = new Client(settings);
-```
-
 The `Client` class is the main interface to the BagelDB API. It requires a `Settings` object to configure connectivity:
 
-```js 
+```js
+const { Settings, Client } = require('bageldb-beta');
+
 // Settings config
 const settings = new Settings({
   bagel_api_impl: "rest",
-  bagel_server_host: "api.bageldb.ai",
-  bagel_server_http_port: 80
+  bagel_server_host: "api.bageldb.ai"
 });
+
+const client = new Client(settings);
 ```
 
 ## Settings
@@ -52,10 +57,9 @@ The `Settings` class contains configuration options for the client:
 
 - `bagel_api_impl` - The BagelDB API implementation, usually `"rest"`
 - `bagel_server_host` - BagelDB server hostname
-- `bagel_server_http_port` - BagelDB HTTP port
 - See `Settings` source for additional options
 
-## Usage 
+## Usage
 
 Once you have created a `Client` instance, you can call API methods like:
 
@@ -64,7 +68,13 @@ Once you have created a `Client` instance, you can call API methods like:
 ### Ping API
 
 ```js
-const response = await client.ping(); 
+const ping_example = async () => {
+    // ping server
+    const response = await client.ping();
+    console.log(response);
+}
+
+ping_example()
 ```
 
 Pings the API to check connectivity.
@@ -72,148 +82,204 @@ Pings the API to check connectivity.
 ### Get API Version
 
 ```js
-const version = await client.get_version();
+const version_example = async () => {
+    // get version
+    const version = await client.get_version();
+    console.log(version);
+}
+
+version_example()
 ```
 
 Gets the API version string.
 
-### Get All Clusters 
-
-```js
-const clusters = await client.get_all_clusters();
-```
-
-Gets info on all existing clusters.
 
 ### Create Cluster
 
 ```js
-const cluster = await client.create_cluster('mycluster');
-``` 
-
-Creates a new cluster.
+const create_cluster_example = async () => {
+    // create cluster
+    const resp = await client.create_cluster('testing_js_client');
+    console.log(resp)
+}
+```
+Creates a new cluster. If already cluster with same name does not exist then resposne will be somethig like this :
+```js
+Cluster {
+    name: 'testing_js_client',
+    id: 'a9c6b467-4af9-4b9e-ab6a-9589b9ceb1cb',
+    metadata: null,
+    _client: API { _api_url: 'http://api.bageldb.ai:80/api/v1' }
+  }
+```
 
 ### Get Cluster
 
 ```js
-const cluster = await client.get_cluster('mycluster'); 
+const get_cluster_example = async () => {
+    // get cluster
+    const cluster = await client.get_or_create_cluster("myclsuter");
+    console.log(cluster)
+}
+
+get_cluster_example()
 ```
 
-Gets an existing cluster by name.
+Gets an existing cluster by name. If cluster does not exist then it will create and return.
 
 ### Delete Cluster
 
 ```js
-await client.delete_cluster('mycluster');
+const delete_cluster_example = async () => {
+    // delete cluster
+    await client.delete_cluster('mycluster');
+}
+
+delete_cluster_example()
 ```
 
-Deletes a cluster by name.
+Delete a cluster by name.
 
 ## Cluster Methods
 
 The `Cluster` class represents a specific cluster and has methods like:
 
 ```js
-// Add documents
-await cluster.add([
-  { id: 1, text: 'Document 1' },  
-  { id: 2, text: 'Document 2' }
-]);
+const cluster_methods_example = async () => {
+    // get or create a cluster
+    const cluster_name = "cluster_methods";
+    const cluster = await client.get_or_create_cluster(cluster_name);
 
-// Search by vector 
-const results = await cluster.query([0.5, 0.5]); 
+    // add data to the cluster
+    await cluster.add(
+        ids = ["id1", "id2"],
+        embeddings = [[1.1, 2.3], [4.5, 6.9]],
+        metadatas = [{"info": "M1"}, {"info": "M1"}],
+        documents = ["doc1", "doc2"]
+    ).then((res) => {
+        if(res){
+            console.log("Data added successfully");
+        }
+    }).catch((err) => {
+        console.log(err);
+    });
+
+    // find data in the cluster
+    console.log('query result: ')
+    const results = await cluster.find(
+        query_embeddings = [[1.1, 2.3]],
+        n_results = 5,
+        where = { info: "M1" },
+        where_document = { $contains: "doc" },
+        include = ["metadatas", "documents", "distances"],
+        query_texts = null
+    );
+    console.log(results);
+}
+
+cluster_methods_example()
 ```
 
 See the `Cluster` class documentation for full details on:
 
 - `count()` - Get total rows
 - `add()` - Insert new rows
-- `delete()` - Delete rows  
+- `delete()` - Delete rows 
 - `update()` - Update existing rows
-- `query()` - Search by vectors
+- `find()` - Search by vectors
 - `peek()` - Sample rows
 - And more
 
 ## Full Example
-
 ```js
-const { Client } = require('bageldb-beta');
+// import
+const { Settings, Client } = require('bageldb-beta');
 
-const settings = new Settings({
-  bagel_api_impl:"rest",
-  bagel_server_host:"api.bageldb.ai",
-  bagel_server_http_port:80,
-});
-
-const client = new Client(settings); 
-
-const cluster = await client.get_or_create_cluster('products');
-
-await cluster.add([
-  { id: 1, name: 'Baseball', vector: [0.1, 0.3] },
-  { id: 2, name: 'Bat', vector: [0.7, 0.2] }
-]);
-
-const results = await cluster.query([0.5, 0.5]); 
-```
-
-Here is another example showing the usage flow:
-
-You're right, I should show an example of searching by text as well. Here is an updated full example:
-
-```js 
-// Import and initialize client
-const { Client } = require('bageldb-beta');
-
+// create settings
 const settings = new Settings({
   bagel_api_impl: "rest",
-  bagel_server_host: "api.bageldb.ai", 
-  bagel_server_http_port: 80  
+  bagel_server_host: "api.bageldb.ai",
+  bagel_server_http_port: 80,
 });
 
-const client = new Client(settings);
+// example for add data to the cluster (with embeddings)
+const full_example = async () => {
+    // create api or client
+    const api = new Client(settings);
+    // get or create a cluster
+    const newName = "testing";
+    const cluster = await api.get_or_create_cluster(newName);
+    // add data to the cluster
+    await cluster.add(
+        ids = ["id1", "id2"],
+        embeddings = [[1.1, 2.3], [4.5, 6.9]],
+        metadatas = [{ "info": "M1" }, { "info": "M1" }],
+        documents = ["doc1", "doc2"]
+    ).then((res) => {
+        if (res) {
+            console.log("Data added successfully");
+        }
+    }).catch((err) => {
+        console.log(err);
+    });
+    // get count
+    const count = await cluster.count()
+    console.log("Count of data inside cluster:", count)
 
-// Get or create cluster
-const cluster = await client.get_or_create_cluster('products');  
+    // update data in the cluster
+    await cluster.update(
+        ids = ["id1"],
+        embeddings = [[10.1, 20.3]],
+        metadatas = [{"info": "M1"}],
+        documents = ["doc1"]
+    ).then((res) => {
+        if(res){
+            console.log("Data updated successfully");
+        }
+    }
+    ).catch((err) => {
+        console.log(err);
+    });
 
-// Add documents
-await cluster.add([
-  { id: 1, text: 'Baseball' },
-  { id: 2, text: 'Bat' }  
-]); 
+    // peek into the cluster
+    const peeks = await cluster.peek(10);
+    console.log('peek result: ', peeks);
 
-// Search by vector 
-const results1 = await cluster.query([0.5, 0.5]);
+    // delete data from the cluster
+    await cluster.delete(
+        ids = ["id1"],
+        where = {},
+        where_document = {}
+    ).then((res) => {
+        if(res){
+            console.log("Data deleted successfully");
+        }
+    }).catch((err) => {
+        console.log(err);
+    });
 
-// Search by text
-const results2 = await cluster.query(null, {
-  query_texts: ['Baseball'] 
-});
+    // get count
+    const countDelete = await cluster.count()
+    console.log("Count after delete:", countDelete)
 
-// BagelDB will search using the embeddings
-// it previously generated for the documents
+    // find data in the cluster
+    console.log("query result: ");
+    await cluster.find(
+        query_embeddings = [[1.1, 2.3]],
+        n_results = 5,
+        where = { info: "M1" },
+        where_document = { $contains: "doc" },
+        include = ["metadatas", "documents", "distances"],
+        query_texts = null
+    );
+
+    // delete the cluster
+    await api.delete_cluster(newName);
+}
+
+full_example();
 ```
+ The code demonstrates how to connect to a BagelDB server, create or retrieve a cluster, perform various operations on the cluster (add, update, delete, find, peek), and then delete the cluster.
 
-The key addition is the `query_texts` parameter to search by text directly:
 
-```js
-const results2 = await cluster.query(null, {
-  query_texts: ['Baseball']  
-});
-```
-
-This searches for the document with the text "Baseball" without needing to provide any embeddings.
-
-The key points are:
-
-- You can insert documents by just providing a text field instead of an embedding vector.
-
-- Behind the scenes, BagelDB will run the text through its built-in neural network to generate an embedding vector. 
-
-- When you search by vector later, it will use the embeddings it previously generated.
-
-This allows you to easily index and search text without having to generate embeddings yourself. BagelDB handles it automatically.
-
-Let me know if this helps explain the full end-to-end flow!
-
-See the [GitHub README](https://github.com/Bagel-DB/Client/tree/main/javascript) and `example.js` for more complete examples. Let me know if any part needs more explanation!
+See `example.js` for more complete examples. Let me know if any part needs more explanation!
