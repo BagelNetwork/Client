@@ -30,6 +30,7 @@ _abstract_type_keys: Dict[str, str] = {
 class Settings(BaseSettings):
     environment: str = ""
     bagel_api_impl: str = "bagel.api.fastapi.FastAPI"
+    bagel_source: str = "bagel_client"
 
     clickhouse_host: Optional[str] = None
     clickhouse_port: Optional[str] = None

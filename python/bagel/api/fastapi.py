@@ -34,6 +34,7 @@ class FastAPI(API):
     def __init__(self, system: System):
         super().__init__(system)
         url_prefix = "https" if system.settings.bagel_server_ssl_enabled else "http"
+        self.__headers = {"bagel_source": system.settings.bagel_source}
         system.settings.require("bagel_server_host")
         if system.settings.bagel_server_http_port:
             self._api_url = f"{url_prefix}://{system.settings.bagel_server_host}:{system.settings.bagel_server_http_port}/api/v1"
@@ -43,7 +44,7 @@ class FastAPI(API):
     @override
     def ping(self) -> int:
         """Returns the current server time in nanoseconds to check if the server is alive"""
-        resp = requests.get(self._api_url)
+        resp = requests.get(self._api_url, headers=self.__headers)
         raise_bagel_error(resp)
         return int(resp.json()["nanosecond heartbeat"])
 
@@ -79,6 +80,7 @@ class FastAPI(API):
             data=json.dumps(
                 {"name": name, "metadata": metadata, "get_or_create": get_or_create}
             ),
+            headers=self.__headers
         )
         raise_bagel_error(resp)
         resp_json = resp.json()
@@ -97,7 +99,7 @@ class FastAPI(API):
         name: str,
     ) -> Cluster:
         """Returns a cluster"""
-        resp = requests.get(self._api_url + "/clusters/" + name)
+        resp = requests.get(self._api_url + "/clusters/" + name, headers=self.__headers)
         raise_bagel_error(resp)
         resp_json = resp.json()
         return Cluster(
@@ -130,13 +132,14 @@ class FastAPI(API):
         resp = requests.put(
             self._api_url + "/clusters/" + str(id),
             data=json.dumps({"new_metadata": new_metadata, "new_name": new_name}),
+            headers=self.__headers
         )
         raise_bagel_error(resp)
 
     @override
     def delete_cluster(self, name: str) -> None:
         """Deletes a cluster"""
-        resp = requests.delete(self._api_url + "/clusters/" + name)
+        resp = requests.delete(self._api_url + "/clusters/" + name, headers=self.__headers)
         raise_bagel_error(resp)
 
     @override
@@ -261,6 +264,7 @@ class FastAPI(API):
                 "image": (str(image_name), image_data, "image/jpeg"),
                 "data": (None, json.dumps(data), "application/json"),
             },
+            headers=self.__headers
         )
         raise_bagel_error(resp)
         return resp
@@ -292,6 +296,7 @@ class FastAPI(API):
                     "increment_index": increment_index,
                 }
             ),
+            headers=self.__headers
         )
 
         raise_bagel_error(resp)
@@ -321,6 +326,7 @@ class FastAPI(API):
                     "documents": documents,
                 }
             ),
+            headers=self.__headers
         )
 
         resp.raise_for_status()
@@ -352,6 +358,7 @@ class FastAPI(API):
                     "increment_index": increment_index,
                 }
             ),
+            headers=self.__headers
         )
 
         resp.raise_for_status()
@@ -428,7 +435,7 @@ class FastAPI(API):
     @override
     def get_version(self) -> str:
         """Returns the version of the server"""
-        resp = requests.get(self._api_url + "/version")
+        resp = requests.get(self._api_url + "/version", headers=self.__headers)
         raise_bagel_error(resp)
         return cast(str, resp.json())
 
@@ -455,6 +462,7 @@ class FastAPI(API):
                     "increment_index": increment_index,
                 }
             ),
+            headers=self.__headers
         )
 
         raise_bagel_error(resp)
