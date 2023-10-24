@@ -58,13 +58,26 @@ def test_img_url(cluster):
     assert cluster.count() == 3
 
 
-def test_delete():
+# client tests
+@pytest.fixture
+def client():
     server_settings = Settings(
         bagel_api_impl="rest",
         bagel_server_host="api.bageldb.ai",
     )
+    return bagel.Client(server_settings)
 
-    client = bagel.Client(server_settings)
+
+def test_ping(client):
+    resp = client.ping()
+    assert isinstance(resp, int)
+
+
+def test_version(client):
+    assert isinstance(client.get_version(), str)
+
+
+def test_delete(client):
     client.delete_cluster(CLUSTER_NAME)
     with pytest.raises(Exception):
         client.get_cluster(CLUSTER_NAME)
