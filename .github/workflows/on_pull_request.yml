@@ -1,0 +1,34 @@
+name: ES Lint Check
+
+on: [push, pull_request]
+
+jobs:
+  eslint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Go to Javacript dir
+        run: cd javascript
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: Install ES Lint
+        run: npm install -g eslint
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v40
+
+      - name: Run ES Lint on all changed files
+        run: |
+          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+            if [[ $file == *.js  ]]; then
+                eslint $file
+            fi
+          done
+
