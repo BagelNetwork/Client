@@ -12,6 +12,8 @@ const ping_version_example = async () => {
         bagel_server_http_port: 80,
     });
 
+    // I am the test
+    
     // create api
     const api = new Client(settings);
 

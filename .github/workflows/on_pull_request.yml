@@ -1,0 +1,36 @@
+name: Javascript Linter Check
+
+on: [push, pull_request]
+
+defaults:
+  run:
+    shell: bash
+    working-directory: ./javascript
+
+jobs:
+  javascript-standard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: Install Javascript Standard
+        run: npm install standard
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v40
+
+      - name: Run Standard Linter on all changed files
+        run: |
+            for file_full_path in ${{ steps.changed-files.outputs.all_changed_files }}; do
+                if [[ $file_full_path == javascript/*.js  ]]; then
+                    relative_path="${file_full_path#javascript/}"
+                    npx standard $relative_path
+                fi
+            done
