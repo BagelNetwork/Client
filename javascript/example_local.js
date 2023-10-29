@@ -2,7 +2,7 @@
 const { Settings, Client } = require('./BagelDB.js')
 
 // example for new javascript api
-const ping_version_example = async () => {
+const pingVersionExample = async () => {
   // create settings
   const settings = new Settings({
     bagel_api_impl: 'rest',
@@ -23,7 +23,7 @@ const ping_version_example = async () => {
 }
 
 // example for get all clusters
-const get_all_clusters_example = async () => {
+const getAllClustersExample = async () => {
   // create settings
   const settings = new Settings({
     bagel_api_impl: 'rest',
@@ -40,7 +40,7 @@ const get_all_clusters_example = async () => {
 }
 
 // example for create/delete cluster and get or create cluster
-const create_delete_get_or_create_cluster_example = async () => {
+const createDeleteGetOrCreateClusterExample = async () => {
   // create settings
   const settings = new Settings({
     bagel_api_impl: 'rest',
@@ -73,7 +73,7 @@ const create_delete_get_or_create_cluster_example = async () => {
 }
 
 // example for add data to the cluster (without embeddings)
-const add_data_to_cluster_without_embedding_example = async () => {
+const addDataToClusterWithoutEmbeddingExample = async () => {
   // create settings
   const settings = new Settings({
     bagel_api_impl: 'rest',
@@ -91,18 +91,18 @@ const add_data_to_cluster_without_embedding_example = async () => {
 
   // add data to the cluster
   await cluster.add(
-    ids = ['i37', 'i38', 'i39'],
-    embeddings = null,
-    metadatas = [
+    ['i37', 'i38', 'i39'], // ids
+    null, // embeddings
+    [
       { source: 'notion' },
       { source: 'notion' },
       { source: 'google-doc' }
-    ],
-    documents = [
+    ], // metadatas
+    [
       'This is document',
       'This is Towhid',
       'This is text'
-    ]
+    ] // documents
   ).then((res) => {
     if (res) {
       console.log('Data added successfully')
@@ -117,13 +117,13 @@ const add_data_to_cluster_without_embedding_example = async () => {
 
   // find data in the cluster
   console.log('query result: ')
-  const results = await cluster.find(
-    query_embeddings = null,
-    n_results = 5,
-    where = { source: 'notion' },
-    where_document = { $contains: 'is' },
-    include = ['metadatas', 'documents', 'distances'],
-    query_texts = ['This']
+  await cluster.find(
+    null, // query_embeddings
+    5, // n_results
+    { source: 'notion' }, // where
+    { $contains: 'is' }, // where_document
+    ['metadatas', 'documents', 'distances'], // include
+    ['This'] // query_texts
   )
 
   // delete the cluster
@@ -131,7 +131,7 @@ const add_data_to_cluster_without_embedding_example = async () => {
 }
 
 // example for add data to the cluster (with embeddings)
-const add_data_to_cluster_with_embedding_example = async () => {
+const addDataToClusterWithEmbeddingExample = async () => {
   // create settings
   const settings = new Settings({
     bagel_api_impl: 'rest',
@@ -149,10 +149,10 @@ const add_data_to_cluster_with_embedding_example = async () => {
 
   // add data to the cluster
   await cluster.add(
-    ids = ['id1', 'id2'],
-    embeddings = [[1.1, 2.3], [4.5, 6.9]],
-    metadatas = [{ info: 'M1' }, { info: 'M1' }],
-    documents = ['doc1', 'doc2']
+    ['id1', 'id2'], // ids
+    [[1.1, 2.3], [4.5, 6.9]], // embeddings
+    [{ info: 'M1' }, { info: 'M1' }], // metadatas
+    ['doc1', 'doc2'] // documents
   ).then((res) => {
     if (res) {
       console.log('Data added successfully')
@@ -168,12 +168,12 @@ const add_data_to_cluster_with_embedding_example = async () => {
   // find data in the cluster
   console.log('query result: ')
   await cluster.find(
-    query_embeddings = [[1.1, 2.3]],
-    n_results = 5,
-    where = { info: 'M1' },
-    where_document = { $contains: 'doc' },
-    include = ['metadatas', 'documents', 'distances'],
-    query_texts = null
+    [[1.1, 2.3]], // query_embeddings
+    5, // n_results
+    { info: 'M1' }, // where
+    { $contains: 'doc' }, // where_document
+    ['metadatas', 'documents', 'distances'], // include
+    null // query_texts
   )
 
   // delete the cluster
@@ -181,7 +181,7 @@ const add_data_to_cluster_with_embedding_example = async () => {
 }
 
 // example for delete data from the cluster
-const delete_data_from_cluster_example = async () => {
+const deleteDataFromClusterExample = async () => {
   // create settings
   const settings = new Settings({
     bagel_api_impl: 'rest',
@@ -199,10 +199,10 @@ const delete_data_from_cluster_example = async () => {
 
   // add data to the cluster
   await cluster.add(
-    ids = ['id1', 'id2'],
-    embeddings = [[1.1, 2.3], [4.5, 6.9]],
-    metadatas = [{ info: 'M1' }, { info: 'M1' }],
-    documents = ['doc1', 'doc2']
+    ['id1', 'id2'], // ids
+    [[1.1, 2.3], [4.5, 6.9]], // embeddings
+    [{ info: 'M1' }, { info: 'M1' }], // metadatas
+    ['doc1', 'doc2'] // documents
   ).then((res) => {
     if (res) {
       console.log('Data added successfully')
@@ -213,9 +213,9 @@ const delete_data_from_cluster_example = async () => {
 
   // delete data from the cluster
   await cluster.delete(
-    ids = ['id1'],
-    where = {},
-    where_document = {}
+    ['id1'], // ids
+    {}, // where
+    {} // where_document
   ).then((res) => {
     if (res) {
       console.log('Data deleted successfully')
@@ -233,7 +233,7 @@ const delete_data_from_cluster_example = async () => {
 }
 
 // example for update data in the cluster
-const update_data_in_cluster_example = async () => {
+const updateDataInClusterExample = async () => {
   // create settings
   const settings = new Settings({
     bagel_api_impl: 'rest',
@@ -251,10 +251,10 @@ const update_data_in_cluster_example = async () => {
 
   // add data to the cluster
   await cluster.add(
-    ids = ['id1', 'id2'],
-    embeddings = [[1.1, 2.3], [4.5, 6.9]],
-    metadatas = [{ info: 'M1' }, { info: 'M1' }],
-    documents = ['doc1', 'doc2']
+    ['id1', 'id2'], // ids
+    [[1.1, 2.3], [4.5, 6.9]], // embeddings
+    [{ info: 'M1' }, { info: 'M1' }], // metadatas
+    ['doc1', 'doc2'] // documents
   ).then((res) => {
     if (res) {
       console.log('Data added successfully')
@@ -265,10 +265,10 @@ const update_data_in_cluster_example = async () => {
 
   // update data in the cluster
   await cluster.update(
-    ids = ['id1'],
-    embeddings = [[10.1, 20.3]],
-    metadatas = [{ info: 'M1' }],
-    documents = ['doc1']
+    ['id1'], // ids
+    [[10.1, 20.3]], // embeddings
+    [{ info: 'M1' }], // metadatas
+    ['doc1'] // documents
   ).then((res) => {
     if (res) {
       console.log('Data updated successfully')
@@ -287,7 +287,7 @@ const update_data_in_cluster_example = async () => {
 }
 
 // example for upsert data in the cluster
-const upsert_data_in_cluster_example = async () => {
+const upsertDataInClusterExample = async () => {
   // create settings
   const settings = new Settings({
     bagel_api_impl: 'rest',
@@ -305,10 +305,10 @@ const upsert_data_in_cluster_example = async () => {
 
   // add data to the cluster
   await cluster.add(
-    ids = ['id1', 'id2'],
-    embeddings = [[1.1, 2.3], [4.5, 6.9]],
-    metadatas = [{ info: 'M1' }, { info: 'M1' }],
-    documents = ['doc1', 'doc2']
+    ['id1', 'id2'], // ids
+    [[1.1, 2.3], [4.5, 6.9]], // embeddings
+    [{ info: 'M1' }, { info: 'M1' }], // metadatas
+    ['doc1', 'doc2'] // documents
   ).then((res) => {
     if (res) {
       console.log('Data added successfully')
@@ -319,10 +319,10 @@ const upsert_data_in_cluster_example = async () => {
 
   // upsert data in the cluster
   await cluster.upsert(
-    ids = ['id1', 'id3'],
-    embeddings = [[15.1, 25.3], [30.1, 40.3]],
-    metadatas = [{ info: 'M1' }, { info: 'M1' }],
-    documents = ['doc1', 'doc3']
+    ['id1', 'id3'], //  ids
+    [[15.1, 25.3], [30.1, 40.3]], // embeddings
+    [{ info: 'M1' }, { info: 'M1' }], // metadatas
+    ['doc1', 'doc3'] // documents
   ).then((res) => {
     if (res) {
       console.log('Data upserted successfully')
@@ -341,7 +341,7 @@ const upsert_data_in_cluster_example = async () => {
 }
 
 // example for modify cluster name and metadata
-const modify_cluster_name_and_metadata_example = async () => {
+const modifyClusterNameAndMetadataExample = async () => {
   // create settings
   const settings = new Settings({
     bagel_api_impl: 'rest',
@@ -359,10 +359,10 @@ const modify_cluster_name_and_metadata_example = async () => {
 
   // add data to the cluster
   await cluster.add(
-    ids = ['id1', 'id2'],
-    embeddings = [[1.1, 2.3], [4.5, 6.9]],
-    metadatas = [{ info: 'M1' }, { info: 'M1' }],
-    documents = ['doc1', 'doc2']
+    ['id1', 'id2'], // ids
+    [[1.1, 2.3], [4.5, 6.9]], // embeddings
+    [{ info: 'M1' }, { info: 'M1' }], // metadatas
+    ['doc1', 'doc2'] // documents
   ).then((res) => {
     if (res) {
       console.log('Data added successfully')
@@ -371,12 +371,12 @@ const modify_cluster_name_and_metadata_example = async () => {
     console.log(err)
   })
 
-  const modified_name = 'testing_70000'
+  const modifiedName = 'testing_70000'
 
   // modify cluster name and metadata
   await cluster.modify(
-    name = modified_name,
-    metadata = { info: 'M2' }
+    modifiedName, // name
+    { info: 'M2' } // metadata
   ).then((res) => {
     if (res) {
       console.log('Cluster modified successfully')
@@ -391,42 +391,42 @@ const modify_cluster_name_and_metadata_example = async () => {
   console.log(peeks)
 
   // delete the cluster
-  await api.delete_cluster(modified_name)
+  await api.delete_cluster(modifiedName)
 }
 
 // run examples
-const run_examples = async () => {
+const runExamples = async () => {
   console.log('Running examples...')
   console.log('====================================')
   console.log('pinging server and getting version...')
-  await ping_version_example()
+  await pingVersionExample()
   console.log('====================================')
   console.log('getting all clusters...')
-  await get_all_clusters_example()
+  await getAllClustersExample()
   console.log('====================================')
   console.log('creating, deleting, and getting or creating a cluster...')
-  await create_delete_get_or_create_cluster_example()
+  await createDeleteGetOrCreateClusterExample()
   console.log('====================================')
   console.log('adding data and querying to the cluster (without embeddings)...')
-  await add_data_to_cluster_without_embedding_example()
+  await addDataToClusterWithoutEmbeddingExample()
   console.log('====================================')
   console.log('adding data and querying to the cluster (with embeddings)...')
-  await add_data_to_cluster_with_embedding_example()
+  await addDataToClusterWithEmbeddingExample()
   console.log('====================================')
   console.log('deleting data from the cluster...')
-  await delete_data_from_cluster_example()
+  await deleteDataFromClusterExample()
   console.log('====================================')
   console.log('updating data in the cluster...')
-  await update_data_in_cluster_example()
+  await updateDataInClusterExample()
   console.log('====================================')
   console.log('upserting data in the cluster...')
-  await upsert_data_in_cluster_example()
+  await upsertDataInClusterExample()
   console.log('====================================')
   console.log('modifying cluster name and metadata...')
-  await modify_cluster_name_and_metadata_example()
+  await modifyClusterNameAndMetadataExample()
   console.log('====================================')
   console.log('Finished running examples...')
 }
 
 // run examples
-run_examples()
+runExamples()

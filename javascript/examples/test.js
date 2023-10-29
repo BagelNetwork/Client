@@ -39,10 +39,10 @@ const example = async () => {
 
   // add data to the cluster
   await cluster.add(
-    ids = ['id1', 'id2'],
-    embeddings = [[1.1, 2.3], [4.5, 6.9]],
-    metadatas = [{ info: 'M1' }, { info: 'M1' }],
-    documents = ['doc1', 'doc2']
+    ['id1', 'id2'], // ids
+    [[1.1, 2.3], [4.5, 6.9]], // embeddings
+    [{ info: 'M1' }, { info: 'M1' }], // metadatas
+    ['doc1', 'doc2'] // documents
   )
 
   // peek into the cluster
@@ -50,7 +50,7 @@ const example = async () => {
   console.log(peeks)
 
   // find data in the cluster
-  const results = await cluster.find(query_embeddings = [[1.1, 2.3]])
+  const results = await cluster.find([[1.1, 2.3]] /* query_embeddings */)
   console.log(results)
 
   // modify cluster name
@@ -58,16 +58,16 @@ const example = async () => {
 
   // update data in the cluster
   await cluster.update(
-    ids = ['id1', 'id2'],
-    embeddings = [[1.9, 4.3], [2.5, 8.9]]
+    ['id1', 'id2'], // ids
+    [[1.9, 4.3], [2.5, 8.9]] // embeddings
   )
 
   // upsert data in the cluster
   await cluster.upsert(
-    ids = ['id3'],
-    embeddings = [[9.9, 16.3]],
-    metadatas = [{ info: 'M3' }],
-    documents = ['doc3']
+    ['id3'], // ids
+    [[9.9, 16.3]], // embeddings
+    [{ info: 'M3' }], // metadatas
+    ['doc3'] // documents
   )
 }
 

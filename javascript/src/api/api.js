@@ -4,7 +4,6 @@ const fetch = require('node-fetch')
 const { Cluster } = require('../model/cluster.js')
 const { v4: uuidv4 } = require('uuid')
 const FormData = require('form-data')
-const Buffer = require('buffer').Buffer
 
 // Class to interact with the Bagel API
 class API {
@@ -63,8 +62,8 @@ class API {
       if (!response.data) {
         throw new Error('Empty response data received')
       }
-      const json_clusters = response.data
-      const clusters = json_clusters.map(json_cluster => new Cluster(this, json_cluster))
+      const jsonClusters = response.data
+      const clusters = jsonClusters.map(jsonCluster => new Cluster(this, jsonCluster))
       return clusters
     } catch (error) {
       console.error('Error:', error)
@@ -72,11 +71,11 @@ class API {
   };
 
   // create a cluster
-  async create_cluster (name, metadata = null, get_or_create = false) {
+  async create_cluster (name, metadata = null, getOrCreate = false) {
     try {
       const response = await axios.post(
         this._api_url + '/clusters',
-        { name, metadata, get_or_create }
+        { name, metadata, getOrCreate }
       )
       if (!response.data) {
         throw new Error('Empty response data received')
@@ -93,7 +92,7 @@ class API {
     try {
       const response = await axios.post(
         this._api_url + '/clusters',
-        { name, metadata, get_or_create: true }
+        { name, metadata, getOrCreate: true }
       )
       if (!response.data) {
         throw new Error('Empty response data received')
@@ -108,11 +107,11 @@ class API {
   async delete_cluster (name) {
     try {
       const resp = await axios.delete(this._api_url + '/clusters/' + name)
-      if (resp.status == 200) {
+      if (resp.status === 200) {
         console.log(`Cluster with name ${name} deleted successfully`)
       }
     } catch (error) {
-      if (error == "IndexError('list index out of range')") {
+      if (error === "IndexError('list index out of range')") {
         console.error('Error', 'Cluster does not exist')
       }
     }
@@ -153,9 +152,9 @@ class API {
   // };
 
   // get count of data within a cluster
-  async _count (cluster_id) {
+  async _count (clusterId) {
     try {
-      const response = await axios.get(this._api_url + '/clusters/' + cluster_id + '/count')
+      const response = await axios.get(this._api_url + '/clusters/' + clusterId + '/count')
       if (!response.data) {
         throw new Error('Empty response data received')
       }
@@ -166,22 +165,22 @@ class API {
   };
 
   // get data within a cluster
-  async _get (cluster_id, ids = null, where = {}, sort = null, limit = null, offset = null, page = null, page_size = null, where_document = {}, include = ['metadatas', 'documents']) {
-    if (page && page_size) {
-      offset = (page - 1) * page_size
-      limit = page_size
+  async _get (clusterId, ids = null, where = {}, sort = null, limit = null, offset = null, page = null, pageSize = null, whereDocument = {}, include = ['metadatas', 'documents']) {
+    if (page && pageSize) {
+      offset = (page - 1) * pageSize
+      limit = pageSize
     }
 
     try {
       const response = await axios.post(
-        this._api_url + '/clusters/' + cluster_id + '/get',
+        this._api_url + '/clusters/' + clusterId + '/get',
         {
           ids,
           where,
           sort,
           limit,
           offset,
-          where_document,
+          whereDocument,
           include
         }
       )
@@ -201,26 +200,30 @@ class API {
   };
 
   // get top n data within a cluster
-  async _peek (cluster_id, n = 10) {
-    let ids
-    let where
-    let sort
-    let limit
-    let offset
-    let page
-    let page_size
-    let where_document
-    let include
-
-    return this._get(cluster_id, ids = null, where = {}, sort = null, limit = n, offset = null, page = null, page_size = null, where_document = {}, include = ['embeddings', 'documents', 'metadatas'])
-  };
+  async _peek (
+    clusterId,
+    n = 10,
+    {
+      ids = null,
+      where = {},
+      sort = null,
+      limit = n,
+      offset = null,
+      page = null,
+      pageSize = null,
+      whereDocument = {},
+      include = ['embeddings', 'documents', 'metadatas']
+    } = {}
+  ) {
+    return this._get(clusterId, ids, where, sort, limit, offset, page, pageSize, whereDocument, include)
+  }
 
   // modify cluster name and metadata
-  async _modify (cluster_id, new_name = null, new_metadata = null) {
+  async _modify (clusterId, newName = null, newMetadata = null) {
     try {
-      const response = await axios.put(
-        this._api_url + '/clusters/' + cluster_id,
-        { new_metadata, new_name },
+      await axios.put(
+        this._api_url + '/clusters/' + clusterId,
+        { newMetadata, newName },
         { headers: { 'Content-Type': 'application/json' } }
       )
       return 'success'
@@ -230,16 +233,16 @@ class API {
   };
 
   // add data to a cluster
-  async _add (cluster_id, ids, embeddings, metadatas = null, documents = null, increment_index = true) {
+  async _add (clusterId, ids, embeddings, metadatas = null, documents = null, incrementIndex = true) {
     try {
       const response = await axios.post(
-        this._api_url + '/clusters/' + cluster_id + '/add',
+        this._api_url + '/clusters/' + clusterId + '/add',
         {
           ids,
           embeddings,
           metadatas,
           documents,
-          increment_index
+          incrementIndex
         }
       )
       if (!response.data) {
@@ -253,13 +256,13 @@ class API {
   }
 
   // delete data from a cluster
-  async _delete (cluster_id, ids = null, where = {}, where_document = {}) {
+  async _delete (clusterId, ids = null, where = {}, whereDocument = {}) {
     try {
-      const url = this._api_url + '/clusters/' + cluster_id + '/delete'
+      const url = this._api_url + '/clusters/' + clusterId + '/delete'
       const requestOpts = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ids, where, where_document })
+        body: JSON.stringify({ ids, where, whereDocument })
       }
       const response = await fetch(url, requestOpts)
       return response.json()
@@ -269,10 +272,10 @@ class API {
   };
 
   // update data in a cluster
-  async _update (cluster_id, ids, embeddings = null, metadatas = null, documents = null) {
+  async _update (clusterId, ids, embeddings = null, metadatas = null, documents = null) {
     try {
       const response = await axios.post(
-        this._api_url + '/clusters/' + cluster_id + '/update',
+        this._api_url + '/clusters/' + clusterId + '/update',
         { ids, embeddings, metadatas, documents }
       )
       if (!response.data) {
@@ -286,11 +289,11 @@ class API {
   };
 
   // upsert data in a cluster
-  async _upsert (cluster_id, ids, embeddings = null, metadatas = null, documents = null, increment_index = true) {
+  async _upsert (clusterId, ids, embeddings = null, metadatas = null, documents = null, incrementIndex = true) {
     try {
       const response = await axios.post(
-        this._api_url + '/clusters/' + cluster_id + '/upsert',
-        { ids, embeddings, metadatas, documents, increment_index }
+        this._api_url + '/clusters/' + clusterId + '/upsert',
+        { ids, embeddings, metadatas, documents, incrementIndex }
       )
       if (!response.data) {
         throw new Error('Empty response data received')
@@ -303,17 +306,17 @@ class API {
   };
 
   // query a cluster
-  async _query (cluster_id, query_embeddings, n_results = 10, where = {}, where_document = {}, include = ['metadatas', 'documents', 'distances'], query_texts = null) {
+  async _query (clusterId, queryEmbeddings, nResults = 10, where = {}, whereDocument = {}, include = ['metadatas', 'documents', 'distances'], queryTexts = null) {
     try {
       const response = await axios.post(
-        this._api_url + '/clusters/' + `${cluster_id}` + '/query',
+        this._api_url + '/clusters/' + `${clusterId}` + '/query',
         {
-          query_embeddings,
-          n_results,
+          queryEmbeddings,
+          nResults,
           where,
-          where_document,
+          whereDocument,
           include,
-          query_texts
+          queryTexts
         }
       )
       console.log(JSON.stringify(response.data))
@@ -335,9 +338,9 @@ class API {
   };
 
   // create index for a cluster
-  async _create_index (cluster_name) {
+  async _create_index (clusterName) {
     try {
-      await axios.post(this._api_url + '/clusters/' + cluster_name + '/create_index')
+      await axios.post(this._api_url + '/clusters/' + clusterName + '/create_index')
     } catch (error) {
       console.error('Error:', error.message)
       throw error
@@ -345,22 +348,22 @@ class API {
   }
 
   // add image to a cluster
-  async _add_image (cluster_id, image_name, image_data) {
-    console.log('add_image', image_data)
+  async _add_image (clusterId, imageName, imageData) {
+    console.log('add_image', imageData)
     const uid = uuidv4()
 
     const data = {
-      metadata: [{ filename: image_name.toString() }],
+      metadata: [{ filename: imageName.toString() }],
       ids: [String(uid)],
-      increment_index: true
+      incrementIndex: true
     }
 
     const formData = new FormData()
-    formData.append('image', image_data, { contentType: 'image/jpeg', filename: image_name.toString() })
+    formData.append('image', imageData, { contentType: 'image/jpeg', filename: imageName.toString() })
     formData.append('data', JSON.stringify(data), { contentType: 'application/json' })
 
     // Send the POST request
-    await fetch(this._api_url + '/clusters/' + cluster_id + '/add_image', {
+    await fetch(this._api_url + '/clusters/' + clusterId + '/add_image', {
       method: 'POST',
       body: formData
     }).then(response => response.json()).then(data => {
@@ -371,9 +374,9 @@ class API {
   };
 
   // add images to a cluster via web form
-  async _add_image_web (cluster_id, formData) {
+  async _add_image_web (clusterId, formData) {
     console.log('add_image_web', formData)
-    const resp = await fetch(this._api_url + '/clusters/' + cluster_id + '/add_image', {
+    await fetch(this._api_url + '/clusters/' + clusterId + '/add_image', {
       method: 'POST',
       body: formData
     }).then(response => response.json()).then(data => {
