@@ -29,6 +29,14 @@ from io import BytesIO
 import os
 import uuid
 
+BAGEL_USER_ID = "BAGEL_USER_ID"
+BAGEL_API_KEY = "BAGEL_API_KEY"
+
+X_API_KEY = 'x-api-key'
+
+DEFAULT_TENANT = "default_tenant"
+DEFAULT_DATABASE = "default_database"
+
 
 class FastAPI(API):
     def __init__(self, system: System):
@@ -56,9 +64,10 @@ class FastAPI(API):
         return resp.json()
 
     @override
-    def get_all_clusters(self) -> Sequence[Cluster]:
+    def get_all_clusters(self, user_id: str = DEFAULT_TENANT, api_key: Optional[str] = None) -> Sequence[Cluster]:
         """Returns a list of all clusters"""
-        resp = requests.get(self._api_url + "/clusters")
+        headers, user_id = self._extract_headers_with_key_and_user_id(api_key, user_id)
+        resp = requests.get(self._api_url + "/clusters", headers=headers, params={"user_id": user_id});
         raise_bagel_error(resp)
         json_clusters = resp.json()
         clusters = []
@@ -69,18 +78,23 @@ class FastAPI(API):
 
     @override
     def create_cluster(
-        self,
-        name: str,
-        metadata: Optional[ClusterMetadata] = None,
-        get_or_create: bool = False,
+            self,
+            name: str,
+            metadata: Optional[ClusterMetadata] = None,
+            get_or_create: bool = False,
+            user_id: str = DEFAULT_TENANT,
+            api_key: Optional[str] = None,
+            embedding_model: Optional[str] = None
     ) -> Cluster:
         """Creates a cluster"""
+        headers, user_id = self._extract_headers_with_key_and_user_id(api_key, user_id)
         resp = requests.post(
             self._api_url + "/clusters",
             data=json.dumps(
-                {"name": name, "metadata": metadata, "get_or_create": get_or_create}
+                {"name": name, "metadata": metadata, "get_or_create": get_or_create,
+                 "user_id": user_id, "embedding_model": embedding_model}
             ),
-            headers=self.__headers
+            headers=headers
         )
         raise_bagel_error(resp)
         resp_json = resp.json()
@@ -90,16 +104,22 @@ class FastAPI(API):
             name=resp_json["name"],
             metadata=resp_json["metadata"],
             cluster_size=resp_json["cluster_size"],
-            embedding_size=resp_json["embedding_size"],
+            embedding_size=resp_json["embedding_size"]
         )
 
     @override
     def get_cluster(
-        self,
-        name: str,
+            self,
+            name: str,
+            user_id: str = DEFAULT_TENANT,
+            api_key: Optional[str] = None
     ) -> Cluster:
         """Returns a cluster"""
-        resp = requests.get(self._api_url + "/clusters/" + name, headers=self.__headers)
+        headers, user_id = self._extract_headers_with_key_and_user_id(api_key, user_id)
+        url = f"{self._api_url}/clusters/{name}"
+        resp = requests.get(url, headers=headers, params={
+            "user_id": user_id
+        })
         raise_bagel_error(resp)
         resp_json = resp.json()
         return Cluster(
@@ -113,65 +133,78 @@ class FastAPI(API):
 
     @override
     def get_or_create_cluster(
-        self,
-        name: str,
-        metadata: Optional[ClusterMetadata] = None,
+            self,
+            name: str,
+            metadata: Optional[ClusterMetadata] = None,
+            user_id: str = DEFAULT_TENANT,
+            api_key: Optional[str] = None
     ) -> Cluster:
         """Get a cluster, or return it if it exists"""
-
-        return self.create_cluster(name, metadata, get_or_create=True)
+        return self.create_cluster(name, metadata, get_or_create=True, user_id=user_id, api_key=api_key)
 
     @override
     def _modify(
-        self,
-        id: UUID,
-        new_name: Optional[str] = None,
-        new_metadata: Optional[ClusterMetadata] = None,
+            self,
+            id: UUID,
+            new_name: Optional[str] = None,
+            new_metadata: Optional[ClusterMetadata] = None,
+            user_id: str = DEFAULT_TENANT,
+            api_key: Optional[str] = None
     ) -> None:
         """Updates a cluster"""
+        headers = self._popuate_headers_with_api_key(api_key)
         resp = requests.put(
             self._api_url + "/clusters/" + str(id),
             data=json.dumps({"new_metadata": new_metadata, "new_name": new_name}),
-            headers=self.__headers
+            headers=headers
         )
         raise_bagel_error(resp)
 
     @override
-    def delete_cluster(self, name: str) -> None:
+    def delete_cluster(self, name: str,
+                       user_id: str = DEFAULT_TENANT,
+                       api_key: Optional[str] = None) -> None:
         """Deletes a cluster"""
-        resp = requests.delete(self._api_url + "/clusters/" + name, headers=self.__headers)
+        headers, user_id = self._extract_headers_with_key_and_user_id(api_key, user_id)
+        url = f"{self._api_url}/clusters/{name}?user_id={user_id}"
+        resp = requests.delete(url, headers=headers)
         raise_bagel_error(resp)
 
     @override
-    def _count(self, cluster_id: UUID) -> int:
+    def _count(self, cluster_id: UUID,
+               api_key: Optional[str] = None) -> int:
         """Returns the number of embeddings in the database"""
-        resp = requests.get(self._api_url + "/clusters/" + str(cluster_id) + "/count")
+        headers = self._popuate_headers_with_api_key(api_key)
+        resp = requests.get(self._api_url + "/clusters/" + str(cluster_id) + "/count", headers=headers)
         raise_bagel_error(resp)
         return cast(int, resp.json())
 
     @override
-    def _peek(self, cluster_id: UUID, n: int = 10) -> GetResult:
+    def _peek(self, cluster_id: UUID, n: int = 10,
+              api_key: Optional[str] = None) -> GetResult:
         return self._get(
             cluster_id,
             limit=n,
-            include=["embeddings", "documents", "metadatas"],
+            include=["embeddings", "documents", "metadatas"]
         )
 
     @override
     def _get(
-        self,
-        cluster_id: UUID,
-        ids: Optional[IDs] = None,
-        where: Optional[Where] = {},
-        sort: Optional[str] = None,
-        limit: Optional[int] = None,
-        offset: Optional[int] = None,
-        page: Optional[int] = None,
-        page_size: Optional[int] = None,
-        where_document: Optional[WhereDocument] = {},
-        include: Include = ["metadatas", "documents"],
+            self,
+            cluster_id: UUID,
+            ids: Optional[IDs] = None,
+            where: Optional[Where] = {},
+            sort: Optional[str] = None,
+            limit: Optional[int] = None,
+            offset: Optional[int] = None,
+            page: Optional[int] = None,
+            page_size: Optional[int] = None,
+            where_document: Optional[WhereDocument] = {},
+            include: Include = ["metadatas", "documents"],
+            api_key: Optional[str] = None
     ) -> GetResult:
         """Gets embeddings from the database"""
+        headers = self._popuate_headers_with_api_key(api_key)
         if page and page_size:
             offset = (page - 1) * page_size
             limit = page_size
@@ -189,6 +222,7 @@ class FastAPI(API):
                     "include": include,
                 }
             ),
+            headers=headers
         )
 
         raise_bagel_error(resp)
@@ -202,11 +236,12 @@ class FastAPI(API):
 
     @override
     def _delete(
-        self,
-        cluster_id: UUID,
-        ids: Optional[IDs] = None,
-        where: Optional[Where] = {},
-        where_document: Optional[WhereDocument] = {},
+            self,
+            cluster_id: UUID,
+            ids: Optional[IDs] = None,
+            where: Optional[Where] = {},
+            where_document: Optional[WhereDocument] = {},
+            api_key: Optional[str] = None
     ) -> IDs:
         """Deletes embeddings from the database"""
 
@@ -222,7 +257,7 @@ class FastAPI(API):
 
     @override
     def _add_image(
-        self, cluster_id: UUID, filename: str, metadata: Optional[Metadata] = None
+            self, cluster_id: UUID, filename: str, metadata: Optional[Metadata] = None
     ) -> Any:
         """
         Add an image to the BagelDB.
@@ -271,13 +306,14 @@ class FastAPI(API):
 
     @override
     def _add(
-        self,
-        ids: IDs,
-        cluster_id: UUID,
-        embeddings: Optional[Embeddings] = None,
-        metadatas: Optional[Metadatas] = None,
-        documents: Optional[Documents] = None,
-        increment_index: bool = True,
+            self,
+            ids: IDs,
+            cluster_id: UUID,
+            embeddings: Optional[Embeddings] = None,
+            metadatas: Optional[Metadatas] = None,
+            documents: Optional[Documents] = None,
+            increment_index: bool = True,
+            api_key: Optional[str] = None
     ) -> bool:
         """
         Adds a batch of embeddings to the database
@@ -285,6 +321,7 @@ class FastAPI(API):
         - by default, the index is progressively built up as you add more data. If for ingestion performance reasons you want to disable this, set increment_index to False
         -     and then manually create the index yourself with cluster.create_index()
         """
+        headers = self._popuate_headers_with_api_key(api_key)
         resp = requests.post(
             self._api_url + "/clusters/" + str(cluster_id) + "/add",
             data=json.dumps(
@@ -296,7 +333,7 @@ class FastAPI(API):
                     "increment_index": increment_index,
                 }
             ),
-            headers=self.__headers
+            headers=headers
         )
 
         raise_bagel_error(resp)
@@ -304,18 +341,19 @@ class FastAPI(API):
 
     @override
     def _update(
-        self,
-        cluster_id: UUID,
-        ids: IDs,
-        embeddings: Optional[Embeddings] = None,
-        metadatas: Optional[Metadatas] = None,
-        documents: Optional[Documents] = None,
+            self,
+            cluster_id: UUID,
+            ids: IDs,
+            embeddings: Optional[Embeddings] = None,
+            metadatas: Optional[Metadatas] = None,
+            documents: Optional[Documents] = None,
+            api_key: Optional[str] = None
     ) -> bool:
         """
         Updates a batch of embeddings in the database
         - pass in column oriented data lists
         """
-
+        headers = self._popuate_headers_with_api_key(api_key)
         resp = requests.post(
             self._api_url + "/clusters/" + str(cluster_id) + "/update",
             data=json.dumps(
@@ -326,7 +364,7 @@ class FastAPI(API):
                     "documents": documents,
                 }
             ),
-            headers=self.__headers
+            headers=headers
         )
 
         resp.raise_for_status()
@@ -334,13 +372,14 @@ class FastAPI(API):
 
     @override
     def _upsert(
-        self,
-        cluster_id: UUID,
-        ids: IDs,
-        embeddings: Optional[Embeddings] = None,
-        metadatas: Optional[Metadatas] = None,
-        documents: Optional[Documents] = None,
-        increment_index: bool = True,
+            self,
+            cluster_id: UUID,
+            ids: IDs,
+            embeddings: Optional[Embeddings] = None,
+            metadatas: Optional[Metadatas] = None,
+            documents: Optional[Documents] = None,
+            increment_index: bool = True,
+            api_key: Optional[str] = None
     ) -> bool:
         """
         Updates a batch of embeddings in the database
@@ -366,16 +405,18 @@ class FastAPI(API):
 
     @override
     def _query(
-        self,
-        cluster_id: UUID,
-        query_embeddings: Embeddings,
-        n_results: int = 10,
-        where: Optional[Where] = {},
-        where_document: Optional[WhereDocument] = {},
-        include: Include = ["metadatas", "documents", "distances"],
-        query_texts: Optional[OneOrMany[Document]] = None,
+            self,
+            cluster_id: UUID,
+            query_embeddings: Embeddings,
+            n_results: int = 10,
+            where: Optional[Where] = {},
+            where_document: Optional[WhereDocument] = {},
+            include: Include = ["metadatas", "documents", "distances"],
+            query_texts: Optional[OneOrMany[Document]] = None,
+            api_key: Optional[str] = None
     ) -> QueryResult:
         """Gets the nearest neighbors of a single embedding"""
+        headers = self._popuate_headers_with_api_key(api_key)
         resp = requests.post(
             self._api_url + "/clusters/" + str(cluster_id) + "/query",
             data=json.dumps(
@@ -388,6 +429,7 @@ class FastAPI(API):
                     "query_texts": query_texts,
                 }
             ),
+            headers=headers
         )
 
         raise_bagel_error(resp)
@@ -432,12 +474,12 @@ class FastAPI(API):
 
     @override
     def _add_image_urls(
-        self,
-        cluster_id: UUID,
-        ids: IDs,
-        urls: List[str],
-        metadatas: Optional[Metadatas] = None,
-        increment_index: bool = True,
+            self,
+            cluster_id: UUID,
+            ids: IDs,
+            urls: List[str],
+            metadatas: Optional[Metadatas] = None,
+            increment_index: bool = True,
     ) -> Any:
         """Add image by urls to BagelDB."""
         if metadatas is None:
@@ -458,6 +500,25 @@ class FastAPI(API):
 
         raise_bagel_error(resp)
         return resp.json()
+
+    def _extract_headers_with_key_and_user_id(self, api_key, user_id):
+        api_key, user_id = self._extract_user_id_and_api_key(api_key, user_id)
+        headers = self._popuate_headers_with_api_key(api_key)
+        return headers, user_id
+
+    def _popuate_headers_with_api_key(self, api_key):
+        headers = self.__headers.copy()  # Make a copy of headers to avoid modifying original headers
+        if os.environ.get(BAGEL_API_KEY) is not None and api_key is None:
+            api_key = os.environ.get(BAGEL_API_KEY)
+        headers[X_API_KEY] = api_key  # Add API key to headers
+        return headers
+
+    def _extract_user_id_and_api_key(self, api_key, user_id):
+        if os.environ.get(BAGEL_USER_ID) is not None and user_id == DEFAULT_TENANT:
+            user_id = os.environ.get(BAGEL_USER_ID)
+        if os.environ.get(BAGEL_API_KEY) is not None and api_key is None:
+            api_key = os.environ.get(BAGEL_API_KEY)
+        return api_key, user_id
 
 
 def raise_bagel_error(resp: requests.Response) -> None:
