@@ -256,7 +256,7 @@ def add_image_find(api):
     name = "image_add_test"
 
     # Get or create a cluster
-    cluster = api.get_or_create_cluster(name)
+    cluster = api.get_or_create_cluster(name=name, embedding_model="bagel-multi-modal")
     img_file_list = [
         "image_emb/test.jpg",
         "image_emb/test.png",
@@ -315,11 +315,18 @@ def add_image_urls_find(api):
 
 def main():
     start_time = time.time()  # Record the start time
-    # Bagel server settings
+    # Bagel server settings for production
     server_settings = Settings(
         bagel_api_impl="rest",
         bagel_server_host="api.bageldb.ai",
     )
+
+    # Bagel server settings for local
+    # server_settings = Settings(
+    #     bagel_api_impl="rest",
+    #     bagel_server_host="localhost",
+    #     bagel_server_http_port="8088",
+    # )
 
     # Create Bagel client
     client = bagel.Client(server_settings)
@@ -337,6 +344,7 @@ def main():
     create_add_find_em(client)
     create_add_modify_update(client)
     create_upsert(client)
+    add_image_find(client)
     end_time = time.time()  # Record the end time
     execution_time = end_time - start_time  # Calculate the execution time
     print(f"Total execution time: {execution_time:.2f} seconds")

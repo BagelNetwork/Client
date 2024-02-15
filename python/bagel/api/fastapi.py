@@ -137,10 +137,12 @@ class FastAPI(API):
             name: str,
             metadata: Optional[ClusterMetadata] = None,
             user_id: str = DEFAULT_TENANT,
-            api_key: Optional[str] = None
+            api_key: Optional[str] = None,
+            embedding_model: Optional[str] = None
     ) -> Cluster:
         """Get a cluster, or return it if it exists"""
-        return self.create_cluster(name, metadata, get_or_create=True, user_id=user_id, api_key=api_key)
+        return self.create_cluster(name, metadata, get_or_create=True, user_id=user_id, api_key=api_key,
+                                   embedding_model=embedding_model)
 
     @override
     def _modify(
@@ -257,7 +259,8 @@ class FastAPI(API):
 
     @override
     def _add_image(
-            self, cluster_id: UUID, filename: str, metadata: Optional[Metadata] = None
+            self, cluster_id: UUID, filename: str, metadata: Optional[Metadata] = None,
+            api_key: Optional[str] = None
     ) -> Any:
         """
         Add an image to the BagelDB.
@@ -281,25 +284,24 @@ class FastAPI(API):
             the image along with metadata to the BagelDB API for addition to
             the specified cluster.
         """
+        headers = self._popuate_headers_with_api_key(api_key)
         image_name = os.path.basename(filename)
         uid = str(uuid.uuid4())
         with open(filename, "rb") as i:
-            image_data = base64.b64encode(i.read())
+            image_data = base64.b64encode(i.read()).decode('utf-8')
 
         if metadata is None:
             metadata = {"filename": str(image_name)}
-        data = {
+        data = json.dumps({
             "metadata": [metadata],
             "ids": [uid],
             "increment_index": True,
-        }
+            "documents": [image_data]
+        })
         resp = requests.post(
             self._api_url + "/clusters/" + str(cluster_id) + "/add_image",
-            files={
-                "image": (str(image_name), image_data, "image/jpeg"),
-                "data": (None, json.dumps(data), "application/json"),
-            },
-            headers=self.__headers
+            data=data,
+            headers=headers
         )
         raise_bagel_error(resp)
         return resp
