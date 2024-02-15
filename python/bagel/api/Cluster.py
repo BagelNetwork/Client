@@ -42,13 +42,13 @@ class Cluster(BaseModel):
     _client: "API" = PrivateAttr()
 
     def __init__(
-            self,
-            client: "API",
-            name: str,
-            id: UUID,
-            cluster_size: float,
-            embedding_size: Optional[int] = None,
-            metadata: Optional[ClusterMetadata] = None,
+        self,
+        client: "API",
+        name: str,
+        id: UUID,
+        cluster_size: float,
+        embedding_size: Optional[int] = None,
+        metadata: Optional[ClusterMetadata] = None,
     ):
         self._client = client
         super().__init__(
@@ -78,10 +78,10 @@ class Cluster(BaseModel):
         )
 
     def add_image_urls(
-            self,
-            ids: OneOrMany[ID],
-            urls: List[str],
-            metadatas: Optional[OneOrMany[Metadata]] = None,
+        self,
+        ids: OneOrMany[ID],
+        urls: List[str],
+        metadatas: Optional[OneOrMany[Metadata]] = None,
     ) -> Any:
         """
         Add images by URLs to BagelDB.
@@ -99,12 +99,12 @@ class Cluster(BaseModel):
         )
 
     def add(
-            self,
-            ids: OneOrMany[ID],
-            embeddings: Optional[OneOrMany[Embedding]] = None,
-            metadatas: Optional[OneOrMany[Metadata]] = None,
-            documents: Optional[OneOrMany[Document]] = None,
-            increment_index: bool = True,
+        self,
+        ids: OneOrMany[ID],
+        embeddings: Optional[OneOrMany[Embedding]] = None,
+        metadatas: Optional[OneOrMany[Metadata]] = None,
+        documents: Optional[OneOrMany[Document]] = None,
+        increment_index: bool = True,
     ) -> None:
         """Add embeddings to the data store.
         Args:
@@ -135,13 +135,13 @@ class Cluster(BaseModel):
         )
 
     def get(
-            self,
-            ids: Optional[OneOrMany[ID]] = None,
-            where: Optional[Where] = None,
-            limit: Optional[int] = None,
-            offset: Optional[int] = None,
-            where_document: Optional[WhereDocument] = None,
-            include: Include = ["metadatas", "documents"],
+        self,
+        ids: Optional[OneOrMany[ID]] = None,
+        where: Optional[Where] = None,
+        limit: Optional[int] = None,
+        offset: Optional[int] = None,
+        where_document: Optional[WhereDocument] = None,
+        include: Include = ["metadatas", "documents"],
     ) -> GetResult:
         """Get embeddings and their associate data from the data store. If no ids or where filter is provided returns
         all embeddings up to limit starting at offset.
@@ -187,13 +187,13 @@ class Cluster(BaseModel):
         return self._client._peek(self.id, limit)
 
     def find(
-            self,
-            query_embeddings: Optional[OneOrMany[Embedding]] = None,
-            query_texts: Optional[OneOrMany[Document]] = None,
-            n_results: int = 10,
-            where: Optional[Where] = None,
-            where_document: Optional[WhereDocument] = None,
-            include: Include = ["metadatas", "documents", "distances"],
+        self,
+        query_embeddings: Optional[OneOrMany[Embedding]] = None,
+        query_texts: Optional[OneOrMany[Document]] = None,
+        n_results: int = 10,
+        where: Optional[Where] = None,
+        where_document: Optional[WhereDocument] = None,
+        include: Include = ["metadatas", "documents", "distances"],
     ) -> QueryResult:
         """Get the n_results nearest neighbor embeddings for provided query_embeddings or query_texts.
 
@@ -230,7 +230,7 @@ class Cluster(BaseModel):
 
         # If neither query_embeddings nor query_texts are provided, or both are provided, raise an error
         if (query_embeddings is None and query_texts is None) or (
-                query_embeddings is not None and query_texts is not None
+            query_embeddings is not None and query_texts is not None
         ):
             raise ValueError(
                 "You must provide either embeddings or texts to find, but not both"
@@ -253,7 +253,7 @@ class Cluster(BaseModel):
         )
 
     def modify(
-            self, name: Optional[str] = None, metadata: Optional[ClusterMetadata] = None
+        self, name: Optional[str] = None, metadata: Optional[ClusterMetadata] = None
     ) -> None:
         """Modify the cluster name or metadata
 
@@ -271,11 +271,11 @@ class Cluster(BaseModel):
             self.metadata = metadata
 
     def update(
-            self,
-            ids: OneOrMany[ID],
-            embeddings: Optional[OneOrMany[Embedding]] = None,
-            metadatas: Optional[OneOrMany[Metadata]] = None,
-            documents: Optional[OneOrMany[Document]] = None,
+        self,
+        ids: OneOrMany[ID],
+        embeddings: Optional[OneOrMany[Embedding]] = None,
+        metadatas: Optional[OneOrMany[Metadata]] = None,
+        documents: Optional[OneOrMany[Document]] = None,
     ) -> None:
         """Update the embeddings, metadatas or documents for provided ids.
 
@@ -296,12 +296,12 @@ class Cluster(BaseModel):
         self._client._update(self.id, ids, embeddings, metadatas, documents)
 
     def upsert(
-            self,
-            ids: OneOrMany[ID],
-            embeddings: Optional[OneOrMany[Embedding]] = None,
-            metadatas: Optional[OneOrMany[Metadata]] = None,
-            documents: Optional[OneOrMany[Document]] = None,
-            increment_index: bool = True,
+        self,
+        ids: OneOrMany[ID],
+        embeddings: Optional[OneOrMany[Embedding]] = None,
+        metadatas: Optional[OneOrMany[Metadata]] = None,
+        documents: Optional[OneOrMany[Document]] = None,
+        increment_index: bool = True,
     ) -> None:
         """Update the embeddings, metadatas or documents for provided ids, or create them if they don't exist.
 
@@ -329,10 +329,10 @@ class Cluster(BaseModel):
         )
 
     def delete(
-            self,
-            ids: Optional[IDs] = None,
-            where: Optional[Where] = None,
-            where_document: Optional[WhereDocument] = None,
+        self,
+        ids: Optional[IDs] = None,
+        where: Optional[Where] = None,
+        where_document: Optional[WhereDocument] = None,
     ) -> None:
         """Delete the embeddings based on ids and/or a where filter
 
@@ -355,12 +355,12 @@ class Cluster(BaseModel):
         self._client.create_index(self.name)
 
     def _validate_embedding_set(
-            self,
-            ids: OneOrMany[ID],
-            embeddings: Optional[OneOrMany[Embedding]],
-            metadatas: Optional[OneOrMany[Metadata]],
-            documents: Optional[OneOrMany[Document]],
-            require_embeddings_or_documents: bool = True,
+        self,
+        ids: OneOrMany[ID],
+        embeddings: Optional[OneOrMany[Embedding]],
+        metadatas: Optional[OneOrMany[Metadata]],
+        documents: Optional[OneOrMany[Document]],
+        require_embeddings_or_documents: bool = True,
     ) -> Tuple[
         IDs,
         List[Embedding],
