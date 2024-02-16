@@ -2,15 +2,18 @@ import time
 import uuid
 import bagel
 from bagel.config import Settings
+import os
 
 
-def check_emaillist(api):
-    """
-    Email waitlist test
-    """
-    valid_email = "example@gmail.com"
-    print(">> ", api.join_waitlist(valid_email))
 
+DEMO_USER_ID = "demo_user"
+DEMO_USER_ID_API_KEYS_PROD = "5Ev2vzRmmCt4zPh1YP94BHSTsilM8uk5"
+DEMO_USER_ID_API_KEYS_LOCAL = "wWpN6rYjXNlSc71IrpTAh8jrB1N6He4h"
+DEMO_KEY_IN_USE = DEMO_USER_ID_API_KEYS_LOCAL
+
+# Set environment variable
+os.environ['BAGEL_API_KEY'] = DEMO_KEY_IN_USE
+os.environ['BAGEL_USER_ID'] = DEMO_USER_ID
 
 def create_and_delete(api):
     """
@@ -21,13 +24,13 @@ def create_and_delete(api):
     print(name)
 
     # Create a cluster
-    cluster = api.create_cluster(name)
+    cluster = api.create_cluster(name=name)
     print(f"cluster size {cluster.cluster_size} mb")
     print(f"embedding size {cluster.embedding_size} ")
     print()
 
     # Delete it
-    api.delete_cluster(name)
+    api.delete_cluster(name=name)
     print(">> create and delete done !\n")
 
 
@@ -38,7 +41,7 @@ def create_add_get(api):
     name = "testing"
 
     # Get or create a cluster
-    cluster = api.get_or_create_cluster(name)
+    cluster = api.get_or_create_cluster(name=name)
 
     # Add documents to the cluster
     _ = cluster.add(
@@ -256,7 +259,7 @@ def add_image_find(api):
     name = "image_add_test"
 
     # Get or create a cluster
-    cluster = api.get_or_create_cluster(name=name, embedding_model="bagel-multi-modal")
+    cluster = api.get_or_create_cluster(name)
     img_file_list = [
         "image_emb/test.jpg",
         "image_emb/test.png",
@@ -315,18 +318,19 @@ def add_image_urls_find(api):
 
 def main():
     start_time = time.time()  # Record the start time
-    # Bagel server settings for production
-    server_settings = Settings(
-        bagel_api_impl="rest",
-        bagel_server_host="api.bageldb.ai",
-    )
 
-    # Bagel server settings for local
+    # Bagel server settings for production
     # server_settings = Settings(
     #     bagel_api_impl="rest",
-    #     bagel_server_host="localhost",
-    #     bagel_server_http_port="8088",
+    #     bagel_server_host="api.bageldb.ai",
     # )
+
+    # Bagel server settings for local
+    server_settings = Settings(
+        bagel_api_impl="rest",
+        bagel_server_host="localhost",
+        bagel_server_http_port="8088",
+    )
 
     # Create Bagel client
     client = bagel.Client(server_settings)
@@ -344,7 +348,6 @@ def main():
     create_add_find_em(client)
     create_add_modify_update(client)
     create_upsert(client)
-    add_image_find(client)
     end_time = time.time()  # Record the end time
     execution_time = end_time - start_time  # Calculate the execution time
     print(f"Total execution time: {execution_time:.2f} seconds")

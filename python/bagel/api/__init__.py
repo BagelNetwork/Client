@@ -22,6 +22,9 @@ from bagel.api.types import (
 from bagel.config import Component
 from overrides import override
 
+DEFAULT_TENANT = "default_tenant"
+DEFAULT_DATABASE = "default_database"
+
 
 class API(Component, ABC):
     @abstractmethod
@@ -38,7 +41,7 @@ class API(Component, ABC):
         pass
 
     @abstractmethod
-    def get_all_clusters(self) -> Sequence[Cluster]:
+    def get_all_clusters(self, user_id: str = DEFAULT_TENANT, api_key: Optional[str] = None) -> Sequence[Cluster]:
         """Returns all clusters in the database
 
         Args:
@@ -68,6 +71,9 @@ class API(Component, ABC):
         name: str,
         metadata: Optional[ClusterMetadata] = None,
         get_or_create: bool = False,
+        user_id: str = DEFAULT_TENANT,
+        api_key: Optional[str] = None,
+        embedding_model: Optional[str] = None
     ) -> Cluster:
         """Creates a new cluster in the database
 
@@ -88,6 +94,8 @@ class API(Component, ABC):
     def delete_cluster(
         self,
         name: str,
+        user_id: str = DEFAULT_TENANT,
+        api_key: Optional[str] = None
     ) -> None:
         """Deletes a cluster from the database
 
@@ -100,6 +108,8 @@ class API(Component, ABC):
         self,
         name: str,
         metadata: Optional[ClusterMetadata] = None,
+        user_id: str = DEFAULT_TENANT,
+        api_key: Optional[str] = None
     ) -> Cluster:
         """Calls create_cluster with get_or_create=True.
            If the cluster exists, but with different metadata, the metadata will be replaced.
@@ -118,6 +128,8 @@ class API(Component, ABC):
     def get_cluster(
         self,
         name: str,
+        user_id: str = DEFAULT_TENANT,
+        api_key: Optional[str] = None
     ) -> Cluster:
         """Gets a cluster from the database by either name or uuid
 
@@ -136,6 +148,8 @@ class API(Component, ABC):
         id: UUID,
         new_name: Optional[str] = None,
         new_metadata: Optional[ClusterMetadata] = None,
+        user_id: str = DEFAULT_TENANT,
+        api_key: Optional[str] = None
     ) -> None:
         """Modify a cluster in the database - can update the name and/or metadata
 
@@ -155,6 +169,7 @@ class API(Component, ABC):
         metadatas: Optional[Metadatas] = None,
         documents: Optional[Documents] = None,
         increment_index: bool = True,
+        api_key: Optional[str] = None
     ) -> bool:
         """Add embeddings to the data store. This is the most general way to add embeddings to the database.
         ⚠️ It is recommended to use the more specific methods below when possible.
@@ -176,6 +191,7 @@ class API(Component, ABC):
         embeddings: Optional[Embeddings] = None,
         metadatas: Optional[Metadatas] = None,
         documents: Optional[Documents] = None,
+        api_key: Optional[str] = None
     ) -> bool:
         """Add embeddings to the data store. This is the most general way to add embeddings to the database.
         ⚠️ It is recommended to use the more specific methods below when possible.
@@ -195,6 +211,7 @@ class API(Component, ABC):
         metadatas: Optional[Metadatas] = None,
         documents: Optional[Documents] = None,
         increment_index: bool = True,
+        api_key: Optional[str] = None
     ) -> bool:
         """Add or update entries in the embedding store.
         If an entry with the same id already exists, it will be updated, otherwise it will be added.
@@ -210,7 +227,8 @@ class API(Component, ABC):
         pass
 
     @abstractmethod
-    def _count(self, cluster_id: UUID) -> int:
+    def _count(self, cluster_id: UUID,
+               api_key: Optional[str] = None) -> int:
         """Returns the number of embeddings in the database
 
         Args:
@@ -224,7 +242,7 @@ class API(Component, ABC):
         pass
 
     @abstractmethod
-    def _peek(self, cluster_id: UUID, n: int = 10) -> GetResult:
+    def _peek(self, cluster_id: UUID, n: int = 10, api_key: Optional[str] = None) -> GetResult:
         pass
 
     @abstractmethod
@@ -240,6 +258,7 @@ class API(Component, ABC):
         page_size: Optional[int] = None,
         where_document: Optional[WhereDocument] = {},
         include: Include = ["embeddings", "metadatas", "documents"],
+        api_key: Optional[str] = None
     ) -> GetResult:
         """Gets embeddings from the database. Supports filtering, sorting, and pagination.
         ⚠️ This method should not be used directly.
@@ -265,6 +284,7 @@ class API(Component, ABC):
         ids: Optional[IDs],
         where: Optional[Where] = {},
         where_document: Optional[WhereDocument] = {},
+        api_key: Optional[str] = None
     ) -> IDs:
         """Deletes embeddings from the database
         ⚠️ This method should not be used directly.
@@ -287,6 +307,7 @@ class API(Component, ABC):
         where_document: WhereDocument = {},
         include: Include = ["embeddings", "metadatas", "documents", "distances"],
         query_texts: Optional[OneOrMany[Document]] = None,
+        api_key: Optional[str] = None
     ) -> QueryResult:
         """Gets the nearest neighbors of a single embedding
         ⚠️ This method should not be used directly.
