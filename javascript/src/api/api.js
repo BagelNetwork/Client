@@ -34,7 +34,18 @@ class API {
 
     this._api_url = `${urlPrefix}://${settings.bagel_server_host}:${port}/api/v1`;
   }
+  _populateHeadersWithApiKey(api_key = null) {
+    const headers = {
+      "Content-Type": "application/json", // Default header
+      // Add more default headers here if necessary
+    };
 
+    if (api_key) {
+      headers["Authorization"] = `Bearer ${api_key}`; // Assuming the API expects a Bearer token
+    }
+
+    return headers;
+  }
   // Methods
 
   // ping the Bagel API
@@ -184,11 +195,18 @@ class API {
   //};
 
   // get count of data within a cluster
-  async _count(cluster_id) {
+  async _count(cluster_id, api_key = null) {
     try {
+      const headers = {};
+      if (api_key) {
+        headers["Authorization"] = `Bearer ${api_key}`;
+      }
+
       const response = await axios.get(
-        this._api_url + "/clusters/" + cluster_id + "/count"
+        `${this._api_url}/clusters/${cluster_id}/count`,
+        { headers }
       );
+
       if (!response.data) {
         throw new Error("Empty response data received");
       }
@@ -346,7 +364,8 @@ class API {
     ids,
     embeddings = null,
     metadatas = null,
-    documents = null
+    documents = null,
+    api_key = null
   ) {
     try {
       const response = await axios.post(
@@ -370,7 +389,8 @@ class API {
     embeddings = null,
     metadatas = null,
     documents = null,
-    increment_index = true
+    increment_index = true,
+    api_key = null
   ) {
     try {
       const response = await axios.post(
