@@ -5,6 +5,10 @@ const { Cluster } = require('../model/cluster.js');
 const { v4: uuidv4 } = require('uuid');
 const FormData = require('form-data');
 const Buffer = require('buffer').Buffer;
+const DEFAULT_TENANT = "default_tenant";
+const DEFAULT_DATABASE = "default_database";
+const fs = require("fs");
+const path = require("path");
 
 
 // Class to interact with the Bagel API
@@ -27,23 +31,31 @@ class API {
         this._api_url = `${urlPrefix}://${settings.bagel_server_host}:${port}/api/v1`;
     };
 
-
+    _populateHeadersWithApiKey(api_key = null) {
+        const headers = {
+          "Content-Type": "application/json", // Default header
+          // Add more default headers here if necessary
+        };
+    
+        if (api_key) {
+          headers["Authorization"] = `Bearer ${api_key}`; // Assuming the API expects a Bearer token
+        }
+    
+        return headers;
+      }
     // Methods
 
     // ping the Bagel API
     async ping() {
         try {
-            const response = await axios.get(this._api_url);
-            if (!response.data) {
-                throw new Error("Empty response data received");
-            }
-            if (parseInt(response.data["nanosecond heartbeat"]) > 0) {
-                return "pong";
-            }
+          const response = await axios.get(this._api_url, {
+            headers: this._headers,
+          });
+          return response.data["nanosecond heartbeat"];
         } catch (error) {
-            console.error("Error:", error);
+          console.error("Error:", error);
         }
-    };
+      }
 
 
     // get the Bagel API version
@@ -64,53 +76,78 @@ class API {
     // get all clusters
     async get_all_clusters() {
         try {
-            const response = await axios.get(this._api_url + "/clusters");
-            if (!response.data) {
-                throw new Error("Empty response data received");
-            }
-            const json_clusters = response.data;
-            const clusters = json_clusters.map(json_cluster => new Cluster(this, json_cluster));
-            return clusters;
+          const response = await axios.get(this._api_url + "/clusters");
+          if (!response.data) {
+            throw new Error("Empty response data received");
+          }
+          const json_clusters = response.data;
+          const clusters = json_clusters.map(
+            (json_cluster) => new Cluster(this, json_cluster)
+          );
+          return clusters;
         } catch (error) {
-            console.error("Error:", error);
+          console.error("Error:", error);
         }
-    };
+      }
 
 
 
     // create a cluster
-    async create_cluster(name, metadata = null, get_or_create = false) {
+    async create_cluster(
+        name,
+        metadata = null,
+        get_or_create = false,
+        user_id = DEFAULT_TENANT,
+        api_key = null,
+        embedding_model = null
+      ) {
+        const headers = this._populateHeadersWithApiKey(api_key);
         try {
-            const response = await axios.post(
-                this._api_url + "/clusters",
-                { name, metadata, get_or_create }
-            );
-            if (!response.data) {
-                throw new Error("Empty response data received");
-            }
-            return new Cluster(this, response.data);
+          const response = await axios.post(
+            `${this._api_url}/clusters`,
+            {
+              name,
+              metadata,
+              get_or_create,
+              user_id,
+              embedding_model,
+            },
+            { headers }
+          );
+          return new Cluster(this, response.data);
         } catch (error) {
-            console.error("Error:", error);
-            // throw error;
+          console.error("Error:", error.response || error);
         }
-    };
+      }
 
 
     // get or create a cluster
-    async get_or_create_cluster(name, metadata = null) {
+    async get_or_create_cluster(
+        name,
+        metadata = null,
+        user_id = DEFAULT_TENANT,
+        api_key = null,
+        embedding_model = null
+      ) {
+        const headers = this._populateHeadersWithApiKey(api_key);
+        // Additional logic to include user_id and embedding_model in the request if necessary
         try {
-            const response = await axios.post(
-                this._api_url + "/clusters",
-                { name, metadata, get_or_create: true }
-            );
-            if (!response.data) {
-                throw new Error("Empty response data received");
-            }
-            return new Cluster(this, response.data);
+          const response = await axios.post(
+            `${this._api_url}/clusters`,
+            {
+              name,
+              metadata,
+              get_or_create: true,
+              user_id,
+              embedding_model,
+            },
+            { headers }
+          );
+          return new Cluster(this, response.data);
         } catch (error) {
-            console.error("Error:", error.response);
+          console.error("Error:", error.response);
         }
-    };
+      }
 
 
     // get a cluster
