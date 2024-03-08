@@ -257,7 +257,7 @@ def add_image_find(api):
     name = "image_add_test"
 
     # Get or create a cluster
-    cluster = api.get_or_create_cluster(name)
+    cluster = api.get_or_create_cluster(name, embedding_model="bagel-multi-modal")
     img_file_list = [
         "image_emb/test.jpg",
         "image_emb/test.png",
@@ -338,13 +338,14 @@ def main():
     # Get the Bagel server version
     print("version: ", client.get_version())
 
-    # # calling all functions
+    # calling all functions
     create_and_delete(client)
     create_add_get(client)
     create_add_find(client)
     create_add_find_em(client)
     create_add_modify_update(client)
     create_upsert(client)
+    add_image_find(client)
     add_image_urls_find(client)
     end_time = time.time()  # Record the end time
     execution_time = end_time - start_time  # Calculate the execution time
