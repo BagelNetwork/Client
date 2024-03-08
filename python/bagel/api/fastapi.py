@@ -483,6 +483,7 @@ class FastAPI(API):
         metadatas: Optional[Metadatas] = None,
         increment_index: bool = True,
     ) -> Any:
+        headers = self._popuate_headers_with_api_key(None)
         """Add image by urls to BagelDB."""
         if metadatas is None:
             metadatas = [{"url": str(url)} for url in urls]
@@ -497,7 +498,7 @@ class FastAPI(API):
                     "increment_index": increment_index,
                 }
             ),
-            headers=self.__headers
+            headers=headers
         )
 
         raise_bagel_error(resp)

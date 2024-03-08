@@ -7,9 +7,7 @@ import os
 
 
 DEMO_USER_ID = "demo_user"
-DEMO_USER_ID_API_KEYS_PROD = "5Ev2vzRmmCt4zPh1YP94BHSTsilM8uk5"
-DEMO_USER_ID_API_KEYS_LOCAL = "wWpN6rYjXNlSc71IrpTAh8jrB1N6He4h"
-DEMO_KEY_IN_USE = DEMO_USER_ID_API_KEYS_LOCAL
+DEMO_KEY_IN_USE = "insert-your-api-key-here"
 
 # Set environment variable
 os.environ['BAGEL_API_KEY'] = DEMO_KEY_IN_USE
@@ -291,7 +289,7 @@ def add_image_urls_find(api):
     name = "image_add_urls_tesing"
 
     # Get or create a cluster
-    cluster = api.get_or_create_cluster(name)
+    cluster = api.get_or_create_cluster(name=name, embedding_model="bagel-multi-modal")
     urls = [
         "https://bagel-public-models-s3-download.s3.eu-north-1.amazonaws.com/cat/60de145c79609acaba3bbe08974a9ff5.jpg",
         "https://bagel-public-models-s3-download.s3.eu-north-1.amazonaws.com/cat/black-white-cat-wallpaper.jpg",
@@ -309,7 +307,6 @@ def add_image_urls_find(api):
 
     # Query the cluster for similar results
     results = cluster.find(query_embeddings=embeddings, n_results=5)
-
     print(results)
     # Delete it
     api.delete_cluster(name)
@@ -320,17 +317,17 @@ def main():
     start_time = time.time()  # Record the start time
 
     # Bagel server settings for production
-    # server_settings = Settings(
-    #     bagel_api_impl="rest",
-    #     bagel_server_host="api.bageldb.ai",
-    # )
-
-    # Bagel server settings for local
     server_settings = Settings(
         bagel_api_impl="rest",
-        bagel_server_host="localhost",
-        bagel_server_http_port="8088",
+        bagel_server_host="api.bageldb.ai",
     )
+
+    # Bagel server settings for local
+    # server_settings = Settings(
+    #     bagel_api_impl="rest",
+    #     bagel_server_host="localhost",
+    #     bagel_server_http_port="8088",
+    # )
 
     # Create Bagel client
     client = bagel.Client(server_settings)
@@ -348,6 +345,7 @@ def main():
     create_add_find_em(client)
     create_add_modify_update(client)
     create_upsert(client)
+    add_image_urls_find(client)
     end_time = time.time()  # Record the end time
     execution_time = end_time - start_time  # Calculate the execution time
     print(f"Total execution time: {execution_time:.2f} seconds")

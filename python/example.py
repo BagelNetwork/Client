@@ -288,7 +288,7 @@ def add_image_urls_find(api):
     name = "image_add_urls_tesing"
 
     # Get or create a cluster
-    cluster = api.get_or_create_cluster(name)
+    cluster = api.get_or_create_cluster(name, embedding_model="bagel-multi-modal")
     urls = [
         "https://bagel-public-models-s3-download.s3.eu-north-1.amazonaws.com/cat/60de145c79609acaba3bbe08974a9ff5.jpg",
         "https://bagel-public-models-s3-download.s3.eu-north-1.amazonaws.com/cat/black-white-cat-wallpaper.jpg",
@@ -345,6 +345,7 @@ def main():
     create_add_modify_update(client)
     create_upsert(client)
     add_image_find(client)
+    add_image_urls_find(client)
     end_time = time.time()  # Record the end time
     execution_time = end_time - start_time  # Calculate the execution time
     print(f"Total execution time: {execution_time:.2f} seconds")
