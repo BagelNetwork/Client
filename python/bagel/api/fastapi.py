@@ -84,7 +84,8 @@ class FastAPI(API):
         get_or_create: bool = False,
         user_id: str = DEFAULT_TENANT,
         api_key: Optional[str] = None,
-        embedding_model: Optional[str] = None
+        embedding_model: Optional[str] = None,
+        dimension: Optional[int] = None
     ) -> Cluster:
         """Creates a cluster"""
         headers, user_id = self._extract_headers_with_key_and_user_id(api_key, user_id)
@@ -92,7 +93,7 @@ class FastAPI(API):
             self._api_url + "/clusters",
             data=json.dumps(
                 {"name": name, "metadata": metadata, "get_or_create": get_or_create,
-                 "user_id": user_id, "embedding_model": embedding_model}
+                 "user_id": user_id, "embedding_model": embedding_model, "dimensions": dimension}
             ),
             headers=headers
         )
@@ -138,11 +139,12 @@ class FastAPI(API):
         metadata: Optional[ClusterMetadata] = None,
         user_id: str = DEFAULT_TENANT,
         api_key: Optional[str] = None,
-        embedding_model: Optional[str] = None
+        embedding_model: Optional[str] = None,
+        dimension: Optional[int] = None
     ) -> Cluster:
         """Get a cluster, or return it if it exists"""
         return self.create_cluster(name, metadata, get_or_create=True, user_id=user_id, api_key=api_key,
-                                   embedding_model=embedding_model)
+                                   embedding_model=embedding_model, dimension=dimension)
 
     @override
     def _modify(
