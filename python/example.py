@@ -105,7 +105,7 @@ def create_add_find(api):
     print(">> create_add_find done  !\n")
 
 
-def create_add_find_em(api):
+def create_add_find_em_with_exception(api):
     """Create, add, & find embeddings
 
     Parameters
@@ -144,11 +144,68 @@ def create_add_find_em(api):
             ids=["id1", "id2", "id3", "id4", "id5", "id6", "id7", "id8"],
         )
     except Exception as exc:  # pylint: disable=W0718
-        print(exc)
-    # Query the cluster for results
-    results = cluster.find(query_embeddings=[[1.1, 2.3, 3.2]], n_results=5)
+        print(f"Exception during addition of emeddings: {exc}")
 
-    print("find result:", results)
+    # Query the cluster for results
+    try:
+        results = cluster.find(query_embeddings=[[1.1, 2.3, 3.2]], n_results=5)
+        print("find result:", results)
+    except Exception as exc:  # pylint: disable=W0718
+        print(f"Exception during query: {exc}")
+
+    # detete after test
+    api.delete_cluster(name)
+    print(">> create_add_find_em done  !\n")
+
+
+def create_add_find_custom_embedding(api):
+    """Create, add, & find embeddings
+
+    Parameters
+    ----------
+    api : _type_
+        _description_
+    """
+    name = "testing_embeddings"
+
+    # Get or create a cluster
+    cluster = api.get_or_create_cluster(name=name, embedding_model="custom", dimension=3)
+    # Add embeddings and other data to the cluster
+    try:
+        cluster.add(
+            embeddings=[
+                [1.1, 2.3, 3.2],
+                [4.5, 6.9, 4.4],
+                [1.1, 2.3, 3.2],
+                [4.5, 6.9, 4.4],
+                [1.1, 2.3, 3.2],
+                [4.5, 6.9, 4.4],
+                [1.1, 2.3, 3.2],
+                [4.5, 6.9, 4.4],
+            ],
+            metadatas=[
+                {"uri": "img1.png", "style": "style1"},
+                {"uri": "img2.png", "style": "style2"},
+                {"uri": "img3.png", "style": "style1"},
+                {"uri": "img4.png", "style": "style1"},
+                {"uri": "img5.png", "style": "style1"},
+                {"uri": "img6.png", "style": "style1"},
+                {"uri": "img7.png", "style": "style1"},
+                {"uri": "img8.png", "style": "style1"},
+            ],
+            documents=["doc1", "doc2", "doc3", "doc4", "doc5", "doc6", "doc7", "doc8"],
+            ids=["id1", "id2", "id3", "id4", "id5", "id6", "id7", "id8"],
+        )
+    except Exception as exc:  # pylint: disable=W0718
+        print(f"Exception during addition of emeddings: {exc}")
+
+    # Query the cluster for results
+    try:
+        results = cluster.find(query_embeddings=[[1.1, 2.3, 3.2]], n_results=5)
+        print("find result:", results)
+    except Exception as exc:  # pylint: disable=W0718
+        print(f"Exception during query: {exc}")
+
     # detete after test
     api.delete_cluster(name)
     print(">> create_add_find_em done  !\n")
@@ -321,7 +378,7 @@ def main():
         bagel_server_host="api.bageldb.ai",
     )
 
-    # Bagel server settings for local
+    # # Bagel server settings for local
     # server_settings = Settings(
     #     bagel_api_impl="rest",
     #     bagel_server_host="localhost",
@@ -341,7 +398,8 @@ def main():
     create_and_delete(client)
     create_add_get(client)
     create_add_find(client)
-    create_add_find_em(client)
+    create_add_find_em_with_exception(client)
+    create_add_find_custom_embedding(client)
     create_add_modify_update(client)
     create_upsert(client)
     add_image_find(client)
