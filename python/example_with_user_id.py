@@ -4,14 +4,13 @@ import bagel
 from bagel.config import Settings
 import os
 
-
-
 DEMO_USER_ID = "demo_user"
 DEMO_KEY_IN_USE = "insert-your-api-key-here"
 
 # Set environment variable
 os.environ['BAGEL_API_KEY'] = DEMO_KEY_IN_USE
 os.environ['BAGEL_USER_ID'] = DEMO_USER_ID
+
 
 def create_and_delete(api):
     """
@@ -117,7 +116,7 @@ def create_add_find_em(api):
     name = "testing_embeddings"
 
     # Get or create a cluster
-    cluster = api.get_or_create_cluster(name)
+    cluster = api.get_or_create_cluster(name=name, embedding_model="custom", dimension=3)
     # Add embeddings and other data to the cluster
     try:
         cluster.add(
