@@ -295,7 +295,7 @@ class FastAPI(API):
         if metadata is None:
             metadata = {"filename": str(image_name)}
         data = json.dumps({
-            "metadata": [metadata],
+            "metadatas": [metadata],
             "ids": [uid],
             "increment_index": True,
             "documents": [image_data]
