@@ -78,14 +78,14 @@ class FastAPI(API):
 
     @override
     def create_cluster(
-        self,
-        name: str,
-        metadata: Optional[ClusterMetadata] = None,
-        get_or_create: bool = False,
-        user_id: str = DEFAULT_TENANT,
-        api_key: Optional[str] = None,
-        embedding_model: Optional[str] = None,
-        dimension: Optional[int] = None
+            self,
+            name: str,
+            metadata: Optional[ClusterMetadata] = None,
+            get_or_create: bool = False,
+            user_id: str = DEFAULT_TENANT,
+            api_key: Optional[str] = None,
+            embedding_model: Optional[str] = None,
+            dimension: Optional[int] = None
     ) -> Cluster:
         """Creates a cluster"""
         headers, user_id = self._extract_headers_with_key_and_user_id(api_key, user_id)
@@ -110,10 +110,10 @@ class FastAPI(API):
 
     @override
     def get_cluster(
-        self,
-        name: str,
-        user_id: str = DEFAULT_TENANT,
-        api_key: Optional[str] = None
+            self,
+            name: str,
+            user_id: str = DEFAULT_TENANT,
+            api_key: Optional[str] = None
     ) -> Cluster:
         """Returns a cluster"""
         headers, user_id = self._extract_headers_with_key_and_user_id(api_key, user_id)
@@ -134,13 +134,13 @@ class FastAPI(API):
 
     @override
     def get_or_create_cluster(
-        self,
-        name: str,
-        metadata: Optional[ClusterMetadata] = None,
-        user_id: str = DEFAULT_TENANT,
-        api_key: Optional[str] = None,
-        embedding_model: Optional[str] = None,
-        dimension: Optional[int] = None
+            self,
+            name: str,
+            metadata: Optional[ClusterMetadata] = None,
+            user_id: str = DEFAULT_TENANT,
+            api_key: Optional[str] = None,
+            embedding_model: Optional[str] = None,
+            dimension: Optional[int] = None
     ) -> Cluster:
         """Get a cluster, or return it if it exists"""
         return self.create_cluster(name, metadata, get_or_create=True, user_id=user_id, api_key=api_key,
@@ -148,12 +148,12 @@ class FastAPI(API):
 
     @override
     def _modify(
-        self,
-        id: UUID,
-        new_name: Optional[str] = None,
-        new_metadata: Optional[ClusterMetadata] = None,
-        user_id: str = DEFAULT_TENANT,
-        api_key: Optional[str] = None
+            self,
+            id: UUID,
+            new_name: Optional[str] = None,
+            new_metadata: Optional[ClusterMetadata] = None,
+            user_id: str = DEFAULT_TENANT,
+            api_key: Optional[str] = None
     ) -> None:
         """Updates a cluster"""
         headers = self._popuate_headers_with_api_key(api_key)
@@ -194,18 +194,18 @@ class FastAPI(API):
 
     @override
     def _get(
-        self,
-        cluster_id: UUID,
-        ids: Optional[IDs] = None,
-        where: Optional[Where] = {},
-        sort: Optional[str] = None,
-        limit: Optional[int] = None,
-        offset: Optional[int] = None,
-        page: Optional[int] = None,
-        page_size: Optional[int] = None,
-        where_document: Optional[WhereDocument] = {},
-        include: Include = ["metadatas", "documents"],
-        api_key: Optional[str] = None
+            self,
+            cluster_id: UUID,
+            ids: Optional[IDs] = None,
+            where: Optional[Where] = {},
+            sort: Optional[str] = None,
+            limit: Optional[int] = None,
+            offset: Optional[int] = None,
+            page: Optional[int] = None,
+            page_size: Optional[int] = None,
+            where_document: Optional[WhereDocument] = {},
+            include: Include = ["metadatas", "documents"],
+            api_key: Optional[str] = None
     ) -> GetResult:
         """Gets embeddings from the database"""
         headers = self._popuate_headers_with_api_key(api_key)
@@ -240,12 +240,12 @@ class FastAPI(API):
 
     @override
     def _delete(
-        self,
-        cluster_id: UUID,
-        ids: Optional[IDs] = None,
-        where: Optional[Where] = {},
-        where_document: Optional[WhereDocument] = {},
-        api_key: Optional[str] = None
+            self,
+            cluster_id: UUID,
+            ids: Optional[IDs] = None,
+            where: Optional[Where] = {},
+            where_document: Optional[WhereDocument] = {},
+            api_key: Optional[str] = None
     ) -> IDs:
         """Deletes embeddings from the database"""
 
@@ -261,8 +261,8 @@ class FastAPI(API):
 
     @override
     def _add_image(
-        self, cluster_id: UUID, filename: str, metadata: Optional[Metadata] = None,
-        api_key: Optional[str] = None
+            self, cluster_id: UUID, filename: str, metadata: Optional[Metadata] = None,
+            api_key: Optional[str] = None
     ) -> Any:
         """
         Add an image to the BagelDB.
@@ -310,14 +310,14 @@ class FastAPI(API):
 
     @override
     def _add(
-        self,
-        ids: IDs,
-        cluster_id: UUID,
-        embeddings: Optional[Embeddings] = None,
-        metadatas: Optional[Metadatas] = None,
-        documents: Optional[Documents] = None,
-        increment_index: bool = True,
-        api_key: Optional[str] = None
+            self,
+            ids: IDs,
+            cluster_id: UUID,
+            embeddings: Optional[Embeddings] = None,
+            metadatas: Optional[Metadatas] = None,
+            documents: Optional[Documents] = None,
+            increment_index: bool = True,
+            api_key: Optional[str] = None
     ) -> bool:
         """
         Adds a batch of embeddings to the database
@@ -345,13 +345,13 @@ class FastAPI(API):
 
     @override
     def _update(
-        self,
-        cluster_id: UUID,
-        ids: IDs,
-        embeddings: Optional[Embeddings] = None,
-        metadatas: Optional[Metadatas] = None,
-        documents: Optional[Documents] = None,
-        api_key: Optional[str] = None
+            self,
+            cluster_id: UUID,
+            ids: IDs,
+            embeddings: Optional[Embeddings] = None,
+            metadatas: Optional[Metadatas] = None,
+            documents: Optional[Documents] = None,
+            api_key: Optional[str] = None
     ) -> bool:
         """
         Updates a batch of embeddings in the database
@@ -376,14 +376,14 @@ class FastAPI(API):
 
     @override
     def _upsert(
-        self,
-        cluster_id: UUID,
-        ids: IDs,
-        embeddings: Optional[Embeddings] = None,
-        metadatas: Optional[Metadatas] = None,
-        documents: Optional[Documents] = None,
-        increment_index: bool = True,
-        api_key: Optional[str] = None
+            self,
+            cluster_id: UUID,
+            ids: IDs,
+            embeddings: Optional[Embeddings] = None,
+            metadatas: Optional[Metadatas] = None,
+            documents: Optional[Documents] = None,
+            increment_index: bool = True,
+            api_key: Optional[str] = None
     ) -> bool:
         """
         Updates a batch of embeddings in the database
@@ -409,15 +409,15 @@ class FastAPI(API):
 
     @override
     def _query(
-        self,
-        cluster_id: UUID,
-        query_embeddings: Embeddings,
-        n_results: int = 10,
-        where: Optional[Where] = {},
-        where_document: Optional[WhereDocument] = {},
-        include: Include = ["metadatas", "documents", "distances"],
-        query_texts: Optional[OneOrMany[Document]] = None,
-        api_key: Optional[str] = None
+            self,
+            cluster_id: UUID,
+            query_embeddings: Embeddings,
+            n_results: int = 10,
+            where: Optional[Where] = {},
+            where_document: Optional[WhereDocument] = {},
+            include: Include = ["metadatas", "documents", "distances"],
+            query_texts: Optional[OneOrMany[Document]] = None,
+            api_key: Optional[str] = None
     ) -> QueryResult:
         """Gets the nearest neighbors of a single embedding"""
         headers = self._popuate_headers_with_api_key(api_key)
@@ -478,12 +478,12 @@ class FastAPI(API):
 
     @override
     def _add_image_urls(
-        self,
-        cluster_id: UUID,
-        ids: IDs,
-        urls: List[str],
-        metadatas: Optional[Metadatas] = None,
-        increment_index: bool = True,
+            self,
+            cluster_id: UUID,
+            ids: IDs,
+            urls: List[str],
+            metadatas: Optional[Metadatas] = None,
+            increment_index: bool = True,
     ) -> Any:
         headers = self._popuate_headers_with_api_key(None)
         """Add image by urls to BagelDB."""
