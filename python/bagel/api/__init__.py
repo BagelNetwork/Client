@@ -1,13 +1,13 @@
 from abc import ABC, abstractmethod
 from typing import Sequence, Optional, Dict, Any, List
-import pandas as pd
 from uuid import UUID
+
+import pandas as pd
 from bagel.api.Cluster import Cluster
 from bagel.api.types import (
     ClusterMetadata,
     Document,
     Documents,
-    EmbeddingFunction,
     Embeddings,
     IDs,
     Include,
@@ -109,7 +109,9 @@ class API(Component, ABC):
         name: str,
         metadata: Optional[ClusterMetadata] = None,
         user_id: str = DEFAULT_TENANT,
-        api_key: Optional[str] = None
+        api_key: Optional[str] = None,
+        embedding_model: Optional[str] = None,
+        dimension: Optional[int] = None
     ) -> Cluster:
         """Calls create_cluster with get_or_create=True.
            If the cluster exists, but with different metadata, the metadata will be replaced.
@@ -408,4 +410,7 @@ class API(Component, ABC):
             HTTPException: If there is an error in the HTTP request.
 
         """
+        pass
+
+    def share_cluster(self, cluster_id: str, usernames: List[str]):
         pass

@@ -351,6 +351,9 @@ class Cluster(BaseModel):
         )
         self._client._delete(self.id, ids, where, where_document)
 
+    def share_with(self, usernames: List[str]) -> None:
+        self._client.share_cluster(str(self.id), usernames)
+
     def create_index(self) -> None:
         self._client.create_index(self.name)
 
