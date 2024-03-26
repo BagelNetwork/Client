@@ -143,7 +143,7 @@ class FastAPI(API):
             dimension: Optional[int] = None
     ) -> Cluster:
         """Get a cluster, or return it if it exists"""
-        return self.create_cluster(name, metadata, get_or_create=True, user_id=user_id, api_key=api_key,
+        return self.create_cluster(name, metadata, get_or_create=True, api_key=api_key,
                                    embedding_model=embedding_model, dimension=dimension)
 
     @override
@@ -475,6 +475,25 @@ class FastAPI(API):
         resp = requests.get(self._api_url + "/version", headers=self.__headers)
         raise_bagel_error(resp)
         return cast(str, resp.json())
+
+    @override
+    def share_cluster(self, cluster_id: str, usernames: List[str]):
+
+        headers = self._popuate_headers_with_api_key(None)
+
+        resp = requests.post(
+            self._api_url + "/share-cluster",
+            data=json.dumps(
+                {
+                    "cluster_id": cluster_id,
+                    "user_names": usernames
+                }
+            ),
+            headers=headers
+        )
+
+        raise_bagel_error(resp)
+        return resp.json()
 
     @override
     def _add_image_urls(

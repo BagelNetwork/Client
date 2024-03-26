@@ -4,20 +4,17 @@ import bagel
 from bagel.config import Settings
 import os
 
-DEMO_USER_ID = "demo_user"
 DEMO_KEY_IN_USE = "insert-your-api-key-here"
 
 # Set environment variable
 os.environ['BAGEL_API_KEY'] = DEMO_KEY_IN_USE
-os.environ['BAGEL_USER_ID'] = DEMO_USER_ID
 
 
 def create_and_delete(api):
     """
     Create and delete a cluster
     """
-    # Generate a unique cluster name using UUID
-    name = str(uuid.uuid4())
+    name = str("create_and_delete_test")
     print(name)
 
     # Create a cluster
@@ -312,6 +309,21 @@ def add_image_urls_find(api):
     print(">> add_image_urls_find done !\n")
 
 
+def share_cluster(api):
+
+    name = "testing_cluster_sharing"
+
+    # Get or create a cluster
+    cluster = api.get_or_create_cluster(name=name)
+    print("Cluster created:", cluster.name)
+
+    cluster.share_with(usernames = [
+        "hugging-face"
+    ])
+
+    api.delete_cluster(name)
+    print(">> create_add_find done  !\n")
+
 def main():
     start_time = time.time()  # Record the start time
 
@@ -342,6 +354,7 @@ def main():
     create_add_get(client)
     create_add_find(client)
     create_add_find_em(client)
+    share_cluster(client)
     create_add_modify_update(client)
     create_upsert(client)
     add_image_find(client)

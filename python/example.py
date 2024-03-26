@@ -16,8 +16,7 @@ def create_and_delete(api):
     """
     Create and delete a cluster
     """
-    # Generate a unique cluster name using UUID
-    name = str(uuid.uuid4())
+    name = str("create_and_delete_test")
     print(name)
 
     # Create a cluster
@@ -378,7 +377,7 @@ def main():
         bagel_server_host="api.bageldb.ai",
     )
 
-    # # Bagel server settings for local
+    # Bagel server settings for local
     # server_settings = Settings(
     #     bagel_api_impl="rest",
     #     bagel_server_host="localhost",
