@@ -13,9 +13,9 @@ Well, this repository houses tools that make chatting with the Bagel API a breez
 
 ### Directory Breakdown 🥯
 
-- **[JavaScript Client](https://github.com/Bagel-DB/Client/tree/main/javascript)**: Tucked here is our JavaScript client, along with some nifty instructions, illustrative examples, and tests to ensure everything's running smoothly.
+- **[JavaScript Client](https://github.com/BagelNetwork/Client/tree/main/javascript)**: Tucked here is our JavaScript client, along with some nifty instructions, illustrative examples, and tests to ensure everything's running smoothly.
   
-- **[Python Client](https://github.com/Bagel-DB/Client/tree/main/python)**: For our Python aficionados, this spot has everything you need: the client itself, guidance on its usage, some sample code, and, of course, tests.
+- **[Python Client](https://github.com/BagelNetwork/Client/tree/main/python)**: For our Python aficionados, this spot has everything you need: the client itself, guidance on its usage, some sample code, and, of course, tests.
 
 ## Ready to Roll? 🥯
 

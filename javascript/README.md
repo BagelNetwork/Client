@@ -31,7 +31,7 @@ The official BagelDB API endpoint is `api.bageldb.ai`.
 The BagelDB JavaScript client provides easy access to the BagelDB API from Node.js applications.
 
 The full source code with examples is available on GitHub:
-https://github.com/Bagel-DB/Client/tree/main/javascript
+https://github.com/BagelNetwork/Client/tree/main/javascript
 
 See `example.js` for complete usage examples.
 
