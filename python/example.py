@@ -70,9 +70,11 @@ def create_add_find(api):
     api : _type_
         _description_
     """
-    name = "testing"
+    name = "testing_1"
 
     # Get or create a cluster
+    cluster = api.get_or_create_cluster(name)
+    api.delete_cluster(name)
     cluster = api.get_or_create_cluster(name)
 
     # Add documents to the cluster
