@@ -1,12 +1,12 @@
-🥯 **Welcome to the BagelDB HTTP API Guide!** 🥯
+🥯 **Welcome to the Bagel HTTP API Guide!** 🥯
 
 Hey there, dough-tastic developer! 🥯 If you're looking to munch through your data with ease, you've come to the right place. Let's break down those endpoints so you can get started right away.
 
-The official BagelDB endpoint is `api.bageldb.ai`. Feel free to give it a whirl!
+The official Bagel endpoint is `api.bageldb.ai`. Feel free to give it a whirl!
 
 *Friendly reminder:* This API is conveniently wrapped up in both Python and JavaScript for your coding pleasure. Check 'em out:
-- [BagelDB Python package](https://github.com/Bagel-DB/Client/tree/main/python)
-- [BagelDB Javascript package](https://github.com/Bagel-DB/Client/tree/main/javascript)
+- [Bagel Python package](https://github.com/Bagel-DB/Client/tree/main/python)
+- [Bagel Javascript package](https://github.com/Bagel-DB/Client/tree/main/javascript)
 
 ### **Endpoints & Their Delights**
 
@@ -105,7 +105,7 @@ Metadatas: Additional info to sprinkle on your documents.
 
 ### **Bagel Bites (aka Errors)**
 
-In the baking world of BagelDB, errors can pop up. We've got a nifty function `raise_bagel_error` that checks the server response for any hiccups. If there's a known BagelError, it raises it. Otherwise, it gives a generic HTTP error. Always check for these crunchy bits when baking your code!
+In the baking world of Bagel, errors can pop up. We've got a nifty function `raise_bagel_error` that checks the server response for any hiccups. If there's a known BagelError, it raises it. Otherwise, it gives a generic HTTP error. Always check for these crunchy bits when baking your code!
 
 ### Conclusion
 

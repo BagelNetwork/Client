@@ -1,8 +1,8 @@
-# BagelDB Python Client 🥯
+# Bagel Python Client 🥯
 
-Welcome to the BagelDB Python Client Example! BagelDB is your bread-and-butter library for interacting with the BagelDB API without breaking a sweat. 
+Welcome to the Bagel Python Client Example! Bagel is your bread-and-butter library for interacting with the Bagel API without breaking a sweat. 
 
-One of the perks? **No need to call the OpenAI Embeddings method or any other model to generate embeddings!** That's right, the BagelDB client handles that for you. So, you don't need to spend extra bucks on generating embeddings. Quite a dough-saver, isn't it? 🥯💰
+One of the perks? **No need to call the OpenAI Embeddings method or any other model to generate embeddings!** That's right, the Bagel client handles that for you. So, you don't need to spend extra bucks on generating embeddings. Quite a dough-saver, isn't it? 🥯💰
 
 ## Prerequisites
 
@@ -12,10 +12,10 @@ One of the perks? **No need to call the OpenAI Embeddings method or any other mo
 
 ## Installation
 
-To install the BagelDB Python client, run the following command in your terminal:
+To install the Bagel Python client, run the following command in your terminal:
 
 ```shell
-pip install betabageldb
+pip install bagelML
 ```
 
 ## Usage
@@ -28,9 +28,9 @@ import bagel
 from bagel.config import Settings
 ```
 
-This snippet imports the required modules for using BagelDB, including the uuid module for generating unique identifiers.
+This snippet imports the required modules for using Bagel, including the uuid module for generating unique identifiers.
 
-2. **Define the BagelDB server settings:**
+2. **Define the Bagel server settings:**
 
 ```python
 server_settings = Settings(
@@ -38,31 +38,31 @@ server_settings = Settings(
     bagel_server_host="api.bageldb.ai"
 )
 ```
-Here, we define the settings for connecting to the BagelDB server.
+Here, we define the settings for connecting to the Bagel server.
 
-3. **Create the BagelDB client:**
+3. **Create the Bagel client:**
 
 ```python
 client = bagel.Client(server_settings)
 ```
 
-Create an instance of the BagelDB client using the previously defined server settings.
+Create an instance of the Bagel client using the previously defined server settings.
 
-4. **Ping the BagelDB server:**
+4. **Ping the Bagel server:**
 
 ```python
 print(client.ping())
 ```
 
-This checks the connectivity to the BagelDB server.
+This checks the connectivity to the Bagel server.
 
-5. **Get the BagelDB server version:**
+5. **Get the Bagel server version:**
 
 ```python
 print(client.get_version())
 ```
 
-Retrieves and prints the version of the BagelDB server.
+Retrieves and prints the version of the Bagel server.
 
 6. **Create and delete a cluster:**
 
@@ -89,7 +89,7 @@ cluster.add(
 results = cluster.find(query_texts=["query"], n_results=5)
 ```
 
-Creates a cluster or retrieves an existing one, adds documents with metadata. Here `ids` are unique identifiers for each documents. BagelDB generates embeddings using its model. And performs a text-based query/search. Here `n_results` is to limit number of results.
+Creates a cluster or retrieves an existing one, adds documents with metadata. Here `ids` are unique identifiers for each documents. Bagel generates embeddings using its model. And performs a text-based query/search. Here `n_results` is to limit number of results.
 
 
 8. **Add embeddings and query (without needing to generate embeddings yourself!):**
@@ -142,7 +142,7 @@ Get the size of the cluster in megabytes. For each cluster max size is 500MB.
 
 13. **Add image:**
 
-In BagelDB we can add image also. Here is an example of adding image to cluster. It supports almost every image format.
+In Bagel we can add image also. Here is an example of adding image to cluster. It supports almost every image format.
 
 ```python
 filename = "your_img.png"
@@ -159,7 +159,7 @@ Initially, if no data is added to the cluster, the value of `embedding_size` is 
 
 15. **Add image by image download URLs:**
 
-Multiple images can be added to a BagelDB cluster using URLs. It's recommended to add fewer than 20 images at a time using this function. Upon execution, the function will return the URLs of successfully added images and those that failed. Here's an example:
+Multiple images can be added to a Bagel cluster using URLs. It's recommended to add fewer than 20 images at a time using this function. Upon execution, the function will return the URLs of successfully added images and those that failed. Here's an example:
 
 ```python
 cluster = api.get_or_create_cluster("new_testing")
@@ -175,12 +175,12 @@ resp = cluster.add_image_urls(ids=ids, urls=urls)
 Explore additional tutorials for more insights.
 
 - [Python Client Example](https://colab.research.google.com/drive/1PXRoP4vIsqQqsD9AGUrQ90D3x0x79F_w)
-- [Using BagelDB with Llama Index](https://colab.research.google.com/drive/13F3PxNgF10ZGlpZS20hQtwwkd8BiMcTS)
-- [Using BagelDB with Langchain](https://colab.research.google.com/drive/1UBWkuihFHvxbzeP61HT1-ttTsURcEXIS?usp=sharing)
-- [Build an image search engine in 10 minutes using BagelDB](https://colab.research.google.com/drive/1J_QlpqvnVloWHg_Q87s-hbp_VGq4wLQz)
+- [Using Bagel with Llama Index](https://colab.research.google.com/drive/13F3PxNgF10ZGlpZS20hQtwwkd8BiMcTS)
+- [Using Bagel with Langchain](https://colab.research.google.com/drive/1UBWkuihFHvxbzeP61HT1-ttTsURcEXIS?usp=sharing)
+- [Build an image search engine in 10 minutes using Bagel](https://colab.research.google.com/drive/1J_QlpqvnVloWHg_Q87s-hbp_VGq4wLQz)
 
 <br>
 
-Need more dough-tails? See the [example code](example.py) for a more comprehensive guide on using the BagelDB Python client.
+Need more dough-tails? See the [example code](example.py) for a more comprehensive guide on using the Bagel Python client.
 
 Happy coding and enjoy your fresh Bagels! 🥯👩‍💻👨‍💻

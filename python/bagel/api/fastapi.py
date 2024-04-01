@@ -265,7 +265,7 @@ class FastAPI(API):
             api_key: Optional[str] = None
     ) -> Any:
         """
-        Add an image to the BagelDB.
+        Add an image to the Bagel.
 
         Args:
             cluster_id (UUID):
@@ -283,7 +283,7 @@ class FastAPI(API):
 
         Note:
             This method reads the image file, encodes it in base64, and sends
-            the image along with metadata to the BagelDB API for addition to
+            the image along with metadata to the Bagel API for addition to
             the specified cluster.
         """
         headers = self._popuate_headers_with_api_key(api_key)
@@ -505,7 +505,7 @@ class FastAPI(API):
             increment_index: bool = True,
     ) -> Any:
         headers = self._popuate_headers_with_api_key(None)
-        """Add image by urls to BagelDB."""
+        """Add image by urls to Bagel."""
         if metadatas is None:
             metadatas = [{"url": str(url)} for url in urls]
 
