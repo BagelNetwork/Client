@@ -72,7 +72,7 @@ class Cluster(BaseModel):
         return self._client._count(cluster_id=self.id)
 
     def add_image(self, filename: str, metadata: Optional[Metadata] = None) -> Any:
-        """Add image to BagelDB."""
+        """Add image to Bagel."""
         return self._client._add_image(
             cluster_id=self.id, filename=filename, metadata=metadata
         )
@@ -84,7 +84,7 @@ class Cluster(BaseModel):
         metadatas: Optional[OneOrMany[Metadata]] = None,
     ) -> Any:
         """
-        Add images by URLs to BagelDB.
+        Add images by URLs to Bagel.
 
         Args:
             ids (OneOrMany[ID]): Identifier(s) associated with the image(s).

@@ -1,14 +1,14 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="betabageldb",
+    name="bagelML",
     version="0.2.45",
-    description="BagelDB is a Python library for interacting with the BagelDB API.",
+    description="BagelML is a Python library for interacting with the Bagel inference and vector embedding API.",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     author="Bidhan Roy",
-    author_email="bidhan@bageldb.ai",
-    url="https://github.com/Bagel-DB/Client",
+    author_email="bidhan@bagel.net",
+    url="https://github.com/BagelNetwork/Client",
     packages=find_packages(),
     install_requires=[
         "certifi>=2023.5.7",

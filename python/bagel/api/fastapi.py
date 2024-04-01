@@ -28,6 +28,7 @@ import base64
 from io import BytesIO
 import os
 import uuid
+import time
 
 BAGEL_USER_ID = "BAGEL_USER_ID"
 BAGEL_API_KEY = "BAGEL_API_KEY"
@@ -265,7 +266,7 @@ class FastAPI(API):
             api_key: Optional[str] = None
     ) -> Any:
         """
-        Add an image to the BagelDB.
+        Add an image to the Bagel.
 
         Args:
             cluster_id (UUID):
@@ -283,7 +284,7 @@ class FastAPI(API):
 
         Note:
             This method reads the image file, encodes it in base64, and sends
-            the image along with metadata to the BagelDB API for addition to
+            the image along with metadata to the Bagel API for addition to
             the specified cluster.
         """
         headers = self._popuate_headers_with_api_key(api_key)
@@ -421,21 +422,31 @@ class FastAPI(API):
     ) -> QueryResult:
         """Gets the nearest neighbors of a single embedding"""
         headers = self._popuate_headers_with_api_key(api_key)
-        resp = requests.post(
-            self._api_url + "/clusters/" + str(cluster_id) + "/query",
-            data=json.dumps(
-                {
-                    "query_embeddings": query_embeddings,
-                    "n_results": n_results,
-                    "where": where,
-                    "where_document": where_document,
-                    "include": include,
-                    "query_texts": query_texts,
-                }
-            ),
-            headers=headers
-        )
-
+        
+        max_retries = 3
+        retry_delay = 1  # in seconds
+        
+        for attempt in range(max_retries):
+            resp = requests.post(
+                self._api_url + "/clusters/" + str(cluster_id) + "/query",
+                data=json.dumps(
+                    {
+                        "query_embeddings": query_embeddings,
+                        "n_results": n_results,
+                        "where": where,
+                        "where_document": where_document,
+                        "include": include,
+                        "query_texts": query_texts,
+                    }
+                ),
+                headers=headers
+            )
+            
+            if resp.ok:
+                break
+            elif attempt < max_retries - 1:
+                time.sleep(retry_delay)
+        
         raise_bagel_error(resp)
         body = resp.json()
 
@@ -505,7 +516,7 @@ class FastAPI(API):
             increment_index: bool = True,
     ) -> Any:
         headers = self._popuate_headers_with_api_key(None)
-        """Add image by urls to BagelDB."""
+        """Add image by urls to Bagel."""
         if metadatas is None:
             metadatas = [{"url": str(url)} for url in urls]
 

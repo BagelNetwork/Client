@@ -54,9 +54,9 @@ def test_big_text(cluster):
     cluster.add(
         ids=["id4"],
         documents=[
-            """Hello and a hearty welcome to the BagelDB client hub!
+            """Hello and a hearty welcome to the Bagel client hub!
             It's an absolute delight and thrill to have you join us
-            on this exciting journey into the future of BagelDB. As
+            on this exciting journey into the future of Bagel. As
             we stand on the cusp of technological innovation,
             embarking on this forward-thinking adventure, we
             can't help but feel the exhilaration of what's to come.
@@ -64,7 +64,7 @@ def test_big_text(cluster):
             constantly innovating and evolving to stay ahead of
             the curve and we are dedicated to providing you with
             top-notch service and support, ensuring that your
-            experience with BagelDB is nothing short of exceptional.
+            experience with Bagel is nothing short of exceptional.
             """
         ],
         metadatas=[{"meta": "m1"}],

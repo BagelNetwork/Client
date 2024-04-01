@@ -380,7 +380,7 @@ class API(Component, ABC):
     def _add_image(
         self, cluster_id: UUID, filename: str, metadata: Optional[Metadata]
     ) -> Any:
-        """Add image to BagelDB."""
+        """Add image to Bagel."""
         pass
 
     @abstractmethod
@@ -393,7 +393,7 @@ class API(Component, ABC):
         increment_index: bool = True,
     ) -> Any:
         """
-        Add images by URLs to BagelDB.
+        Add images by URLs to Bagel.
         If metadatas is not provided, it will be generated with default values.
 
         Args:

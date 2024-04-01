@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Remove the dist, build, and betabageldb.egg-info directories
-rm -rf dist build betabageldb.egg-info
+# Remove the dist, build, and bagelML.egg-info directories
+rm -rf dist build bagelml.egg-info
 
 # Create a virtual environment in the venv directory if it doesn't exist
 if [ ! -d "venv" ]; then
