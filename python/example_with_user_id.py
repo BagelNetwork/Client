@@ -4,7 +4,7 @@ import bagel
 from bagel.config import Settings
 import os
 
-DEMO_KEY_IN_USE = "insert-your-api-key-here"
+DEMO_KEY_IN_USE = "5QwQk5SUHgSf8wsXGUK6xhiPqt1vvfY6"
 
 # Set environment variable
 os.environ['BAGEL_API_KEY'] = DEMO_KEY_IN_USE
