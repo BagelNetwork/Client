@@ -1,5 +1,11 @@
+import csv
+from pathlib import Path
 from typing import Optional, cast, Any, List
-from bagel.api import API
+
+from tqdm import tqdm
+
+from bagel.api import API, CreateDatasetPayload
+from bagel.api.Dataset import Dataset
 from bagel.config import System
 from bagel.api.types import (
     Document,
@@ -25,7 +31,7 @@ import bagel.errors as errors
 from uuid import UUID
 from overrides import override
 import base64
-from io import BytesIO
+from io import BytesIO, StringIO
 import os
 import uuid
 import time
@@ -536,6 +542,117 @@ class FastAPI(API):
         raise_bagel_error(resp)
         return resp.json()
 
+    @override
+    def load_dataset(self, dataset_id):
+        headers = self._popuate_headers_with_api_key(None)
+        # Fetch the total number of chunks for the dataset
+        info_response = requests.get(f"{self._api_url}/dataset-info/", params={"dataset_id": dataset_id})
+        info_response.raise_for_status()  # Ensure we got a valid response
+        total_chunks = info_response.json()['total_chunks']
+
+        dfs = []  # To store dataframes of each chunk
+
+        for chunk_number in tqdm(range(1, total_chunks + 1), desc="Downloading"):
+            response = requests.get(f"{self._api_url}/download-dataset/",
+                                    params={"dataset_id": dataset_id, "chunk_number": chunk_number})
+            response.raise_for_status()  # Ensure we got a valid response
+
+            dfs.append(pd.read_csv(StringIO(response.text), on_bad_lines='skip'))
+
+        # Concatenate all chunks into a single DataFrame
+        full_df = pd.concat(dfs, ignore_index=True) if dfs else pd.DataFrame()
+
+        return full_df
+
+    @override
+    def upload_dataset(self, file_path: str, dataset_id, file_name, rows_per_chunk=100) -> Any:
+        file_path = Path(file_path)
+
+        # First, determine the total number of rows for the progress bar
+        with open(file_path, mode='r', encoding='utf-8', newline='') as file:
+            total_rows = sum(1 for row in file) - 1  # Exclude header
+
+        # Initialize progress bar with total rows for percentage calculation
+        pbar = tqdm(total=total_rows, desc="Uploading", unit='rows', dynamic_ncols=True)
+
+        # Now, process the file for uploading in chunks
+        with open(file_path, mode='r', encoding='utf-8', newline='') as file:
+            reader = csv.reader(file)
+            file_name = file.name
+            header = next(reader)  # Read the header
+            # Process the header to escape quotes and enclose each field in quotes
+            processed_header = ['"{}"'.format(field.replace('"', '""')) for field in header]
+            header_str = ','.join(processed_header) + '\n'
+
+            rows = []
+            chunk_number = 0
+
+            for row in reader:
+                # Prepare each row by escaping quotes and enclosing fields in quotes
+                quoted_row = ['"{}"'.format(field.replace('"', '""')) for field in row]
+                rows.append(','.join(quoted_row))
+                if len(rows) == rows_per_chunk:
+                    chunk_number += 1
+                    chunk_data = header_str + '\n'.join(rows)
+                    self._upload_chunk(chunk_data, chunk_number, file_name, dataset_id, pbar)
+                    rows = []
+
+            if rows:  # Upload any remaining rows as the last chunk
+                chunk_number += 1
+                chunk_data = header_str + '\n'.join(rows)
+                self._upload_chunk(chunk_data, chunk_number, file_name, dataset_id, pbar)
+
+        pbar.close()
+        print("Upload completed successfully.")
+
+    def _upload_chunk(self, chunk_data, chunk_number, file_name, dataset_id, pbar):
+        files = {'data_file': (file_name, chunk_data)}
+        data = {
+            'dataset_id': dataset_id,
+            'chunk_number': chunk_number,
+        }
+        response = requests.post(f"{self._api_url}/upload-dataset", files=files, data=data)
+        if response.status_code == 200:
+            pbar.update(len(chunk_data.splitlines()) - 1)  # Update progress bar by the number of rows
+        else:
+            print(f"Failed to upload chunk {chunk_number}. Server responded with status code {response.status_code}.")
+
+    @override
+    def create_dataset(self, payload: CreateDatasetPayload) -> Dataset:
+        headers = self.populate_headers_with_api_key()
+        resp = requests.post(
+            self._api_url + "/dataset",
+            data=json.dumps(
+                {"title": payload.title, "category": payload.category, "tags": payload.tags,
+                 "details": payload.details}
+            ),
+            headers=headers
+        )
+        raise_bagel_error(resp)
+        dataset_id = resp.json()
+        return Dataset(
+            client=self,
+            dataset_id=dataset_id,
+            title=payload.title,
+            details=payload.details,
+            category=payload.category,
+            tags=payload.tags
+        )
+
+    @override
+    def delete_dataset(self, dataset_id: str) -> Dataset:
+        headers = self.populate_headers_with_api_key()
+        url = f"{self._api_url}/dataset/{dataset_id}"
+        resp = requests.delete(url, headers=headers)
+        raise_bagel_error(resp)
+
+    @override
+    def publish_dataset(self, dataset_id: str) -> bool:
+        headers = self.populate_headers_with_api_key()
+        url = f"{self._api_url}/publish-dataset?dataset_id={dataset_id}"
+        resp = requests.post(url, headers=headers)
+        raise_bagel_error(resp)
+
     def _extract_headers_with_key_and_user_id(self, api_key, user_id):
         api_key, user_id = self._extract_user_id_and_api_key(api_key, user_id)
         headers = self._popuate_headers_with_api_key(api_key)
@@ -544,6 +661,13 @@ class FastAPI(API):
     def _popuate_headers_with_api_key(self, api_key):
         headers = self.__headers.copy()  # Make a copy of headers to avoid modifying original headers
         if os.environ.get(BAGEL_API_KEY) is not None and api_key is None:
+            api_key = os.environ.get(BAGEL_API_KEY)
+        headers[X_API_KEY] = api_key  # Add API key to headers
+        return headers
+
+    def populate_headers_with_api_key(self):
+        headers = self.__headers.copy()  # Make a copy of headers to avoid modifying original headers
+        if os.environ.get(BAGEL_API_KEY) is not None:
             api_key = os.environ.get(BAGEL_API_KEY)
         headers[X_API_KEY] = api_key  # Add API key to headers
         return headers

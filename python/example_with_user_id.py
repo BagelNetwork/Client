@@ -1,7 +1,7 @@
 import time
 import uuid
 import bagel
-from bagel.config import Settings
+
 
 def create_and_delete(api):
     """
@@ -303,35 +303,22 @@ def add_image_urls_find(api):
 
 
 def share_cluster(api):
-
     name = "testing_cluster_sharing"
 
     # Get or create a cluster
     cluster = api.get_or_create_cluster(name=name)
     print("Cluster created:", cluster.name)
 
-    cluster.share_with(usernames = [
-        "hugging-face"
+    cluster.share_with(usernames=[
+        "username_001"
     ])
 
     api.delete_cluster(name)
     print(">> create_add_find done  !\n")
 
+
 def main():
     start_time = time.time()  # Record the start time
-
-    # Bagel server settings for production
-    server_settings = Settings(
-        bagel_api_impl="rest",
-        bagel_server_host="api.bageldb.ai",
-    )
-
-    # Bagel server settings for local
-    # server_settings = Settings(
-    #     bagel_api_impl="rest",
-    #     bagel_server_host="localhost",
-    #     bagel_server_http_port="8088",
-    # )
 
     # Create Bagel client
     client = bagel.Client()

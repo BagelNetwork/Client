@@ -4,6 +4,8 @@ from uuid import UUID
 
 import pandas as pd
 from bagel.api.Cluster import Cluster
+from bagel.api.Dataset import Dataset
+from bagel.api.model import CreateDatasetPayload
 from bagel.api.types import (
     ClusterMetadata,
     Document,
@@ -384,6 +386,10 @@ class API(Component, ABC):
         pass
 
     @abstractmethod
+    def upload_dataset(self, file_path: str, dataset_id, file_name, rows_per_chunk=100) -> Any:
+        pass
+
+    @abstractmethod
     def _add_image_urls(
         self,
         cluster_id: UUID,
@@ -413,4 +419,16 @@ class API(Component, ABC):
         pass
 
     def share_cluster(self, cluster_id: str, usernames: List[str]):
+        pass
+
+    def load_dataset(self, dataset_id: str):
+        pass
+
+    def create_dataset(self, payload: CreateDatasetPayload) -> Dataset:
+        pass
+
+    def delete_dataset(self, dataset_id: str) -> Dataset:
+        pass
+
+    def publish_dataset(self, dataset_id: str) -> bool:
         pass
