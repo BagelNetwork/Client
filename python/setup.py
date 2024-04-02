@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="bagelML",
-    version="0.2.45",
+    version="0.0.1",
     description="BagelML is a Python library for interacting with the Bagel inference and vector embedding API.",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
