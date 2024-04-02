@@ -390,6 +390,8 @@ class FastAPI(API):
         Updates a batch of embeddings in the database
         - pass in column oriented data lists
         """
+        
+        headers = self._popuate_headers_with_api_key(api_key)
 
         resp = requests.post(
             self._api_url + "/clusters/" + str(cluster_id) + "/upsert",
@@ -402,7 +404,7 @@ class FastAPI(API):
                     "increment_index": increment_index,
                 }
             ),
-            headers=self.__headers
+            headers = headers
         )
 
         resp.raise_for_status()
