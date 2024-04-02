@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, Optional, Tuple, cast, List, Any
 from pydantic import BaseModel, PrivateAttr
 from uuid import UUID
+import time
 
 from bagel.api.types import (
     ClusterMetadata,
@@ -133,6 +134,9 @@ class Cluster(BaseModel):
         self._client._add(
             ids, self.id, embeddings, metadatas, documents, increment_index
         )
+
+        # Syncing time after add
+        time.sleep(1)
 
     def get(
         self,

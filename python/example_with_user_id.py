@@ -2,13 +2,6 @@ import time
 import uuid
 import bagel
 from bagel.config import Settings
-import os
-
-DEMO_KEY_IN_USE = "insert-your-api-key-here"
-
-# Set environment variable
-os.environ['BAGEL_API_KEY'] = DEMO_KEY_IN_USE
-
 
 def create_and_delete(api):
     """
@@ -341,7 +334,7 @@ def main():
     # )
 
     # Create Bagel client
-    client = bagel.Client(server_settings)
+    client = bagel.Client()
 
     # Ping the Bagel server
     print("ping: ", client.ping())
