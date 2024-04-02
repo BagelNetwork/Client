@@ -1,9 +1,6 @@
-import os
 import time
 import uuid
-
 import bagel
-from bagel.config import Settings
 
 
 def create_and_delete(api):
@@ -342,7 +339,6 @@ def main():
     create_upsert(client)
     add_image_find(client)
     add_image_urls_find(client)
-
     end_time = time.time()  # Record the end time
     execution_time = end_time - start_time  # Calculate the execution time
     print(f"Total execution time: {execution_time:.2f} seconds")
