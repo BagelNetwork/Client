@@ -1,4 +1,4 @@
-from typing import Optional, cast, Any, List
+from typing import Optional, cast, Any, List, Tuple
 from bagel.api import API
 from bagel.config import System
 from bagel.api.types import (
@@ -29,6 +29,8 @@ from io import BytesIO
 import os
 import uuid
 import time
+
+import tempfile, zipfile
 
 BAGEL_USER_ID = "BAGEL_USER_ID"
 BAGEL_API_KEY = "BAGEL_API_KEY"
@@ -556,6 +558,102 @@ class FastAPI(API):
         if os.environ.get(BAGEL_API_KEY) is not None and api_key is None:
             api_key = os.environ.get(BAGEL_API_KEY)
         return api_key, user_id
+    
+    @override
+    def create_dataset(
+            self,
+            dataset_id: UUID,
+            name: str,
+            description: str,
+            user_id: str = DEFAULT_TENANT,
+            api_key: Optional[str] = None
+    ) -> str:
+        """Create a dataset"""
+        headers, user_id = self._extract_headers_with_key_and_user_id(api_key, user_id)
+        url = f"{self._api_url}/dataset-git"
+
+        data = {
+            "dataset_id": str(dataset_id),
+            "dataset_type": "Tabular",
+            "title": name,
+            "tags": [
+                "Dataset"
+            ],
+            "category": "AI",
+            "details": description,
+            "user_id": user_id
+        }
+        
+        resp = requests.post(url, headers=headers, data=json.dumps(data))
+        raise_bagel_error(resp)
+        
+        resp_text = resp.text
+        uuid_clean = resp_text.strip('"')
+        print(f"Response text: {uuid_clean}")  # Print the response text for debugging
+
+        return uuid_clean
+
+    @override
+    def get_dataset_info(
+            self,
+            dataset_id: str,
+            path: Optional[str] = "",
+            api_key: Optional[str] = None
+    ) -> str:
+        """Get information about a dataset."""
+        headers = self._popuate_headers_with_api_key(api_key)
+        url = f"{self._api_url}/dataset-git"
+        
+        data = {'dataset_id': dataset_id, 'path': path}
+        
+        resp = requests.get(url, headers=headers, params=data)
+
+        resp_json = resp.json()
+        
+        return resp_json
+    
+    @override
+    def upload_dataset(
+            self,
+            dataset_id: str,
+            chunk_number: int = 1,
+            file_name: str = "",
+            file_content: bytes = None,
+            api_key: Optional[str] = None
+    ) -> str:
+        """Upload a dataset file to Bagel."""
+        headers = self._popuate_headers_with_api_key(api_key)
+        url = f"{self._api_url}/datasets/{dataset_id}/upload-dataset-git"
+
+        params = {'dataset_id': dataset_id, 'chunk_number': chunk_number, 'file_name': file_name}
+
+        files = {'data_file': (file_name, file_content)}
+        
+        resp = requests.post(url, headers=headers, files=files, params=params)
+        
+        return resp.text
+    
+    @override
+    def download_dataset(
+            self,
+            dataset_id: str,
+            file_path: Optional[str] = "",
+            api_key: Optional[str] = None
+    ) -> str:
+        """Download a specific file from dataset."""
+        headers = self._popuate_headers_with_api_key(api_key)
+        url = f"{self._api_url}/download-dataset-git"
+        
+        params = {'dataset_id': dataset_id, 'file_path': file_path}
+        
+        resp = requests.get(url, headers=headers, params=params)
+        # raise_bagel_error(resp)
+        
+        file_content = resp.content
+        file_name = resp.headers.get('Content-Disposition', '').split('filename=')[1].strip('"')
+        file_type = resp.headers.get('Content-Type', '')
+        
+        return file_content, file_name, file_type
 
 
 def raise_bagel_error(resp: requests.Response) -> None:
