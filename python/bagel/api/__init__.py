@@ -414,3 +414,47 @@ class API(Component, ABC):
 
     def share_cluster(self, cluster_id: str, usernames: List[str]):
         pass
+    
+    @abstractmethod
+    def create_dataset(
+            self,
+            dataset_id: UUID,
+            name: str,
+            description: str,
+            user_id: str = DEFAULT_TENANT,
+            api_key: Optional[str] = None
+    ) -> str:
+        """Create a dataset"""
+        pass
+    
+    @abstractmethod
+    def get_dataset_info(
+            self, 
+            dataset_id: str,
+            api_key: Optional[str] = None
+    ) -> str:
+        """Get information about a dataset."""
+        pass
+
+    @abstractmethod
+    def upload_dataset(
+            self,
+            dataset_id: str, 
+            chunk_number: int = 1,
+            file_name: str = "",
+            file_content: bytes = None,
+            api_key: Optional[str] = None
+    ) -> str:
+        """Upload a dataset file to Bagel."""
+        pass
+
+    @abstractmethod
+    def download_dataset(
+            self,
+            dataset_id: str,
+            file_path: Optional[str] = "",
+            api_key: Optional[str] = None
+    ) -> str:  
+        """Download the full dataset."""
+        pass
+
