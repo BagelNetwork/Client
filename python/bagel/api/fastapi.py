@@ -589,7 +589,6 @@ class FastAPI(API):
         
         resp_text = resp.text
         uuid_clean = resp_text.strip('"')
-        print(f"Response text: {uuid_clean}")  # Print the response text for debugging
 
         return uuid_clean
 
