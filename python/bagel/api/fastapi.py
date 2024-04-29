@@ -670,7 +670,6 @@ class FastAPI(API):
         dataset_info = self.get_dataset_info(dataset_id, file_path)
         file_types = ["file", "dir"]
 
-        dataset_id = dataset_info['dataset_id']
         repo_info = dataset_info['repo_info']
         files = repo_info['files']
 
@@ -687,8 +686,7 @@ class FastAPI(API):
                     file.write(file_content)
 
             elif file_info['type'] == file_types[1]:
-                dataset_dir_info = self.get_dataset_info(dataset_id, file_path)
-                self.download_dataset_files(dataset_dir_info, target_dir)
+                self.download_dataset_files(dataset_id, target_dir, file_path)
         
         return True
 
