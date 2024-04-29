@@ -653,6 +653,44 @@ class FastAPI(API):
         file_type = resp.headers.get('Content-Type', '')
         
         return file_content, file_name, file_type
+    
+    @override
+    def download_dataset_files(
+            self, 
+            dataset_id: str, 
+            target_dir: str,
+            file_path: Optional[str] = "",
+            api_key: Optional[str] = None
+            ) -> bool:
+        
+        headers = self._popuate_headers_with_api_key(api_key)
+
+        os.makedirs(target_dir, exist_ok=True)
+        
+        dataset_info = self.get_dataset_info(dataset_id, file_path)
+        file_types = ["file", "dir"]
+
+        dataset_id = dataset_info['dataset_id']
+        repo_info = dataset_info['repo_info']
+        files = repo_info['files']
+
+        for file_info in files:
+            file_path = file_info['path']
+            if file_info['type'] == file_types[0]:
+                file_content, file_name, file_type = self.download_dataset(
+                    dataset_id=dataset_id,
+                    file_path=file_path
+                )
+
+                file_path = os.path.join(target_dir, file_name)
+                with open(file_path, "wb") as file:
+                    file.write(file_content)
+
+            elif file_info['type'] == file_types[1]:
+                dataset_dir_info = self.get_dataset_info(dataset_id, file_path)
+                self.download_dataset_files(dataset_dir_info, target_dir)
+        
+        return True
 
 
 def raise_bagel_error(resp: requests.Response) -> None:

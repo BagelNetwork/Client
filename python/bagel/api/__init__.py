@@ -457,4 +457,14 @@ class API(Component, ABC):
     ) -> str:  
         """Download the full dataset."""
         pass
+    
+    @abstractmethod
+    def download_dataset_files(
+            self,
+            dataset_id: str, 
+            target_dir: str,
+            file_path: Optional[str] = "",
+            api_key: Optional[str] = None
+            ) -> bool:
+        pass
 
