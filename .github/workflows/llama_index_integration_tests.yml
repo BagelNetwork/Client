@@ -1,4 +1,4 @@
-name: Langchain Integration Tests
+name: Llama Index Integration Tests
 
 on: [pull_request]
 
@@ -26,4 +26,4 @@ jobs:
 
     - name: Run tests
       run: |
-        python -m unittest discover -s tests -p "test_langchain_integration.py"
+        python -m unittest discover -s tests -p "test_llama_index.py"
