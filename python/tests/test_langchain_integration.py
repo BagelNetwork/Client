@@ -12,7 +12,7 @@ class TestLangchain(unittest.TestCase):
         cluster.delete_cluster()
 
     def test_02_create_vectorstore_from_docs(self):
-        loader = TextLoader("tests/state_of_the_union_2023.txt")
+        loader = TextLoader("tests/data/state_of_the_union_2023.txt")
         documents = loader.load()
         text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
         docs = text_splitter.split_documents(documents)[:20]
