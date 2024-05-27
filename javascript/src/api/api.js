@@ -1,10 +1,13 @@
 // imports
-const axios = require('axios')
-const fetch = require('node-fetch')
-const { Cluster } = require('./cluster')
-const { v4: uuidv4 } = require('uuid')
-const FormData = require('form-data')
-const Buffer = require('buffer').Buffer
+import axios from 'axios'
+import fetch from 'node-fetch'
+// const { Cluster } = require('./cluster') [Deprecated]
+import {v4 as uuidv4} from 'uuid'
+// const { v4: uuidv4 } = require('uuid')
+import FormData from 'form-data'
+// const FormData = require('form-data')
+// import {Buffer} from 'buffer'
+// // const Buffer = require('buffer').Buffer
 
 // Class to interact with the Bagel API====================================================================================
 class API {
@@ -78,8 +81,8 @@ class API {
   //     }
   //   }
 
-  //=========================================================================================
-  //Create Asset
+  //
+  //Create Asset===================================================================================[ADDED]
   async create_asset(payload, apiKey) {
     // Define headers
     const headers = {
@@ -113,7 +116,7 @@ class API {
 
   //Get a particular created asset using the asset id
   // getAssetById.js
-  //====================================================================================
+  //====================================================================================[ADDED]
   async get_asset_by_Id(id, apiKey) {
     // Define headers
     const headers = {
@@ -129,7 +132,7 @@ class API {
 
       const data = await response.json()
 
-      if (response.status === 204) {
+      if (response.status === 200) {
         console.log('Asset retrieved successfully!')
         console.log(data)
       } else {
@@ -140,7 +143,7 @@ class API {
     }
   }
 
-  //Get all assets of a particular user====================================================================================
+  //Get all assets of a particular user===============================[ADDED]
   async get_all_assets(userId, apiKey) {
     // Define headers
     const headers = {
@@ -170,8 +173,8 @@ class API {
     }
   }
 
-  // Deletes a particular asset using its asset id====================================================================================
-  async delete_asset(apiKey, assetId) {
+  // Deletes a particular asset using its asset id==========================================[ADDED]
+  async delete_asset(assetId, apiKey) {
     const headers = {
       'x-api-key': apiKey,
       'Content-Type': 'application/json',
@@ -185,10 +188,10 @@ class API {
       if (response.ok) {
         console.log(`Cluster with the id ${assetId} deleted successfully`)
       } else {
-        throw new error(`Error deleting assets ${await response.text()}`)
+        throw new Error(`Error deleting assets ${await response.text()}`)
       }
     } catch (error) {
-      console.error('Error: asset does not exist!')
+      console.error('Error: asset does not exist!', error)
     }
   }
 
@@ -356,31 +359,31 @@ class API {
     }
   }
 
-  // get top n data within a cluster
-  async _peek(cluster_id, n = 10) {
-    let ids
-    let where
-    let sort
-    let limit
-    let offset
-    let page
-    let page_size
-    let where_document
-    let include
+  // // get top n data within a cluster
+  // async _peek(cluster_id, n = 10) {
+  //   let ids
+  //   let where
+  //   let sort
+  //   let limit
+  //   let offset
+  //   let page
+  //   let page_size
+  //   let where_document
+  //   let include
 
-    return this._get(
-      cluster_id,
-      (ids = null),
-      (where = {}),
-      (sort = null),
-      (limit = n),
-      (offset = null),
-      (page = null),
-      (page_size = null),
-      (where_document = {}),
-      (include = ['embeddings', 'documents', 'metadatas'])
-    )
-  }
+  //   return this._get(
+  //     cluster_id,
+  //     (ids = null),
+  //     (where = {}),
+  //     (sort = null),
+  //     (limit = n),
+  //     (offset = null),
+  //     (page = null),
+  //     (page_size = null),
+  //     (where_document = {}),
+  //     (include = ['embeddings', 'documents', 'metadatas'])
+  //   )
+  // }
 
   // modify cluster name and metadata====================================================================================
   async _modify(clusterId, new_name = null, new_metadata = null) {
@@ -586,7 +589,7 @@ class API {
   // add images to a cluster via web form====================================================================================
   async _add_image_web(cluster_id, formData) {
     console.log('add_image_web', formData)
-    const resp = await fetch(
+     await fetch(
       this._api_url + '/clusters/' + cluster_id + '/add_image',
       {
         method: 'POST',
@@ -603,4 +606,4 @@ class API {
   }
 }
 
-module.exports = { API }
+export default { API }
