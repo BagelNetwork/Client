@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "javascript": "^1.0.0",
+    "standard": "^17.1.0"
+  }
+}

@@ -17,6 +17,7 @@
     "axios": "^0.21.4",
     "buffer": "^6.0.3",
     "form-data": "^4.0.0",
+    "javascript": "^1.0.0",
     "node-fetch": "^2.7.0",
     "standard": "^17.1.0",
     "uuid": "^9.0.1"
