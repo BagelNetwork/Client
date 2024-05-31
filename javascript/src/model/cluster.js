@@ -102,4 +102,4 @@ class Cluster {
 }
 
 
-module.exports = { Cluster };
+export default Cluster;
