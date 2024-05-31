@@ -3,6 +3,7 @@
   "version": "1.0.24",
   "description": "A npm client for BagelDB.",
   "main": "BagelDB.js",
+  "type": "module",
   "scripts": {
     "test": "jest"
   },

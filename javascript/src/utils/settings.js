@@ -1,4 +1,4 @@
-const config = require("./config.js");
+import config from "./config.js"
 
 class Settings {
     constructor(options = {}) {
@@ -45,4 +45,4 @@ class Settings {
 };
 
 
-module.exports = {Settings};
+export default Settings
