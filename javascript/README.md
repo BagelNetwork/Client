@@ -1,5 +1,4 @@
 # Bagel JavaScript Client 🥯
-
 ## Table of Contents.
 
 - [Installation](#installation)
