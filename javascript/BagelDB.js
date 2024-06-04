@@ -1,14 +1,13 @@
-const api = require('./src/api/api.js');
-const settigs = require('./src/utils/settings.js');
-const cluster = require('./src/model/cluster.js');
-
+import API from './src/api/api.js'
+import Settings from './src/utils/settings.js'
+import cluster from './src/model/cluster.js'
 
 // exports
-module.exports = {
-    // api
-    Client: api.API,
-    // utils
-    Settings: settigs.Settings,
-    // cluster
-    Cluster: cluster.Cluster,
-};
+export {
+  // api
+  API as Client,
+  // utils
+  Settings,
+  // cluster
+  cluster as Cluster
+}

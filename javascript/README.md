@@ -1,51 +1,57 @@
-# BagelDB JavaScript Client 🥯
+# Bagel JavaScript Client 🥯
 
 ## Table of Contents
 
-- [BagelDB JavaScript Client 🥯](#bageldb-javascript-client-)
-  - [Table of Contents](#table-of-contents)
-  - [Installation](#installation)
-  - [Overview](#overview)
-  - [Client](#client)
-  - [Settings](#settings)
-  - [Usage](#usage)
-  - [API Methods](#api-methods)
-    - [Ping API](#ping-api)
-    - [Get API Version](#get-api-version)
-    - [Create Cluster](#create-cluster)
-    - [Get Cluster](#get-cluster)
-    - [Delete Cluster](#delete-cluster)
-  - [Cluster Methods](#cluster-methods)
-  - [Full Example](#full-example)
+- [Installation](#installation)
+- [Overview](#overview)
+- [Client](#client)
+- [Settings](#settings)
+- [Usage](#usage)
+- [API Methods](#api-methods)
+  - [Ping API](#ping-api)
+  - [Get API Version](#get-api-version)
+  - [Create Asset](#create-asset)
+  - [Get Asset](#get-asset)
+  - [Get All Assets](#get-all-assets)
+  - [Delete Asset](#delete-asset)
 
 ## Installation
 
-```
+To install the Bagel JavaScript client, use npm:
+
+```bash
 npm install bageldb-beta
 ```
 
+## Dependencies
+
+Also, install the following dependencies:
+
+1. Axios : `npm install axios`
+2. Node-Fetch: `npm install node-fetch`
+3. Form data: `npm install form-data`
+4. uuid: `npm install uuid`
+5. Buffer: `npm install buffer`
+
 ## Overview
 
-The official BagelDB API endpoint is `api.bageldb.ai`.
+The official Bagel API endpoint is `api.bageldb.ai`.
 
-The BagelDB JavaScript client provides easy access to the BagelDB API from Node.js applications.
+The Bagel JavaScript client provides easy access to the Bagel API from Node.js applications.
 
-The full source code with examples is available on GitHub:
-https://github.com/BagelNetwork/Client/tree/main/javascript
-
-See `example.js` for complete usage examples.
+The full source code with examples is available on [GitHub](https://github.com/BagelNetwork/Client/tree/main/javascript).
 
 ## Client
 
-The `Client` class is the main interface to the BagelDB API. It requires a `Settings` object to configure connectivity:
+The `Client` class is the main interface to the Bagel API. It requires a `Settings` object to configure connectivity:
 
 ```js
-const { Settings, Client } = require('bageldb-beta');
+import { Settings, Client } from "bageldb-beta";
 
 // Settings config
 const settings = new Settings({
   bagel_api_impl: "rest",
-  bagel_server_host: "api.bageldb.ai"
+  bagel_server_host: "api.bageldb.ai",
 });
 
 const client = new Client(settings);
@@ -55,231 +61,206 @@ const client = new Client(settings);
 
 The `Settings` class contains configuration options for the client:
 
-- `bagel_api_impl` - The BagelDB API implementation, usually `"rest"`
-- `bagel_server_host` - BagelDB server hostname
+- `bagel_api_impl` - The Bagel API implementation, usually `"rest"`
+- `bagel_server_host` - Bagel server hostname
 - See `Settings` source for additional options
 
 ## Usage
 
-Once you have created a `Client` instance, you can call API methods like:
+Once you have created a `Client` instance, you can call API methods as shown in the examples below.
 
 ## API Methods
 
 ### Ping API
 
 ```js
-const ping_example = async () => {
-    // ping server
-    const response = await client.ping();
-    console.log(response);
-}
+const pingExample = async () => {
+  const response = await client.ping();
+  console.log(response);
+};
 
-ping_example()
+pingExample();
 ```
 
-Pings the API to check connectivity.
+This method pings the API to check connectivity. You will get `Pong!` as a response, acknowledging that the Bagel API is reachable.
 
 ### Get API Version
 
 ```js
-const version_example = async () => {
-    // get version
-    const version = await client.get_version();
-    console.log(version);
-}
+const versionExample = async () => {
+  const version = await client.get_version();
+  console.log(version);
+};
 
-version_example()
+versionExample();
 ```
 
-Gets the API version string.
+This method retrieves the API version string.
 
+### Create Asset
 
-### Create Cluster
+Assets in Bagel serve as powerful containers for large datasets, encapsulating embeddings — high-dimensional vectors that represent various data forms, such as text, images, or audio. These Assets enable efficient similarity searches, which are fundamental to a wide range of applications, from recommendation systems and search engines to data analytics tools.
 
-```js
-const create_cluster_example = async () => {
-    // create cluster
-    const resp = await client.create_cluster('testing_js_client');
-    console.log(resp)
-}
-```
-Creates a new cluster. If already cluster with same name does not exist then resposne will be somethig like this :
-```js
-Cluster {
-    name: 'testing_js_client',
-    id: 'a9c6b467-4af9-4b9e-ab6a-9589b9ceb1cb',
-    metadata: null,
-    _client: API { _api_url: 'http://api.bageldb.ai:80/api/v1' }
-  }
-```
+#### Create Asset: 'RAW' Type dataset
 
-### Get Cluster
+A raw dataset is an unprocessed collection of data in its original form. This type of dataset typically consists of various types of data such as text, images, audio, or any other form of data that hasn't been transformed, processed, or encoded into a specific format.
 
 ```js
-const get_cluster_example = async () => {
-    // get cluster
-    const cluster = await client.get_or_create_cluster("myclsuter");
-    console.log(cluster)
-}
+import { Settings, Client } from "bageldb-beta";
 
-get_cluster_example()
-```
-
-Gets an existing cluster by name. If cluster does not exist then it will create and return.
-
-### Delete Cluster
-
-```js
-const delete_cluster_example = async () => {
-    // delete cluster
-    await client.delete_cluster('mycluster');
-}
-
-delete_cluster_example()
-```
-
-Delete a cluster by name.
-
-## Cluster Methods
-
-The `Cluster` class represents a specific cluster and has methods like:
-
-```js
-const cluster_methods_example = async () => {
-    // get or create a cluster
-    const cluster_name = "cluster_methods";
-    const cluster = await client.get_or_create_cluster(cluster_name);
-
-    // add data to the cluster
-    await cluster.add(
-        ids = ["id1", "id2"],
-        embeddings = [[1.1, 2.3], [4.5, 6.9]],
-        metadatas = [{"info": "M1"}, {"info": "M1"}],
-        documents = ["doc1", "doc2"]
-    ).then((res) => {
-        if(res){
-            console.log("Data added successfully");
-        }
-    }).catch((err) => {
-        console.log(err);
-    });
-
-    // find data in the cluster
-    console.log('query result: ')
-    const results = await cluster.find(
-        query_embeddings = [[1.1, 2.3]],
-        n_results = 5,
-        where = { info: "M1" },
-        where_document = { $contains: "doc" },
-        include = ["metadatas", "documents", "distances"],
-        query_texts = null
-    );
-    console.log(results);
-}
-
-cluster_methods_example()
-```
-
-See the `Cluster` class documentation for full details on:
-
-- `count()` - Get total rows
-- `add()` - Insert new rows
-- `delete()` - Delete rows 
-- `update()` - Update existing rows
-- `find()` - Search by vectors
-- `peek()` - Sample rows
-- And more
-
-## Full Example
-```js
-// import
-const { Settings, Client } = require('bageldb-beta');
-
-// create settings
+// Settings config
 const settings = new Settings({
   bagel_api_impl: "rest",
   bagel_server_host: "api.bageldb.ai",
-  bagel_server_http_port: 80,
 });
 
-// example for add data to the cluster (with embeddings)
-const full_example = async () => {
-    // create api or client
-    const api = new Client(settings);
-    // get or create a cluster
-    const newName = "testing";
-    const cluster = await api.get_or_create_cluster(newName);
-    // add data to the cluster
-    await cluster.add(
-        ids = ["id1", "id2"],
-        embeddings = [[1.1, 2.3], [4.5, 6.9]],
-        metadatas = [{ "info": "M1" }, { "info": "M1" }],
-        documents = ["doc1", "doc2"]
-    ).then((res) => {
-        if (res) {
-            console.log("Data added successfully");
-        }
-    }).catch((err) => {
-        console.log(err);
-    });
-    // get count
-    const count = await cluster.count()
-    console.log("Count of data inside cluster:", count)
+const client = new Client(settings);
 
-    // update data in the cluster
-    await cluster.update(
-        ids = ["id1"],
-        embeddings = [[10.1, 20.3]],
-        metadatas = [{"info": "M1"}],
-        documents = ["doc1"]
-    ).then((res) => {
-        if(res){
-            console.log("Data updated successfully");
-        }
-    }
-    ).catch((err) => {
-        console.log(err);
-    });
+const apiKey = "4gB2wJPByf8qnUihAmH8dgbGYsZESEOH";
+const payload = {
+  dataset_type: "RAW",
+  title: "insert_assetName",
+  category: "insert_category",
+  details: "insert_details",
+  tags: [],
+  user_id: "insert_userId",
+};
+const createAsset = async () => {
+  // get version
+  const asset = await client.create_asset(payload, apiKey);
+  console.log(asset);
+};
 
-    // peek into the cluster
-    const peeks = await cluster.peek(10);
-    console.log('peek result: ', peeks);
-
-    // delete data from the cluster
-    await cluster.delete(
-        ids = ["id1"],
-        where = {},
-        where_document = {}
-    ).then((res) => {
-        if(res){
-            console.log("Data deleted successfully");
-        }
-    }).catch((err) => {
-        console.log(err);
-    });
-
-    // get count
-    const countDelete = await cluster.count()
-    console.log("Count after delete:", countDelete)
-
-    // find data in the cluster
-    console.log("query result: ");
-    await cluster.find(
-        query_embeddings = [[1.1, 2.3]],
-        n_results = 5,
-        where = { info: "M1" },
-        where_document = { $contains: "doc" },
-        include = ["metadatas", "documents", "distances"],
-        query_texts = null
-    );
-
-    // delete the cluster
-    await api.delete_cluster(newName);
-}
-
-full_example();
+createAsset();
 ```
- The code demonstrates how to connect to a BagelDB server, create or retrieve a cluster, perform various operations on the cluster (add, update, delete, find, peek), and then delete the cluster.
 
+This method creates a new asset and returns a response indicating "Asset successfully created" along with the asset ID. If the asset already exists, the response will be:
 
-See `example.js` for more complete examples. Let me know if any part needs more explanation!
+```js
+data: {
+  error: "ValueError('Asset already exists')";
+}
+```
+
+`NOTE:` Ensure all assets you create are unique to avoid errors.
+
+#### Create Asset: 'VECTOR' Type Asset
+
+A vector dataset consists of data that has been transformed into vectors, which are numerical representations of the original data. Each vector typically contains a set of numbers (features) that capture the essential characteristics of the data.
+
+Creating a 'VECTOR' type asset is similar to creating a 'RAW' type asset. The only difference is the payload:
+
+```js
+import { Settings, Client } from "bageldb-beta";
+
+// Settings config
+const settings = new Settings({
+  bagel_api_impl: "rest",
+  bagel_server_host: "api.bageldb.ai",
+});
+
+const client = new Client(settings);
+
+const apiKey = "insert_your_api_key";
+
+const payload = {
+  dataset_type: "VECTOR",
+  itle: "insert_assetName",
+  category: "insert_category",
+  details: "insert_details",
+  tags: ["VECTOR"],
+  user_id: "insert_userId",
+  embedding_model: "Embeddings here",
+  dimensions: 3,
+};
+
+const createAsset = async () => {
+  const asset = await client.create_asset(payload, apiKey);
+  console.log(asset);
+};
+
+createAsset();
+```
+
+### Get Asset by ID
+
+This method retrieves details for a specific Asset using the generated "Asset ID". An API key is used to ensure security.
+
+```js
+import { Settings, Client } from "bageldb-beta";
+
+// Settings config
+const settings = new Settings({
+  bagel_api_impl: "rest",
+  bagel_server_host: "api.bageldb.ai",
+});
+
+const client = new Client(settings);
+
+//Pass in requirements
+const assetId = "insert_assetID";
+const apiKey = "insert_apiKey";
+
+const getAsset = async () => {
+  // get version
+  const asset = await client.get_asset_by_Id(assetId, apiKey);
+  console.log(asset);
+};
+
+getAsset();
+```
+
+### Get All Assets (For a Specific User)
+
+This method retrieves a list of Assets created by a specific user. An API key is used to ensure security.
+
+```js
+import { Settings, Client } from "bageldb-beta";
+
+const settings = new Settings({
+  bagel_api_impl: "rest",
+  bagel_server_host: "api.bageldb.ai",
+});
+
+const client = new Client(settings);
+
+//Pass in requirements
+const userId = "insert_userID";
+const apiKey = "insert_apiKey";
+
+const getAssets = async () => {
+  // get version
+  const asset = await client.get_all_assets(userId, apiKey);
+  console.log(asset);
+};
+
+getAssets();
+```
+
+### Delete Asset
+
+This method deletes a specific Asset.
+
+```js
+import { Settings, Client } from "bageldb-beta";
+
+// Settings config
+const settings = new Settings({
+  bagel_api_impl: "rest",
+  bagel_server_host: "api.bageldb.ai",
+});
+
+const client = new Client(settings);
+
+const apiKey = "insert_apiKey";
+const assetId = "insert_assetID";
+
+const deleteAsset = async () => {
+  // get version
+  const asset = await client.delete_asset(assetId, apiKey);
+  console.log(asset);
+};
+deleteAsset();
+```
+
+This method deletes an Asset by ID. You can also confirm this by trying to delete the Asset, which will result in an `error`. All changes can be viewed on your console.
