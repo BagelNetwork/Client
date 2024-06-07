@@ -237,6 +237,34 @@ const getAssets = async () => {
 getAssets();
 ```
 
+### Upload File to Asset
+
+This method uploads files to a specific Asset.
+
+```Js
+import { Settings, Client } from 'bageldb-beta'
+
+// Settings config
+const settings = new Settings({
+  bagel_api_impl: 'rest',
+  bagel_server_host: 'api.bageldb.ai',
+})
+
+const client = new Client(settings)
+const assetId = 'b59195f2-030e-430d-8a25-29dbf79aa03e'
+const filePath = './sample_data.csv'
+const apiKey = '4gB2wJPByf8qnUihAmH8dgbGYsZESEOH'
+
+const uploadFile = async () => {
+  // get version
+  const asset = await client.add_file(assetId, filePath, apiKey)
+  console.log(asset)
+}
+
+uploadFile()
+
+```
+
 ### Delete Asset
 
 This method deletes a specific Asset.
