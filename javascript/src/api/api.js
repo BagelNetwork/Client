@@ -564,13 +564,13 @@ class API {
     }
   }
 
-  async query(
+  async query (
     clusterId,
     queryEmbeddings,
     nResults = 10,
     where = {},
     whereDocument = {},
-    include = ["metadatas", "documents", "distances"],
+    include = ['metadatas', 'documents', 'distances'],
     queryTexts = null,
     apiKey = null
   ) {
@@ -584,17 +584,16 @@ class API {
         include,
         queryTexts,
         apiKey
-      );
-      return result;
+      )
+      return result
     } catch (error) {
-      console.error("Error querying cluster:", error);
-      throw error;
+      console.error('Error querying cluster:', error)
+      throw error
     }
   }
 
-
   // main query private method
-  async _query(
+  async _query (
     clusterId,
     queryEmbeddings,
     nResults = 10,
@@ -615,7 +614,7 @@ class API {
           whereDocument,
           include,
           queryTexts,
-          apiKey,
+          apiKey
         }
       )
       console.log(JSON.stringify(response.data))
@@ -630,13 +629,14 @@ class API {
         embeddings: embeddings || null,
         documents: documents || null,
         metadatas: metadatas || null,
-        distances: distances || null,
+        distances: distances || null
       }
     } catch (error) {
       console.error('Error:', error.message)
       throw error
     }
   }
+
   // create index for a cluster====================================================================================
   async _create_index (clusterName) {
     try {
