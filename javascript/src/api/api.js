@@ -564,26 +564,58 @@ class API {
     }
   }
 
-  // query a cluster====================================================================================
-  async _query (
+  async query(
+    clusterId,
+    queryEmbeddings,
+    nResults = 10,
+    where = {},
+    whereDocument = {},
+    include = ["metadatas", "documents", "distances"],
+    queryTexts = null,
+    apiKey = null
+  ) {
+    try {
+      const result = await this._query(
+        clusterId,
+        queryEmbeddings,
+        nResults,
+        where,
+        whereDocument,
+        include,
+        queryTexts,
+        apiKey
+      );
+      return result;
+    } catch (error) {
+      console.error("Error querying cluster:", error);
+      throw error;
+    }
+  }
+
+
+  // main query private method
+  async _query(
     clusterId,
     queryEmbeddings,
     nResults = 10,
     where = {},
     whereDocument = {},
     include = ['metadatas', 'documents', 'distances'],
-    queryTexts = null
+    queryTexts = null,
+    apiKey
   ) {
     try {
-      const response = await axios.post(
+      const response = await fetch(
         this._api_url + '/clusters/' + `${clusterId}` + '/query',
         {
+          method: 'POST',
           queryEmbeddings,
           nResults,
           where,
           whereDocument,
           include,
-          queryTexts
+          queryTexts,
+          apiKey,
         }
       )
       console.log(JSON.stringify(response.data))
@@ -598,14 +630,13 @@ class API {
         embeddings: embeddings || null,
         documents: documents || null,
         metadatas: metadatas || null,
-        distances: distances || null
+        distances: distances || null,
       }
     } catch (error) {
       console.error('Error:', error.message)
       throw error
     }
   }
-
   // create index for a cluster====================================================================================
   async _create_index (clusterName) {
     try {
