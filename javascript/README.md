@@ -1,7 +1,6 @@
 # Bagel JavaScript Client 🥯
 
 ## Table of Contents
-
 - [Installation](#installation)
 - [Overview](#overview)
 - [Client](#client)
@@ -13,6 +12,7 @@
   - [Create Asset](#create-asset)
   - [Get Asset](#get-asset)
   - [Get All Assets](#get-all-assets)
+  - [Upload File](#upload-file-to-asset)
   - [Delete Asset](#delete-asset)
 
 ## Installation
@@ -161,25 +161,34 @@ const settings = new Settings({
 
 const client = new Client(settings);
 
-const apiKey = "insert_your_api_key";
+const assetId = 'f4013273-03fa-4d2a-bfb4-d36bda4d5a1c';
+const apiKey = '4gB2wJPByf8qnUihAmH8dgbGYsZESEOH';
 
 const payload = {
-  dataset_type: "VECTOR",
-  itle: "insert_assetName",
-  category: "insert_category",
-  details: "insert_details",
-  tags: ["VECTOR"],
-  user_id: "insert_userId",
-  embedding_model: "Embeddings here",
-  dimensions: 3,
+  metadatas: [
+    { source: "This is apple" }
+  ],
+  documents: [
+    "This is apple "
+  ],
+  ids: [
+    "hbdvsf-478t4bf4g4bj-4bc8be8bc8b8b8"
+  ]
 };
 
-const createAsset = async () => {
-  const asset = await client.create_asset(payload, apiKey);
-  console.log(asset);
+const addVectorAsset = async () => {
+  try {
+    console.log('Sending request with payload:', payload);
+    
+    const response = await client.add_data_to_asset(assetId, payload, apiKey);
+
+    console.log('Response received:', response);
+  } catch (error) {
+    console.error('Error embedding data to vector asset:', error);
+  }
 };
 
-createAsset();
+addVectorAsset();
 ```
 
 ### Get Asset by ID

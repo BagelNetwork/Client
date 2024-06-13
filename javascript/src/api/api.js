@@ -446,22 +446,73 @@ class API {
   //= ===================================================================================
   // add data to a asset
 
+  // async add_data_to_asset(assetId, payload, apiKey) {
+  //   const response = await fetch(`https://api.bageldb.ai/api/v1/asset/${assetId}/add`, {
+  //     method: 'POST',
+  //     headers: {
+  //       'Authorization': `Bearer ${apiKey}`,
+  //       'Content-Type': 'application/json'
+  //     },
+  //     body: JSON.stringify(payload)
+  //   });
+
+  //   if (!response.ok) {
+  //     const errorDetail = await response.json();
+  //     throw new Error(`Error adding data: ${response.statusText} - ${errorDetail.detail}`);
+  //   }
+
+  //   return await response.json();
+  // }
+
+  // Add data to vector asset=================================================================================
+
   async add_data_to_asset (assetId, payload, apiKey) {
-    const response = await fetch(`https://api.bageldb.ai/api/v1/asset/${assetId}/add`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    })
+    try {
+      const response = await fetch(`https://api.bageldb.ai/api/v1/asset/${assetId}/add`, {
+        method: 'POST',
+        headers: {
+          'x-api-key': apiKey,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
 
-    if (!response.ok) {
-      const errorDetail = await response.json()
-      throw new Error(`Error adding data: ${response.statusText} - ${errorDetail.detail}`)
+      if (!response.ok) {
+        const errorDetail = await response.json() // Changed to json to catch the error detail
+        console.error('Error response:', errorDetail) // Log the full error response
+        throw new Error(`Error adding data: ${response.status} - ${response.statusText}`)
+      }
+
+      return await response.json()
+    } catch (error) {
+      console.error('Internal error:', error)
+      throw error
     }
+  }
 
-    return await response.json()
+  // New method to query data from vector asset=================================================================================
+  async query_data_from_asset (assetId, payload, apiKey) {
+    try {
+      const response = await fetch(`https://api.bageldb.ai/api/v1/asset/${assetId}/query`, {
+        method: 'POST',
+        headers: {
+          'x-api-key': apiKey,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
+
+      if (!response.ok) {
+        const errorDetail = await response.json()
+        console.error('Error response:', errorDetail)
+        throw new Error(`Error querying data: ${response.status} - ${response.statusText}`)
+      }
+
+      return await response.json()
+    } catch (error) {
+      console.error('Internal error:', error)
+      throw error
+    }
   }
 
   // delete data from a cluster====================================================================================
@@ -564,78 +615,78 @@ class API {
     }
   }
 
-  async query (
-    clusterId,
-    queryEmbeddings,
-    nResults = 10,
-    where = {},
-    whereDocument = {},
-    include = ['metadatas', 'documents', 'distances'],
-    queryTexts = null,
-    apiKey = null
-  ) {
-    try {
-      const result = await this._query(
-        clusterId,
-        queryEmbeddings,
-        nResults,
-        where,
-        whereDocument,
-        include,
-        queryTexts,
-        apiKey
-      )
-      return result
-    } catch (error) {
-      console.error('Error querying cluster:', error)
-      throw error
-    }
-  }
+  // async query(
+  //   clusterId,
+  //   queryEmbeddings,
+  //   nResults = 10,
+  //   where = {},
+  //   whereDocument = {},
+  //   include = ["metadatas", "documents", "distances"],
+  //   queryTexts = null,
+  //   apiKey = null
+  // ) {
+  //   try {
+  //     const result = await this._query(
+  //       clusterId,
+  //       queryEmbeddings,
+  //       nResults,
+  //       where,
+  //       whereDocument,
+  //       include,
+  //       queryTexts,
+  //       apiKey
+  //     );
+  //     return result;
+  //   } catch (error) {
+  //     console.error("Error querying cluster:", error);
+  //     throw error;
+  //   }
+  // }
 
-  // main query private method
-  async _query (
-    clusterId,
-    queryEmbeddings,
-    nResults = 10,
-    where = {},
-    whereDocument = {},
-    include = ['metadatas', 'documents', 'distances'],
-    queryTexts = null,
-    apiKey
-  ) {
-    try {
-      const response = await fetch(
-        this._api_url + '/clusters/' + `${clusterId}` + '/query',
-        {
-          method: 'POST',
-          queryEmbeddings,
-          nResults,
-          where,
-          whereDocument,
-          include,
-          queryTexts,
-          apiKey
-        }
-      )
-      console.log(JSON.stringify(response.data))
-      if (!response.data) {
-        throw new Error('Empty response data received')
-      }
-      const { ids, embeddings, documents, metadatas, distances } = JSON.parse(
-        JSON.stringify(response.data)
-      )
-      return {
-        ids,
-        embeddings: embeddings || null,
-        documents: documents || null,
-        metadatas: metadatas || null,
-        distances: distances || null
-      }
-    } catch (error) {
-      console.error('Error:', error.message)
-      throw error
-    }
-  }
+  // // main query private method
+  // async _query(
+  //   clusterId,
+  //   queryEmbeddings,
+  //   nResults = 10,
+  //   where = {},
+  //   whereDocument = {},
+  //   include = ['metadatas', 'documents', 'distances'],
+  //   queryTexts = null,
+  //   apiKey
+  // ) {
+  //   try {
+  //     const response = await fetch(
+  //       this._api_url + '/clusters/' + `${clusterId}` + '/query',
+  //       {
+  //         method: 'POST',
+  //         queryEmbeddings,
+  //         nResults,
+  //         where,
+  //         whereDocument,
+  //         include,
+  //         queryTexts,
+  //         apiKey,
+  //       }
+  //     )
+  //     console.log(JSON.stringify(response.data))
+  //     if (!response.data) {
+  //       throw new Error('Empty response data received')
+  //     }
+  //     const { ids, embeddings, documents, metadatas, distances } = JSON.parse(
+  //       JSON.stringify(response.data)
+  //     )
+  //     return {
+  //       ids,
+  //       embeddings: embeddings || null,
+  //       documents: documents || null,
+  //       metadatas: metadatas || null,
+  //       distances: distances || null,
+  //     }
+  //   } catch (error) {
+  //     console.error('Error:', error.message)
+  //     throw error
+  //   }
+  // }
 
   // create index for a cluster====================================================================================
   async _create_index (clusterName) {
