@@ -1,8 +1,8 @@
 # Bagel Python Client 🥯
 
-Welcome to the Bagel Python Client Example! Bagel is your bread-and-butter library for interacting with the Bagel API without breaking a sweat. 
+Welcome to the Bagel Python Client Example! Bagel is your platform for peer-to-peer machine learning, finetuning open-source models like Llama or Mistral, and using retrieval augmented generation (RAG).
 
-One of the perks? **No need to call the OpenAI Embeddings method or any other model to generate embeddings!** That's right, the Bagel client handles that for you. So, you don't need to spend extra bucks on generating embeddings. Quite a dough-saver, isn't it? 🥯💰
+One of the perks? **No need to manage complex embeddings or model integrations yourself!** The Bagel client handles these processes, saving you time and money. 🥯💰
 
 ## Prerequisites
 

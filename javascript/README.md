@@ -38,6 +38,22 @@ Also, install the following dependencies:
 
 The official Bagel API endpoint is `api.bageldb.ai`.
 The Bagel JavaScript client provides easy access to the Bagel API from Node.js applications.
+
+Also, install the following dependencies:
+
+1. Axios : `npm install axios`
+2. Node-Fetch: `npm install node-fetch`
+3. Form data: `npm install form-data`
+4. uuid: `npm install uuid`
+5. Buffer: `npm install buffer`
+
+## Overview
+
+The official Bagel API endpoint is `api.bageldb.ai`.
+
+The Bagel JavaScript client provides easy access to the Bagel API from Node.js applications.
+
+
 The full source code with examples is available on [GitHub](https://github.com/BagelNetwork/Client/tree/main/javascript).
 
 ## Client
@@ -97,6 +113,7 @@ versionExample();
 This method retrieves the API version string.
 
 ### Create Asset
+
 
 Assets in Bagel serve as powerful containers for large datasets, encapsulating embeddings — high-dimensional vectors that represent various data forms, such as text, images, or audio. These Assets enable efficient similarity searches, which are fundamental to a wide range of applications, from recommendation systems and search engines to data analytics tools.
 
@@ -216,9 +233,98 @@ getAsset();
 
 This method retrieves a list of Assets created by a specific user. An API key is used to ensure security.
 
+Assets in Bagel serve as powerful containers for large datasets, encapsulating embeddings — high-dimensional vectors that represent various data forms, such as text, images, or audio. These Assets enable efficient similarity searches, which are fundamental to a wide range of applications, from recommendation systems and search engines to data analytics tools.
+
+#### Create Asset: 'RAW' Type dataset
+
+A raw dataset is an unprocessed collection of data in its original form. This type of dataset typically consists of various types of data such as text, images, audio, or any other form of data that hasn't been transformed, processed, or encoded into a specific format.
+
 ```js
 import { Settings, Client } from "bageldb-beta";
 
+// Settings config
+const settings = new Settings({
+  bagel_api_impl: "rest",
+  bagel_server_host: "api.bageldb.ai",
+});
+
+const client = new Client(settings);
+
+const apiKey = "4gB2wJPByf8qnUihAmH8dgbGYsZESEOH";
+const payload = {
+  dataset_type: "RAW",
+  title: "insert_assetName",
+  category: "insert_category",
+  details: "insert_details",
+  tags: [],
+  user_id: "insert_userId",
+};
+const createAsset = async () => {
+  // get version
+  const asset = await client.create_asset(payload, apiKey);
+  console.log(asset);
+};
+
+createAsset();
+```
+
+This method creates a new asset and returns a response indicating "Asset successfully created" along with the asset ID. If the asset already exists, the response will be:
+
+```js
+data: {
+  error: "ValueError('Asset already exists')";
+}
+```
+
+`NOTE:` Ensure all assets you create are unique to avoid errors.
+
+#### Create Asset: 'VECTOR' Type Asset
+
+A vector dataset consists of data that has been transformed into vectors, which are numerical representations of the original data. Each vector typically contains a set of numbers (features) that capture the essential characteristics of the data.
+
+Creating a 'VECTOR' type asset is similar to creating a 'RAW' type asset. The only difference is the payload:
+
+```js
+import { Settings, Client } from "bageldb-beta";
+
+// Settings config
+const settings = new Settings({
+  bagel_api_impl: "rest",
+  bagel_server_host: "api.bageldb.ai",
+});
+
+const client = new Client(settings);
+
+const apiKey = "insert_your_api_key";
+
+const payload = {
+  dataset_type: "VECTOR",
+  itle: "insert_assetName",
+  category: "insert_category",
+  details: "insert_details",
+  tags: ["VECTOR"],
+  user_id: "insert_userId",
+  embedding_model: "Embeddings here",
+  dimensions: 3,
+};
+
+const createAsset = async () => {
+  const asset = await client.create_asset(payload, apiKey);
+  console.log(asset);
+};
+
+createAsset();
+```
+
+### Get Asset by ID
+
+This method retrieves details for a specific Asset using the generated "Asset ID". An API key is used to ensure security.
+
+
+```js
+import { Settings, Client } from "bageldb-beta";
+
+// Settings config
 const settings = new Settings({
   bagel_api_impl: "rest",
   bagel_server_host: "api.bageldb.ai",
@@ -264,6 +370,43 @@ const uploadFile = async () => {
 }
 
 uploadFile()
+const assetId = "insert_assetID";
+const apiKey = "insert_apiKey";
+
+const getAsset = async () => {
+  // get version
+  const asset = await client.get_asset_by_Id(assetId, apiKey);
+  console.log(asset);
+};
+
+getAsset();
+```
+
+### Get All Assets (For a Specific User)
+
+This method retrieves a list of Assets created by a specific user. An API key is used to ensure security.
+
+```js
+import { Settings, Client } from "bageldb-beta";
+
+const settings = new Settings({
+  bagel_api_impl: "rest",
+  bagel_server_host: "api.bageldb.ai",
+});
+
+const client = new Client(settings);
+
+//Pass in requirements
+const userId = "insert_userID";
+const apiKey = "insert_apiKey";
+
+const getAssets = async () => {
+  // get version
+  const asset = await client.get_all_assets(userId, apiKey);
+  console.log(asset);
+};
+
+getAssets();
 ```
 
 ### Delete Asset
