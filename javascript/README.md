@@ -1,6 +1,7 @@
 # Bagel JavaScript Client 🥯
 
 ## Table of Contents
+
 - [Installation](#installation)
 - [Overview](#overview)
 - [Client](#client)
@@ -36,9 +37,7 @@ Also, install the following dependencies:
 ## Overview
 
 The official Bagel API endpoint is `api.bageldb.ai`.
-
 The Bagel JavaScript client provides easy access to the Bagel API from Node.js applications.
-
 The full source code with examples is available on [GitHub](https://github.com/BagelNetwork/Client/tree/main/javascript).
 
 ## Client
@@ -161,30 +160,24 @@ const settings = new Settings({
 
 const client = new Client(settings);
 
-const assetId = 'f4013273-03fa-4d2a-bfb4-d36bda4d5a1c';
-const apiKey = '4gB2wJPByf8qnUihAmH8dgbGYsZESEOH';
+const assetId = "f4013273-03fa-4d2a-bfb4-d36bda4d5a1c";
+const apiKey = "4gB2wJPByf8qnUihAmH8dgbGYsZESEOH";
 
 const payload = {
-  metadatas: [
-    { source: "This is apple" }
-  ],
-  documents: [
-    "This is apple "
-  ],
-  ids: [
-    "hbdvsf-478t4bf4g4bj-4bc8be8bc8b8b8"
-  ]
+  metadatas: [{ source: "This is apple" }],
+  documents: ["This is apple "],
+  ids: ["hbdvsf-478t4bf4g4bj-4bc8be8bc8b8b8"],
 };
 
 const addVectorAsset = async () => {
   try {
-    console.log('Sending request with payload:', payload);
-    
+    console.log("Sending request with payload:", payload);
+
     const response = await client.add_data_to_asset(assetId, payload, apiKey);
 
-    console.log('Response received:', response);
+    console.log("Response received:", response);
   } catch (error) {
-    console.error('Error embedding data to vector asset:', error);
+    console.error("Error embedding data to vector asset:", error);
   }
 };
 
@@ -271,7 +264,6 @@ const uploadFile = async () => {
 }
 
 uploadFile()
-
 ```
 
 ### Delete Asset
