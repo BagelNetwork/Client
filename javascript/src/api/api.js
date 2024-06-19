@@ -263,6 +263,35 @@ class API {
     }
   }
 
+  // new update function added
+  async update_cluster (clusterId, payload, apiKey) {
+    return this._update_cluster(clusterId, payload, apiKey)
+  }
+
+  async _update_cluster (clusterId, payload, apiKey) {
+    try {
+      const response = await fetch(this._api_url + '/clusters/' + clusterId + '/update', {
+        method: 'POST',
+        headers: {
+          'x-api-key': apiKey,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
+
+      if (!response.ok) {
+        const errorDetail = await response.json() // Changed to json to catch the error detail
+        console.error('Error response:', errorDetail) // Log the full error response
+        throw new Error(`Error updating data: ${response.status}`)
+      }
+
+      return await response.json()
+    } catch (error) {
+      console.error('Internal error:', error)
+      throw error
+    }
+  }
+
   // persist the database on disk====================================================================================
   async persist () {
     try {
