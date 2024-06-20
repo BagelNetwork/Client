@@ -247,6 +247,46 @@ const getAsset = async () => {
 getAsset();
 ```
 
+### Update Asset
+
+Updates data in the Asset
+
+```js
+import { Settings, Client } from "bageldb-beta";
+
+// Settings config
+const settings = new Settings({
+  bagel_api_impl: "rest",
+  bagel_server_host: "api.bageldb.ai",
+});
+
+const client = new Client(settings);
+
+const assetId = "f4013273-03fa-4d2a-bfb4-d36bda4d5a1c";
+const apiKey = "4gB2wJPByf8qnUihAmH8dgbGYsZESEOH";
+
+const payload = {
+  price: 200,
+  is_published: true,
+  is_purchased: true,
+  details: "This is for everyone video TV gadget",
+  title: "LG Televisoin",
+};
+const update = async () => {
+  try {
+    console.log("Sending request with payload:", payload);
+
+    const response = await client.update_asset(assetId, payload, apiKey);
+
+    console.log("Response received:", response);
+  } catch (error) {
+    console.error("Error update cluster embedding:", error);
+  }
+};
+
+update();
+```
+
 ### Get All Assets (For a Specific User)
 
 Retrieves all assets associated with a specific user.  An API key is used to ensure security.
