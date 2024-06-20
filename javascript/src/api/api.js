@@ -195,6 +195,35 @@ class API {
     }
   }
 
+  // new update function added
+  async update_asset (assetId, payload, apiKey) {
+    return this._update_asset(assetId, payload, apiKey)
+  }
+
+  async _update_asset (assetId, payload, apiKey) {
+    try {
+      const response = await fetch(this._api_url + '/datasets/' + assetId, {
+        method: 'PUT',
+        headers: {
+          'x-api-key': apiKey,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
+
+      if (!response.ok) {
+        const errorDetail = await response.json() // Changed to json to catch the error detail
+        console.error('Error response:', errorDetail) // Log the full error response
+        throw new Error(`Error updating data: ${response.status}`)
+      }
+
+      return await response.json()
+    } catch (error) {
+      console.error('Internal error:', error)
+      throw error
+    }
+  }
+
   // persist the database on disk====================================================================================
   async persist () {
     try {
@@ -386,7 +415,7 @@ class API {
       console.error('Internal error:', error)
       // throw error;
     }
-  }
+  }// ------------------- Query Asset ---------------------
 
   // delete data from a cluster====================================================================================
   async _delete (clusterId, ids = null, where = {}, whereDocument = {}) {
@@ -404,34 +433,7 @@ class API {
     }
   }
 
-  // new update function added
-  async update_asset (assetId, payload, apiKey) {
-    return this._update_asset(assetId, payload, apiKey)
-  }
 
-  async _update_asset (assetId, payload, apiKey) {
-    try {
-      const response = await fetch(this._api_url + '/datasets/' + assetId, {
-        method: 'PUT',
-        headers: {
-          'x-api-key': apiKey,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      })
-
-      if (!response.ok) {
-        const errorDetail = await response.json() // Changed to json to catch the error detail
-        console.error('Error response:', errorDetail) // Log the full error response
-        throw new Error(`Error updating data: ${response.status}`)
-      }
-
-      return await response.json()
-    } catch (error) {
-      console.error('Internal error:', error)
-      throw error
-    }
-  }
 
   // update data in a cluster====================================================================================
   async _update (
