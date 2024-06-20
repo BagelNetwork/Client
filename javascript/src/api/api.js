@@ -264,14 +264,14 @@ class API {
   }
 
   // new update function added
-  async update_cluster (clusterId, payload, apiKey) {
-    return this._update_cluster(clusterId, payload, apiKey)
+  async update_asset (assetId, payload, apiKey) {
+    return this._update_asset(assetId, payload, apiKey)
   }
 
-  async _update_cluster (clusterId, payload, apiKey) {
+  async _update_asset (assetId, payload, apiKey) {
     try {
-      const response = await fetch(this._api_url + '/clusters/' + clusterId + '/update', {
-        method: 'POST',
+      const response = await fetch(this._api_url + '/datasets/' + assetId, {
+        method: 'PUT',
         headers: {
           'x-api-key': apiKey,
           'Content-Type': 'application/json'
@@ -519,10 +519,39 @@ class API {
     }
   }
 
-  // New method to query data from vector asset=================================================================================
-  async query_data_from_asset (assetId, payload, apiKey) {
+  // // New method to query data from vector asset=================================================================================
+  // async query_data_from_asset (assetId, payload, apiKey) {
+  //   try {
+  //     const response = await fetch(`https://api.bageldb.ai/api/v1/asset/${assetId}/query`, {
+  //       method: 'POST',
+  //       headers: {
+  //         'x-api-key': apiKey,
+  //         'Content-Type': 'application/json'
+  //       },
+  //       body: JSON.stringify(payload)
+  //     })
+
+  //     if (!response.ok) {
+  //       const errorDetail = await response.json()
+  //       console.error('Error response:', errorDetail)
+  //       throw new Error(`Error querying data: ${response.status} - ${response.statusText}`)
+  //     }
+
+  //     return await response.json()
+  //   } catch (error) {
+  //     console.error('Internal error:', error)
+  //     throw error
+  //   }
+  // }
+
+  // -------------New Query Asset---------------------
+  async query_asset (assetId, payload, apiKey) {
+    return this._query_asset(assetId, payload, apiKey)
+  }
+
+  async _query_asset (assetId, payload, apiKey) {
     try {
-      const response = await fetch(`https://api.bageldb.ai/api/v1/asset/${assetId}/query`, {
+      const response = await fetch(this._api_url + '/asset/' + assetId + '/query', {
         method: 'POST',
         headers: {
           'x-api-key': apiKey,
@@ -532,9 +561,9 @@ class API {
       })
 
       if (!response.ok) {
-        const errorDetail = await response.json()
-        console.error('Error response:', errorDetail)
-        throw new Error(`Error querying data: ${response.status} - ${response.statusText}`)
+        const errorDetail = await response.json() // Changed to json to catch the error detail
+        console.error('Error response:', errorDetail) // Log the full error response
+        throw new Error(`Error querying data: ${response.status}`)
       }
 
       return await response.json()
@@ -542,7 +571,7 @@ class API {
       console.error('Internal error:', error)
       throw error
     }
-  }
+  }// ------------------- Query Asset ---------------------
 
   // delete data from a cluster====================================================================================
   async _delete (clusterId, ids = null, where = {}, whereDocument = {}) {

@@ -53,7 +53,6 @@ The official Bagel API endpoint is `api.bageldb.ai`.
 
 The Bagel JavaScript client provides easy access to the Bagel API from Node.js applications.
 
-
 The full source code with examples is available on [GitHub](https://github.com/BagelNetwork/Client/tree/main/javascript).
 
 ## Client
@@ -113,7 +112,6 @@ versionExample();
 This method retrieves the API version string.
 
 ### Create Asset
-
 
 Assets in Bagel serve as powerful containers for large datasets, encapsulating embeddings — high-dimensional vectors that represent various data forms, such as text, images, or audio. These Assets enable efficient similarity searches, which are fundamental to a wide range of applications, from recommendation systems and search engines to data analytics tools.
 
@@ -316,10 +314,59 @@ const createAsset = async () => {
 createAsset();
 ```
 
+### Query Vector Asset
+
+```js
+import { Settings, Client } from "bageldb-beta";
+
+// Settings config
+const settings = new Settings({
+  bagel_api_impl: "rest",
+  bagel_server_host: "api.bageldb.ai",
+});
+
+const client = new Client(settings);
+
+const assetId = "inset assetId";
+const apiKey = "insert apiKey";
+let i;
+let list;
+for (i = 0; i < 768; i++) {
+  list = Math.random().toFixed(1);
+}
+const em = new Array(i).fill(list);
+
+const payload = {
+  where: {
+    category: "Cat2",
+  },
+  where_document: {
+    is_published: true,
+  },
+  query_embeddings: [em],
+  n_results: 10,
+  include: ["metadatas", "documents", "distances"],
+  query_texts: ["TV show"],
+  padding: false,
+};
+const query = async () => {
+  try {
+    console.log("Sending request with payload:", payload);
+
+    const response = await client.query_asset(assetId, payload, apiKey);
+
+    console.log("Response received:", response);
+  } catch (error) {
+    console.error("Error querryin asset:", error);
+  }
+};
+
+query();
+```
+
 ### Get Asset by ID
 
 This method retrieves details for a specific Asset using the generated "Asset ID". An API key is used to ensure security.
-
 
 ```js
 import { Settings, Client } from "bageldb-beta";
@@ -380,6 +427,46 @@ const getAsset = async () => {
 };
 
 getAsset();
+```
+
+### Update Asset
+
+Updates data in the Asset
+
+```js
+import { Settings, Client } from "bageldb-beta";
+
+// Settings config
+const settings = new Settings({
+  bagel_api_impl: "rest",
+  bagel_server_host: "api.bageldb.ai",
+});
+
+const client = new Client(settings);
+
+const assetId = "f4013273-03fa-4d2a-bfb4-d36bda4d5a1c";
+const apiKey = "4gB2wJPByf8qnUihAmH8dgbGYsZESEOH";
+
+const payload = {
+  price: 200,
+  is_published: true,
+  is_purchased: true,
+  details: "This is for everyone video TV gadget",
+  title: "LG Televisoin",
+};
+const update = async () => {
+  try {
+    console.log("Sending request with payload:", payload);
+
+    const response = await client.update_asset(assetId, payload, apiKey);
+
+    console.log("Response received:", response);
+  } catch (error) {
+    console.error("Error update cluster embedding:", error);
+  }
+};
+
+update();
 ```
 
 ### Get All Assets (For a Specific User)
