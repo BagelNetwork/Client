@@ -48,6 +48,15 @@ Also, install the following dependencies:
 4. uuid: `npm install uuid`
 5. Buffer: `npm install buffer`
 
+<<<<<<< HEAD
+=======
+## Overview
+
+The official Bagel API endpoint is `api.bageldb.ai`.
+
+The Bagel JavaScript client provides easy access to the Bagel API from Node.js applications.
+
+>>>>>>> fa58b33 (Update resolved - Query WIP)
 The full source code with examples is available on [GitHub](https://github.com/BagelNetwork/Client/tree/main/javascript).
 
 ## Client
@@ -252,8 +261,155 @@ getAsset();
 This method retrieves a list of Assets created by a specific user. An API key is used to ensure security.
 
 ```js
+<<<<<<< HEAD
 const apiKey = "insert-your-api-key";
 const userId = "insert-your-user-id";
+=======
+import { Settings, Client } from "bageldb-beta";
+
+// Settings config
+const settings = new Settings({
+  bagel_api_impl: "rest",
+  bagel_server_host: "api.bageldb.ai",
+});
+
+const client = new Client(settings);
+
+const apiKey = "4gB2wJPByf8qnUihAmH8dgbGYsZESEOH";
+const payload = {
+  dataset_type: "RAW",
+  title: "insert_assetName",
+  category: "insert_category",
+  details: "insert_details",
+  tags: [],
+  user_id: "insert_userId",
+};
+const createAsset = async () => {
+  // get version
+  const asset = await client.create_asset(payload, apiKey);
+  console.log(asset);
+};
+
+createAsset();
+```
+
+This method creates a new asset and returns a response indicating "Asset successfully created" along with the asset ID. If the asset already exists, the response will be:
+
+```js
+data: {
+  error: "ValueError('Asset already exists')";
+}
+```
+
+`NOTE:` Ensure all assets you create are unique to avoid errors.
+
+#### Create Asset: 'VECTOR' Type Asset
+
+A vector dataset consists of data that has been transformed into vectors, which are numerical representations of the original data. Each vector typically contains a set of numbers (features) that capture the essential characteristics of the data.
+
+Creating a 'VECTOR' type asset is similar to creating a 'RAW' type asset. The only difference is the payload:
+
+```js
+import { Settings, Client } from "bageldb-beta";
+
+// Settings config
+const settings = new Settings({
+  bagel_api_impl: "rest",
+  bagel_server_host: "api.bageldb.ai",
+});
+
+const client = new Client(settings);
+
+const apiKey = "insert_your_api_key";
+
+const payload = {
+  dataset_type: "VECTOR",
+  itle: "insert_assetName",
+  category: "insert_category",
+  details: "insert_details",
+  tags: ["VECTOR"],
+  user_id: "insert_userId",
+  embedding_model: "Embeddings here",
+  dimensions: 3,
+};
+
+const createAsset = async () => {
+  const asset = await client.create_asset(payload, apiKey);
+  console.log(asset);
+};
+
+createAsset();
+```
+
+### Query Vector Asset
+
+```js
+import { Settings, Client } from "bageldb-beta";
+
+// Settings config
+const settings = new Settings({
+  bagel_api_impl: "rest",
+  bagel_server_host: "api.bageldb.ai",
+});
+
+const client = new Client(settings);
+
+const assetId = "inset assetId";
+const apiKey = "insert apiKey";
+let i;
+let list;
+for (i = 0; i < 768; i++) {
+  list = Math.random().toFixed(1);
+}
+const em = new Array(i).fill(list);
+
+const payload = {
+  where: {
+    category: "Cat2",
+  },
+  where_document: {
+    is_published: true,
+  },
+  query_embeddings: [em],
+  n_results: 10,
+  include: ["metadatas", "documents", "distances"],
+  query_texts: ["TV show"],
+  padding: false,
+};
+const query = async () => {
+  try {
+    console.log("Sending request with payload:", payload);
+
+    const response = await client.query_asset(assetId, payload, apiKey);
+
+    console.log("Response received:", response);
+  } catch (error) {
+    console.error("Error querryin asset:", error);
+  }
+};
+
+query();
+```
+
+### Get Asset by ID
+
+This method retrieves details for a specific Asset using the generated "Asset ID". An API key is used to ensure security.
+
+```js
+import { Settings, Client } from "bageldb-beta";
+
+// Settings config
+const settings = new Settings({
+  bagel_api_impl: "rest",
+  bagel_server_host: "api.bageldb.ai",
+});
+
+const client = new Client(settings);
+
+//Pass in requirements
+const userId = "insert_userID";
+const apiKey = "insert_apiKey";
+>>>>>>> fa58b33 (Update resolved - Query WIP)
 
 const getAssets = async () => {
   const assets = await client.get_all_assets(userId, apiKey);
@@ -282,6 +438,49 @@ uploadFile()
 ```
 
 ### Update Asset
+<<<<<<< HEAD
+=======
+
+Updates data in the Asset
+
+```js
+import { Settings, Client } from "bageldb-beta";
+
+// Settings config
+const settings = new Settings({
+  bagel_api_impl: "rest",
+  bagel_server_host: "api.bageldb.ai",
+});
+
+const client = new Client(settings);
+
+const assetId = "f4013273-03fa-4d2a-bfb4-d36bda4d5a1c";
+const apiKey = "4gB2wJPByf8qnUihAmH8dgbGYsZESEOH";
+
+const payload = {
+  price: 200,
+  is_published: true,
+  is_purchased: true,
+  details: "This is for everyone video TV gadget",
+  title: "LG Televisoin",
+};
+const update = async () => {
+  try {
+    console.log("Sending request with payload:", payload);
+
+    const response = await client.update_asset(assetId, payload, apiKey);
+
+    console.log("Response received:", response);
+  } catch (error) {
+    console.error("Error update cluster embedding:", error);
+  }
+};
+
+update();
+```
+
+### Get All Assets (For a Specific User)
+>>>>>>> fa58b33 (Update resolved - Query WIP)
 
 Updates data in the Asset
 
