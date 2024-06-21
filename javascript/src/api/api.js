@@ -544,34 +544,34 @@ class API {
   //   }
   // }
 
-  // // -------------New Query Asset--------------------- [Preferred]
-  // async query_asset (assetId, payload, apiKey) {
-  //   return this._query_asset(assetId, payload, apiKey)
-  // }
+  // ------------- Query Asset Function --------------------- [Preferred]
+  async query_asset (assetId, payload, apiKey) {
+    return this._query_asset(assetId, payload, apiKey)
+  }
 
-  // async _query_asset (assetId, payload, apiKey) {
-  //   try {
-  //     const response = await fetch(this._api_url + '/asset/' + assetId + '/query', {
-  //       method: 'POST',
-  //       headers: {
-  //         'x-api-key': apiKey,
-  //         'Content-Type': 'application/json'
-  //       },
-  //       body: JSON.stringify(payload)
-  //     })
+  async _query_asset (assetId, payload, apiKey) {
+    try {
+      const response = await fetch(this._api_url + '/asset/' + assetId + '/query', {
+        method: 'POST',
+        headers: {
+          'x-api-key': apiKey,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
 
-  //     if (!response.ok) {
-  //       const errorDetail = await response.json() // Changed to json to catch the error detail
-  //       console.error('Error response:', errorDetail) // Log the full error response
-  //       throw new Error(`Error querying data: ${response.status}`)
-  //     }
+      if (!response.ok) {
+        const errorDetail = await response.json() // Changed to json to catch the error detail
+        console.error('Error response:', errorDetail) // Log the full error response
+        throw new Error(`Error querying data: ${response.status}`)
+      }
 
-  //     return await response.json()
-  //   } catch (error) {
-  //     console.error('Internal error:', error)
-  //     throw error
-  //   }
-  // }
+      return await response.json()
+    } catch (error) {
+      console.error('Internal error:', error)
+      throw error
+    }
+  }
 
   // delete data from a cluster====================================================================================
   async _delete (clusterId, ids = null, where = {}, whereDocument = {}) {

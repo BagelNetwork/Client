@@ -199,6 +199,41 @@ const addVectorAsset = async () => {
 addVectorAsset();
 ```
 
+#### Query Vector Asset
+
+```js
+import { Settings, Client } from "bageldb-beta";
+
+// Settings config
+const settings = new Settings({
+  bagel_api_impl: "rest",
+  bagel_server_host: "api.bageldb.ai",
+});
+
+const client = new Client(settings);
+
+const asset_Id = "ea01e2c7-8d8a-496f-b6df-653c98fcf60f";
+const apiKey = "4gB2wJPByf8qnUihAmH8dgbGYsZESEOH";
+
+const payload = {
+  where: {},
+  where_document: {},
+  n_results: 1,
+  include: ["metadatas", "documents", "distances"],
+  query_texts: ["google"],
+  padding: false,
+};
+const query = async () => {
+  console.log("Sending request with payload:", payload);
+
+  const response = await client.query_asset(asset_Id, payload, apiKey);
+
+  console.log("Response received:", response);
+};
+
+query();
+```
+
 ### Get Asset by ID
 
 This method retrieves details for a specific Asset using the generated "Asset ID". An API key is used to ensure security.
