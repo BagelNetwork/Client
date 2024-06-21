@@ -312,7 +312,6 @@ const update = async () => {
 update();
 ```
 
-
 ### Get User Details
 Retrieve details of a specific user from BagelDB using their user ID.
 
