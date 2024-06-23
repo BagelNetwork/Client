@@ -433,8 +433,6 @@ class API {
     }
   }
 
-
-
   // update data in a cluster====================================================================================
   async _update (
     clusterId,
