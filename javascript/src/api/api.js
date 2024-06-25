@@ -579,7 +579,7 @@ class API {
       })
   }
 
-  // Retrieve user details for a given user ID =======================================
+  // Retrieve user details for a given user ID ======================================= [NEW]
   async get_user_details (userId, apiKey) {
   // Define headers
     const headers = {
