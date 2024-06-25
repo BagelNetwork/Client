@@ -578,6 +578,33 @@ class API {
         console.error('Error:', error)
       })
   }
+
+  // Retrieve user details for a given user ID =======================================
+  async get_user_details (userId, apiKey) {
+  // Define headers
+    const headers = {
+      'x-api-key': apiKey,
+      'Content-Type': 'application/json'
+    }
+
+    try {
+      const response = await fetch(this._api_url + `/user?userId=${userId}`, {
+        method: 'GET',
+        headers
+      })
+
+      const data = await response.json()
+
+      if (response.status === 200) {
+        console.log('Asset retrieved successfully!')
+        console.log(data)
+      } else {
+        console.error(`Error retrieving asset: ${JSON.stringify(data)}`)
+      }
+    } catch (error) {
+      console.error('Error retrieving asset:', error)
+    }
+  }
 }
 
 export default API

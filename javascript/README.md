@@ -409,6 +409,34 @@ const getAssets = async () => {
 getAssets();
 ```
 
+### Get User Details
+```js
+import { Settings, Client } from 'bageldb-beta';
+
+// Settings config
+const settings = new Settings({
+  bagel_api_impl: 'rest',
+  bagel_server_host: 'api.bageldb.ai',
+});
+
+const client = new Client(settings);
+
+const apiKey = 'insert your api key';
+const userId = 'insert your user id';  // Replace with an actual user ID
+
+const getUserDetails = async () => {
+  try {
+    const userDetails = await client.get_user_details(userId, apiKey);
+    console.log(userDetails);
+  } catch (error) {
+    console.error('Error retrieving user details:', error);
+  }
+};
+
+getUserDetails();
+
+```
+
 ### Delete Asset
 
 This method deletes a specific Asset.
