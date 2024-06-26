@@ -605,6 +605,32 @@ class API {
       console.error('Error retrieving asset:', error)
     }
   }
+
+  // Create API key ==========================================================
+  async create_api_key (name, apiKey = '') {
+    const headers = {
+      'Content-Type': 'application/json'
+    }
+    try {
+      const response = await (this._api_url + '/api_keys', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ name, api_key: apiKey })
+
+      })
+
+      const data = await response.json()
+
+      if (response.status === 500) {
+        console.log('API keys created successfully!')
+        return data
+      } else {
+        console.error(`Error creating API key: ${JSON.stringify(data)}`)
+      }
+    } catch (error) {
+      console.error('Error creating API key:', error)
+    }
+  }
 }
 
 export default API
