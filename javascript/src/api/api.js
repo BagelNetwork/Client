@@ -606,23 +606,23 @@ class API {
     }
   }
 
-  // Create API key ==========================================================
-  async create_api_key (name, apiKey = '') {
+  // Create API key
+  async create_api_key (name, userId, apiKey = '') {
     const headers = {
       'Content-Type': 'application/json'
     }
+
     try {
-      const response = await (this._api_url + '/api_keys', {
+      const response = await fetch(this._api_url + '/api_keys', {
         method: 'POST',
         headers,
-        body: JSON.stringify({ name, api_key: apiKey })
-
+        body: JSON.stringify({ name, api_key: apiKey, user_id: userId })
       })
 
       const data = await response.json()
 
-      if (response.status === 500) {
-        console.log('API keys created successfully!')
+      if (response.status === 200) {
+        console.log('API key created successfully and sent to user ID:', userId)
         return data
       } else {
         console.error(`Error creating API key: ${JSON.stringify(data)}`)

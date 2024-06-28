@@ -410,31 +410,58 @@ getAssets();
 ```
 
 ### Get User Details
+
 ```js
-import { Settings, Client } from 'bageldb-beta';
+import { Settings, Client } from "bageldb-beta";
 
 // Settings config
 const settings = new Settings({
-  bagel_api_impl: 'rest',
-  bagel_server_host: 'api.bageldb.ai',
+  bagel_api_impl: "rest",
+  bagel_server_host: "api.bageldb.ai",
 });
 
 const client = new Client(settings);
 
-const apiKey = 'insert your api key';
-const userId = 'insert your user id';  // Replace with an actual user ID
+const apiKey = "insert your api key";
+const userId = "insert your user id"; // Replace with an actual user ID
 
 const getUserDetails = async () => {
   try {
     const userDetails = await client.get_user_details(userId, apiKey);
     console.log(userDetails);
   } catch (error) {
-    console.error('Error retrieving user details:', error);
+    console.error("Error retrieving user details:", error);
   }
 };
 
 getUserDetails();
+```
 
+#### Create API Key
+
+```js
+import { Settings, Client } from "bageldb-beta";
+
+// Settings config
+const settings = new Settings({
+  bagel_api_impl: "rest",
+  bagel_server_host: "api.bageldb.ai",
+});
+
+const client = new Client(settings);
+
+const userId = "insert your user id";
+
+const createApiKey = async (userId) => {
+  try {
+    const apiKeyDetail = await client.create_api_key("api-key1", userId);
+    console.log(apiKeyDetail);
+  } catch (error) {
+    console.error("Error creating API key:", error);
+  }
+};
+
+createApiKey(userId);
 ```
 
 ### Delete Asset
