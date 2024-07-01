@@ -616,7 +616,7 @@ class API {
       const response = await fetch(this._api_url + '/api_keys', {
         method: 'POST',
         headers,
-        body: JSON.stringify({ name, api_key: apiKey, user_id: userId })
+        body: JSON.stringify({ name, api_key: apiKey, userId })
       })
 
       const data = await response.json()
@@ -629,6 +629,32 @@ class API {
       }
     } catch (error) {
       console.error('Error creating API key:', error)
+    }
+  }
+
+  // List API keys
+  async list_api_keys (userId, apiKey) {
+    const headers = {
+      'x-api-key': apiKey,
+      'Content-Type': 'application/json'
+    }
+
+    try {
+      const response = await fetch(this._api_url + `/api_keys?userId=${userId}`, {
+        method: 'GET',
+        headers
+      })
+
+      const data = await response.json()
+
+      if (response.status === 500) {
+        console.log('API keys listed successfully!')
+        return data
+      } else {
+        console.error(`Error listing API keys: ${JSON.stringify(data)}`)
+      }
+    } catch (error) {
+      console.error('Error listing API keys:', error)
     }
   }
 }
