@@ -863,6 +863,32 @@ class API {
       throw error
     }
   }
+
+  // Get notification ==============================================
+  async get_notification (userId, apiKey) {
+    const headers = {
+      'x-api-key': apiKey,
+      'Content-Type': 'application/json'
+    }
+
+    try {
+      const response = await fetch(this._api_url + `/notification/user/${userId}`, {
+        method: 'POST',
+        headers
+      })
+
+      const data = await response.json()
+
+      if (response.status === 200) {
+        console.log('Notification recieved successfully!')
+        return data
+      } else {
+        console.error(`Error recieving notification: ${JSON.stringify(data)}`)
+      }
+    } catch (error) {
+      console.error('Error recieving notification:', error)
+    }
+  }
 }
 
 export default API
