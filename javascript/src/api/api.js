@@ -65,24 +65,6 @@ class API {
     }
   }
 
-  // get all clusters====================================================================================
-  //   async get_all_clusters() {
-  //     try {
-  //       const response = await fetch(this._api_url + '/clusters')
-  //       if (!response.data) {
-  //         throw new Error('Empty response data received')
-  //       }
-  //       const json_clusters = response.data
-  //       const clusters = json_clusters.map(
-  //         (json_cluster) => new Cluster(this, json_cluster)
-  //       )
-  //       return clusters
-  //     } catch (error) {
-  //       console.error('Error:', error)
-  //     }
-  //   }
-
-  //
   // Create Asset===================================================================================[ADDED]
   async create_asset (payload, apiKey) {
     // Define headers
@@ -202,56 +184,6 @@ class API {
     }
   };
 
-  //= ==========================================================================================
-  // create a cluster
-  //   async create_cluster(name, metadata = null, get_or_create = false) {
-  //     try {
-  //       const response = await axios.post(this._api_url + '/clusters', {
-  //         name,
-  //         metadata,
-  //         get_or_create,
-  //       })
-  //       if (!response.data) {
-  //         throw new Error('Empty response data received')
-  //       }
-  //       return new Cluster(this, response.data)
-  //     } catch (error) {
-  //       console.error('Error:', error)
-  //       // throw error;
-  //     }
-  //   }
-
-  //   // get or create a cluster
-  //   async get_or_create_cluster(name, metadata = null) {
-  //     try {
-  //       const response = await axios.post(this._api_url + '/clusters', {
-  //         name,
-  //         metadata,
-  //         get_or_create: true,
-  //       })
-  //       if (!response.data) {
-  //         throw new Error('Empty response data received')
-  //       }
-  //       return new Cluster(this, response.data)
-  //     } catch (error) {
-  //       console.error('Error:', error.response)
-  //     }
-  //   }
-
-  // get a cluster
-  //   async delete_cluster(name) {
-  //     try {
-  //       const resp = await axios.delete(this._api_url + '/clusters/' + name)
-  //       if (resp.status == 200) {
-  //         console.log(`Cluster with name ${name} deleted successfully`)
-  //       }
-  //     } catch (error) {
-  //       if (error == "IndexError('list index out of range')") {
-  //         console.error('Error', 'Cluster does not exist')
-  //       }
-  //     }
-  //   }
-
   // reset the database====================================================================================
   async reset () {
     try {
@@ -302,22 +234,6 @@ class API {
       console.error('Error:', error)
     }
   }
-
-  // use raw sql to query the database====================================================================================
-  // async raw_sql(sql) {
-  //    try {
-  //        const response = await axios.post(
-  //            this._api_url + "/raw_sql",
-  //            { raw_sql: sql }
-  //        );
-  //        if (!response.data) {
-  //            throw new Error("Empty response data received");
-  //        }
-  //        return response.data;
-  //    } catch (error) {
-  //        console.error("Error:", error);
-  //    }
-  // };
 
   // get count of data within a cluster====================================================================================
   async _count (clusterId) {
@@ -395,32 +311,6 @@ class API {
     }
   }
 
-  // // get top n data within a cluster
-  // async _peek(cluster_id, n = 10) {
-  //   let ids
-  //   let where
-  //   let sort
-  //   let limit
-  //   let offset
-  //   let page
-  //   let page_size
-  //   let where_document
-  //   let include
-
-  //   return this._get(
-  //     cluster_id,
-  //     (ids = null),
-  //     (where = {}),
-  //     (sort = null),
-  //     (limit = n),
-  //     (offset = null),
-  //     (page = null),
-  //     (page_size = null),
-  //     (where_document = {}),
-  //     (include = ['embeddings', 'documents', 'metadatas'])
-  //   )
-  // }
-
   // modify cluster name and metadata====================================================================================
   async _modify (clusterId, newName = null, newMetadata = null) {
     try {
@@ -472,27 +362,6 @@ class API {
     }
   }
 
-  //= ===================================================================================
-  // add data to a asset
-
-  // async add_data_to_asset(assetId, payload, apiKey) {
-  //   const response = await fetch(`https://api.bageldb.ai/api/v1/asset/${assetId}/add`, {
-  //     method: 'POST',
-  //     headers: {
-  //       'Authorization': `Bearer ${apiKey}`,
-  //       'Content-Type': 'application/json'
-  //     },
-  //     body: JSON.stringify(payload)
-  //   });
-
-  //   if (!response.ok) {
-  //     const errorDetail = await response.json();
-  //     throw new Error(`Error adding data: ${response.statusText} - ${errorDetail.detail}`);
-  //   }
-
-  //   return await response.json();
-  // }
-
   // Add data to vector asset=================================================================================
 
   async add_data_to_asset (assetId, payload, apiKey) {
@@ -519,59 +388,34 @@ class API {
     }
   }
 
-  // // New method to query data from vector asset=================================================================================
-  // async query_data_from_asset (assetId, payload, apiKey) {
-  //   try {
-  //     const response = await fetch(`https://api.bageldb.ai/api/v1/asset/${assetId}/query`, {
-  //       method: 'POST',
-  //       headers: {
-  //         'x-api-key': apiKey,
-  //         'Content-Type': 'application/json'
-  //       },
-  //       body: JSON.stringify(payload)
-  //     })
+  // -------------------New Query Asset Function ---------------------
+  async query_asset (assetId, payload, apiKey) {
+    return this._query_asset(assetId, payload, apiKey)
+  }
 
-  //     if (!response.ok) {
-  //       const errorDetail = await response.json()
-  //       console.error('Error response:', errorDetail)
-  //       throw new Error(`Error querying data: ${response.status} - ${response.statusText}`)
-  //     }
+  async _query_asset (assetId, payload, apiKey) {
+    try {
+      const response = await fetch(this._api_url + '/asset/' + assetId + '/query', {
+        method: 'POST',
+        headers: {
+          'x-api-key': apiKey,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
 
-  //     return await response.json()
-  //   } catch (error) {
-  //     console.error('Internal error:', error)
-  //     throw error
-  //   }
-  // }
+      if (!response.ok) {
+        const errorDetail = await response.json() // Changed to json to catch the error detail
+        console.error('Error response:', errorDetail) // Log the full error response
+        throw new Error(`Error querying data: ${response.status}`)
+      }
 
-  // // -------------New Query Asset--------------------- [Preferred]
-  // async query_asset (assetId, payload, apiKey) {
-  //   return this._query_asset(assetId, payload, apiKey)
-  // }
-
-  // async _query_asset (assetId, payload, apiKey) {
-  //   try {
-  //     const response = await fetch(this._api_url + '/asset/' + assetId + '/query', {
-  //       method: 'POST',
-  //       headers: {
-  //         'x-api-key': apiKey,
-  //         'Content-Type': 'application/json'
-  //       },
-  //       body: JSON.stringify(payload)
-  //     })
-
-  //     if (!response.ok) {
-  //       const errorDetail = await response.json() // Changed to json to catch the error detail
-  //       console.error('Error response:', errorDetail) // Log the full error response
-  //       throw new Error(`Error querying data: ${response.status}`)
-  //     }
-
-  //     return await response.json()
-  //   } catch (error) {
-  //     console.error('Internal error:', error)
-  //     throw error
-  //   }
-  // }
+      return await response.json()
+    } catch (error) {
+      console.error('Internal error:', error)
+      // throw error;
+    }
+  }// ------------------- Query Asset ---------------------
 
   // delete data from a cluster====================================================================================
   async _delete (clusterId, ids = null, where = {}, whereDocument = {}) {
@@ -673,79 +517,6 @@ class API {
     }
   }
 
-  // async query(
-  //   clusterId,
-  //   queryEmbeddings,
-  //   nResults = 10,
-  //   where = {},
-  //   whereDocument = {},
-  //   include = ["metadatas", "documents", "distances"],
-  //   queryTexts = null,
-  //   apiKey = null
-  // ) {
-  //   try {
-  //     const result = await this._query(
-  //       clusterId,
-  //       queryEmbeddings,
-  //       nResults,
-  //       where,
-  //       whereDocument,
-  //       include,
-  //       queryTexts,
-  //       apiKey
-  //     );
-  //     return result;
-  //   } catch (error) {
-  //     console.error("Error querying cluster:", error);
-  //     throw error;
-  //   }
-  // }
-
-  // // main query private method
-  // async _query(
-  //   clusterId,
-  //   queryEmbeddings,
-  //   nResults = 10,
-  //   where = {},
-  //   whereDocument = {},
-  //   include = ['metadatas', 'documents', 'distances'],
-  //   queryTexts = null,
-  //   apiKey
-  // ) {
-  //   try {
-  //     const response = await fetch(
-  //       this._api_url + '/clusters/' + `${clusterId}` + '/query',
-  //       {
-  //         method: 'POST',
-  //         queryEmbeddings,
-  //         nResults,
-  //         where,
-  //         whereDocument,
-  //         include,
-  //         queryTexts,
-  //         apiKey,
-  //       }
-  //     )
-  //     console.log(JSON.stringify(response.data))
-  //     if (!response.data) {
-  //       throw new Error('Empty response data received')
-  //     }
-  //     const { ids, embeddings, documents, metadatas, distances } = JSON.parse(
-  //       JSON.stringify(response.data)
-  //     )
-  //     return {
-  //       ids,
-  //       embeddings: embeddings || null,
-  //       documents: documents || null,
-  //       metadatas: metadatas || null,
-  //       distances: distances || null,
-  //     }
-  //   } catch (error) {
-  //     console.error('Error:', error.message)
-  //     throw error
-  //   }
-  // }
-
   // create index for a cluster====================================================================================
   async _create_index (clusterName) {
     try {
@@ -806,6 +577,111 @@ class API {
       .catch((error) => {
         console.error('Error:', error)
       })
+  }
+
+  // Retrieve user details for a given user ID ======================================= [NEW]
+  async get_user_details (userId, apiKey) {
+  // Define headers
+    const headers = {
+      'x-api-key': apiKey,
+      'Content-Type': 'application/json'
+    }
+
+    try {
+      const response = await fetch(this._api_url + `/user?userId=${userId}`, {
+        method: 'GET',
+        headers
+      })
+
+      const data = await response.json()
+
+      if (response.status === 200) {
+        console.log('Asset retrieved successfully!')
+        console.log(data)
+      } else {
+        console.error(`Error retrieving asset: ${JSON.stringify(data)}`)
+      }
+    } catch (error) {
+      console.error('Error retrieving asset:', error)
+    }
+  }
+
+  // Create API key
+  async create_api_key (name, userId, apiKey = '') {
+    const headers = {
+      'Content-Type': 'application/json'
+    }
+
+    try {
+      const response = await fetch(this._api_url + '/api_keys', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ name, api_key: apiKey, userId })
+      })
+
+      const data = await response.json()
+
+      if (response.status === 200) {
+        console.log('API key created successfully and sent to user ID:', userId)
+        return data
+      } else {
+        console.error(`Error creating API key: ${JSON.stringify(data)}`)
+      }
+    } catch (error) {
+      console.error('Error creating API key:', error)
+    }
+  }
+
+  // List API keys ===================================
+  async list_api_keys (userId, apiKey) {
+    const headers = {
+      'x-api-key': apiKey,
+      'Content-Type': 'application/json'
+    }
+
+    try {
+      const response = await fetch(this._api_url + `/api_keys?userId=${userId}`, {
+        method: 'GET',
+        headers
+      })
+
+      const data = await response.json()
+
+      if (response.status === 200) {
+        console.log('API keys listed successfully!')
+        return data
+      } else {
+        console.error(`Error listing API keys: ${JSON.stringify(data)}`)
+      }
+    } catch (error) {
+      console.error('Error listing API keys:', error)
+    }
+  }
+
+  // Get notification ==============================================
+  async get_notification (userId, apiKey) {
+    const headers = {
+      'x-api-key': apiKey,
+      'Content-Type': 'application/json'
+    }
+
+    try {
+      const response = await fetch(this._api_url + `/notification/user/${userId}`, {
+        method: 'POST',
+        headers
+      })
+
+      const data = await response.json()
+
+      if (response.status === 200) {
+        console.log('Notification recieved successfully!')
+        return data
+      } else {
+        console.error(`Error recieving notification: ${JSON.stringify(data)}`)
+      }
+    } catch (error) {
+      console.error('Error recieving notification:', error)
+    }
   }
 }
 
