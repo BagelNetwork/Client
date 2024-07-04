@@ -890,86 +890,84 @@ class API {
     }
   }
 
-  
- // Download model files ============[WIP]
- async download_model_files(job_id, file_name, apiKey) {
-  const headers = {
-    'x-api-key': apiKey,
-    'Content-Type': 'application/json'
-  }
-
-  try {
-    const response = await fetch(this._api_url + `/jobs/${job_id}/files/${file_name}`, {
-      method: 'GET',
-      headers,
-    })
-
-    const data = await response.json()
-
-    if (response.status === 200) {
-      console.log('File downloaded successfully!')
-      return data
-    } else {
-      console.error(`Error downloading files: ${JSON.stringify(data)}`)
+  // Download model files ============[WIP]
+  async download_model_files (jobId, fileName, apiKey) {
+    const headers = {
+      'x-api-key': apiKey,
+      'Content-Type': 'application/json'
     }
-  } catch (error) {
-    console.error('Error downloading files:', error)
-  }
-}
 
-// list model files ==============[WIP]
-async list_model_files(job_id, apiKey) {
-  const headers = {
-    'x-api-key': apiKey,
-    'Content-Type': 'application/json'
-  }
+    try {
+      const response = await fetch(this._api_url + `/jobs/${jobId}/files/${fileName}`, {
+        method: 'GET',
+        headers
+      })
 
-  try {
-    const response = await fetch(this._api_url + `/jobs/${job_id}/files`, {
-      method: 'GET',
-      headers,
-    })
+      const data = await response.json()
 
-    const data = await response.json()
-
-    if (response.status === 200) {
-      console.log('Files retrieved successfully!')
-      return data
-    } else {
-      console.error(`Error retrieving files: ${JSON.stringify(data)}`)
+      if (response.status === 200) {
+        console.log('File downloaded successfully!')
+        return data
+      } else {
+        console.error(`Error downloading files: ${JSON.stringify(data)}`)
+      }
+    } catch (error) {
+      console.error('Error downloading files:', error)
     }
-  } catch (error) {
-    console.error('Error retrieving files:', error)
-  }
-}
-
- // Fine tune ==============[WIP]
- async fine_tune(payload, apiKey) {
-  const headers = {
-    'x-api-key': apiKey,
-    'Content-Type': 'application/json'
   }
 
-  try {
-    const response = await fetch(this._api_url + "/fine-tune", {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(payload)
-    })
-
-    const data = await response.json()
-
-    if (response.status === 200) {
-      console.log('Fine tune successfully!')
-      return data
-    } else {
-      console.error(`Error Fine tunning: ${JSON.stringify(data)}`)
+  // list model files ==============[WIP]
+  async list_model_files (jobId, apiKey) {
+    const headers = {
+      'x-api-key': apiKey,
+      'Content-Type': 'application/json'
     }
-  } catch (error) {
-    console.error('Error Fine tunning:', error)
-  }
-}
 
+    try {
+      const response = await fetch(this._api_url + `/jobs/${jobId}/files`, {
+        method: 'GET',
+        headers
+      })
+
+      const data = await response.json()
+
+      if (response.status === 200) {
+        console.log('Files retrieved successfully!')
+        return data
+      } else {
+        console.error(`Error retrieving files: ${JSON.stringify(data)}`)
+      }
+    } catch (error) {
+      console.error('Error retrieving files:', error)
+    }
+  }
+
+  // Fine tune ==============[WIP]
+  async fine_tune (payload, apiKey) {
+    const headers = {
+      'x-api-key': apiKey,
+      'Content-Type': 'application/json'
+    }
+
+    try {
+      const response = await fetch(this._api_url + '/fine-tune', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload)
+      })
+
+      const data = await response.json()
+
+      if (response.status === 200) {
+        console.log('Fine tune successfully!')
+        return data
+      } else {
+        console.error(`Error Fine tunning: ${JSON.stringify(data)}`)
+      }
+    } catch (error) {
+      console.error('Error Fine tunning:', error)
+    }
+  }
 }
 
 export default API
