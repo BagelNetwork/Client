@@ -658,7 +658,7 @@ class API {
     }
   }
 
-  // Get notification ==============================================
+  // Get notification ============================================== [WIP]
   async get_notification (userId, apiKey) {
     const headers = {
       'x-api-key': apiKey,
@@ -683,6 +683,87 @@ class API {
       console.error('Error recieving notification:', error)
     }
   }
+
+  
+ // Download model files ============[WIP]
+ async download_model_files(job_id, file_name, apiKey) {
+  const headers = {
+    'x-api-key': apiKey,
+    'Content-Type': 'application/json'
+  }
+
+  try {
+    const response = await fetch(this._api_url + `/jobs/${job_id}/files/${file_name}`, {
+      method: 'GET',
+      headers,
+    })
+
+    const data = await response.json()
+
+    if (response.status === 200) {
+      console.log('File downloaded successfully!')
+      return data
+    } else {
+      console.error(`Error downloading files: ${JSON.stringify(data)}`)
+    }
+  } catch (error) {
+    console.error('Error downloading files:', error)
+  }
+}
+
+// list model files ==============[WIP]
+async list_model_files(job_id, apiKey) {
+  const headers = {
+    'x-api-key': apiKey,
+    'Content-Type': 'application/json'
+  }
+
+  try {
+    const response = await fetch(this._api_url + `/jobs/${job_id}/files`, {
+      method: 'GET',
+      headers,
+    })
+
+    const data = await response.json()
+
+    if (response.status === 200) {
+      console.log('Files retrieved successfully!')
+      return data
+    } else {
+      console.error(`Error retrieving files: ${JSON.stringify(data)}`)
+    }
+  } catch (error) {
+    console.error('Error retrieving files:', error)
+  }
+}
+
+ // Fine tune ==============[WIP]
+ async fine_tune(payload, apiKey) {
+  const headers = {
+    'x-api-key': apiKey,
+    'Content-Type': 'application/json'
+  }
+
+  try {
+    const response = await fetch(this._api_url + "/fine-tune", {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(payload)
+    })
+
+    const data = await response.json()
+
+    if (response.status === 200) {
+      console.log('Fine tune successfully!')
+      return data
+    } else {
+      console.error(`Error Fine tunning: ${JSON.stringify(data)}`)
+    }
+  } catch (error) {
+    console.error('Error Fine tunning:', error)
+  }
+}
+
 }
 
 export default API
