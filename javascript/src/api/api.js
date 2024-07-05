@@ -632,7 +632,7 @@ class API {
     }
   }
 
-  // List API keys ===================================
+  // List API keys ===================================[WIP]
   async list_api_keys (userId, apiKey) {
     const headers = {
       'x-api-key': apiKey,
@@ -760,6 +760,141 @@ class API {
       }
     } catch (error) {
       console.error('Error Fine tunning:', error)
+    }
+  }
+
+  // Like asset =================[WIP]
+
+  async like_dataset (assetId, userId, action, apiKey) {
+    const headers = {
+      'x-api-key': apiKey,
+      'Content-Type': 'application/json'
+    }
+
+    try {
+      const response = await fetch(this._api_url + `/datasets/${assetId}/like?userId=${userId}&action=${action}`, {
+        method: 'POST',
+        headers
+      })
+
+      const data = await response.json()
+
+      if (response.status === 200) {
+        console.log('Dataset liked successfully!')
+        return data
+      } else {
+        console.error(`Error liking dataset: ${JSON.stringify(data)}`)
+      }
+    } catch (error) {
+      console.error('Error liking dataset:', error)
+    }
+  }
+
+  // rate asset =================[WIP]
+
+  async rate_dataset (assetId, userId, rating, apiKey) {
+    const headers = {
+      'x-api-key': apiKey,
+      'Content-Type': 'application/json'
+    }
+
+    try {
+      const response = await fetch(this._api_url + `/datasets/${assetId}/like?userId=${userId}&rating=${rating}`, {
+        method: 'POST',
+        headers
+      })
+
+      const data = await response.json()
+
+      if (response.status === 200) {
+        console.log('Dataset rated successfully!')
+        return data
+      } else {
+        console.error(`Error rating dataset: ${JSON.stringify(data)}`)
+      }
+    } catch (error) {
+      console.error('Error rating dataset:', error)
+    }
+  }
+
+  // get job =================[WIP]
+
+  async get_job (jobId, apiKey) {
+    const headers = {
+      'x-api-key': apiKey,
+      'Content-Type': 'application/json'
+    }
+
+    try {
+      const response = await fetch(this._api_url + `/jobs/${jobId}`, {
+        method: 'GET',
+        headers
+      })
+
+      const data = await response.json()
+
+      if (response.status === 200) {
+        console.log('Job retrieved successfully!')
+        return data
+      } else {
+        console.error(`Error retrieving job: ${JSON.stringify(data)}`)
+      }
+    } catch (error) {
+      console.error('Error lretrieving job:', error)
+    }
+  }
+
+  // get job by asset =================[WIP]
+
+  async get_job_by_asset (assetId, apiKey) {
+    const headers = {
+      'x-api-key': apiKey,
+      'Content-Type': 'application/json'
+    }
+
+    try {
+      const response = await fetch(this._api_url + `/jobs/asset/${assetId}`, {
+        method: 'GET',
+        headers
+      })
+
+      const data = await response.json()
+
+      if (response.status === 200) {
+        console.log('Job retrieved successfully!')
+        return data
+      } else {
+        console.error(`Error retrieving job: ${JSON.stringify(data)}`)
+      }
+    } catch (error) {
+      console.error('Error lretrieving job:', error)
+    }
+  }
+
+  // list jobs =================[WIP]
+
+  async list_jobs (createdBy, apiKey) {
+    const headers = {
+      'x-api-key': apiKey,
+      'Content-Type': 'application/json'
+    }
+
+    try {
+      const response = await fetch(this._api_url + `/jobs/createdBy/${createdBy}`, {
+        method: 'GET',
+        headers
+      })
+
+      const data = await response.json()
+
+      if (response.status === 200) {
+        console.log('Jobs retrieved successfully!')
+        return data
+      } else {
+        console.error(`Error retrieving jobs: ${JSON.stringify(data)}`)
+      }
+    } catch (error) {
+      console.error('Error retrieving jobs:', error)
     }
   }
 }
