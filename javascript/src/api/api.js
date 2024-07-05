@@ -916,58 +916,6 @@ class API {
     }
   }
 
-  // list model files ==============[WIP]
-  async list_model_files (jobId, apiKey) {
-    const headers = {
-      'x-api-key': apiKey,
-      'Content-Type': 'application/json'
-    }
-
-    try {
-      const response = await fetch(this._api_url + `/jobs/${jobId}/files`, {
-        method: 'GET',
-        headers
-      })
-
-      const data = await response.json()
-
-      if (response.status === 200) {
-        console.log('Files retrieved successfully!')
-        return data
-      } else {
-        console.error(`Error retrieving files: ${JSON.stringify(data)}`)
-      }
-    } catch (error) {
-      console.error('Error retrieving files:', error)
-    }
-  }
-
-  // Fine tune ==============[WIP]
-  async fine_tune (payload, apiKey) {
-    const headers = {
-      'x-api-key': apiKey,
-      'Content-Type': 'application/json'
-    }
-
-    try {
-      const response = await fetch(this._api_url + '/fine-tune', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(payload)
-      })
-
-      const data = await response.json()
-
-      if (response.status === 200) {
-        console.log('Fine tune successfully!')
-        return data
-      } else {
-        console.error(`Error Fine tunning: ${JSON.stringify(data)}`)
-      }
-    } catch (error) {
-      console.error('Error Fine tunning:', error)
-    }
-  }
 }
 
 export default API
