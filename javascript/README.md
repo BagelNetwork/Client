@@ -136,7 +136,7 @@ const payload = {
   category: "insert category",
   details: "insert details",
   tags: [],
-  user_id: "insert your user Id",
+  userId: "insert your user Id",
 };
 const createAsset = async () => {
   // get version
@@ -182,7 +182,7 @@ const payload = {
   category: "string",
   details: "Badman",
   tags: [],
-  user_id: "insert your user Id",
+  userId: "insert your user Id",
   embedding_model: "bagel-text",
   dimensions: 768,
 };
@@ -329,16 +329,6 @@ const uploadFile = async () => {
 }
 
 uploadFile()
-const assetId = "insert your asset ID";
-const apiKey = "insert your api Key";
-
-const getAsset = async () => {
-  // get version
-  const asset = await client.get_asset_by_Id(assetId, apiKey);
-  console.log(asset);
-};
-
-getAsset();
 ```
 
 ### Update Asset
@@ -462,6 +452,57 @@ const createApiKey = async (userId) => {
 
 createApiKey(userId);
 ```
+
+
+### Finetuning
+
+```js
+import { Settings, Client } from 'bageldb-beta';
+
+// Settings config
+const settings = new Settings({
+  bagel_api_impl: 'rest',
+  bagel_server_host: 'api.bageldb.ai',
+});
+
+const client = new Client(settings);
+
+const apiKey = "your apikey"
+
+const payload = {
+  dataset_type: "MODEL",
+  title: "insert title", // 
+  category: "insert category", 
+  details: "insert details", //choose detail
+  tags: [],
+  userId: "insert user id", //your user id 
+  fine_tune_payload: {
+    asset_id: "insert RAW asset id", // make sure to upload a .txt file to the raw asset after creating
+    model_name: "insert model name ", // Same name as the title 
+    base_model: "insert base model id", // asset id of purchased model from marketplace 
+    file_name: "nameoffile.txt", // file name in RAW asset 
+    userId: "insert your user id", // your user id 
+  },
+};
+
+const testFineTune = async () => {
+  try {
+    console.log("Sending request with payload:", payload);
+    const response = await client.fine_tune(payload, apiKey);
+    console.log('Fine tune response:', response);
+  } catch (error) {
+    console.error('Error during fine tuning:', error);
+  }
+};
+
+testFineTune();
+
+```
+
+
+
+
+
 
 ### Delete Asset
 

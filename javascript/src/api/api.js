@@ -684,7 +684,7 @@ class API {
     }
   }
 
-  // Download model files ============[WIP]
+  // Download model files ==============================[WIP]
   async download_model_files (jobId, fileName, apiKey) {
     const headers = {
       'x-api-key': apiKey,
@@ -710,7 +710,7 @@ class API {
     }
   }
 
-  // list model files ==============[WIP]
+  // list model files ===============================[WIP]
   async list_model_files (jobId, apiKey) {
     const headers = {
       'x-api-key': apiKey,
@@ -736,34 +736,7 @@ class API {
     }
   }
 
-  // Fine tune ==============[WIP]
-  async fine_tune (payload, apiKey) {
-    const headers = {
-      'x-api-key': apiKey,
-      'Content-Type': 'application/json'
-    }
-
-    try {
-      const response = await fetch(this._api_url + '/fine-tune', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(payload)
-      })
-
-      const data = await response.json()
-
-      if (response.status === 200) {
-        console.log('Fine tune successfully!')
-        return data
-      } else {
-        console.error(`Error Fine tunning: ${JSON.stringify(data)}`)
-      }
-    } catch (error) {
-      console.error('Error Fine tunning:', error)
-    }
-  }
-
-  // Like asset =================[WIP]
+  // Like asset ==============================[WIP]
 
   async like_dataset (assetId, userId, action, apiKey) {
     const headers = {
@@ -790,7 +763,7 @@ class API {
     }
   }
 
-  // rate asset =================[WIP]
+  // rate asset ==============================[WIP]
 
   async rate_dataset (assetId, userId, rating, apiKey) {
     const headers = {
@@ -817,84 +790,116 @@ class API {
     }
   }
 
-  // get job =================[WIP]
+  // -------------------New Fine Tune Function ---------------------
+  async fine_tune (payload, apiKey) {
+    return this._fine_tune(payload, apiKey)
+  }
 
+  async _fine_tune (payload, apiKey) {
+    try {
+      const response = await fetch(this._api_url + '/asset', {
+        method: 'POST',
+        headers: {
+          'x-api-key': apiKey,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
+
+      if (!response.ok) {
+        const errorDetail = await response.json() // Changed to json to catch the error detail
+        console.error('Error response:', errorDetail) // Log the full error response
+        throw new Error(`Error fine tuning: ${response.status}`)
+      }
+
+      return await response.json()
+    } catch (error) {
+      console.error('Internal error:', error)
+      throw error
+    }
+  }
+
+  // -------------------New List Jobs Function ---------------------
+  async list_jobs (userId, apiKey) {
+    return this._list_jobs(userId, apiKey)
+  }
+
+  async _list_jobs (userId, apiKey) {
+    try {
+      const response = await fetch(this._api_url + '/api/v1/jobs/created_by' + userId, {
+        method: 'GET',
+        headers: {
+          'x-api-key': apiKey,
+          'Content-Type': 'application/json'
+        }
+      })
+
+      if (!response.ok) {
+        const errorDetail = await response.json()
+        console.error('Error response:', errorDetail)
+        throw new Error(`Error listing jobs: ${response.status} ${errorDetail.detail}`)
+      }
+
+      return await response.json()
+    } catch (error) {
+      console.error('Internal error:', error)
+      throw error
+    }
+  }
+
+  // -------------------New Get Job Function ---------------------
   async get_job (jobId, apiKey) {
-    const headers = {
-      'x-api-key': apiKey,
-      'Content-Type': 'application/json'
-    }
+    return this._get_job(jobId, apiKey)
+  }
 
+  async _get_job (jobId, apiKey) {
     try {
-      const response = await fetch(this._api_url + `/jobs/${jobId}`, {
+      const response = await fetch(this._api_url + '/api/v1/asset' + jobId, {
         method: 'GET',
-        headers
+        headers: {
+          'x-api-key': apiKey,
+          'Content-Type': 'application/json'
+        }
       })
 
-      const data = await response.json()
-
-      if (response.status === 200) {
-        console.log('Job retrieved successfully!')
-        return data
-      } else {
-        console.error(`Error retrieving job: ${JSON.stringify(data)}`)
+      if (!response.ok) {
+        const errorDetail = await response.json()
+        console.error('Error response:', errorDetail)
+        throw new Error(`Error getting job: ${response.status} ${errorDetail.detail}`)
       }
+
+      return await response.json()
     } catch (error) {
-      console.error('Error lretrieving job:', error)
+      console.error('Internal error:', error)
+      throw error
     }
   }
 
-  // get job by asset =================[WIP]
-
+  // -------------------New Get job by Asset Function ---------------------
   async get_job_by_asset (assetId, apiKey) {
-    const headers = {
-      'x-api-key': apiKey,
-      'Content-Type': 'application/json'
-    }
-
-    try {
-      const response = await fetch(this._api_url + `/jobs/asset/${assetId}`, {
-        method: 'GET',
-        headers
-      })
-
-      const data = await response.json()
-
-      if (response.status === 200) {
-        console.log('Job retrieved successfully!')
-        return data
-      } else {
-        console.error(`Error retrieving job: ${JSON.stringify(data)}`)
-      }
-    } catch (error) {
-      console.error('Error lretrieving job:', error)
-    }
+    return this._get_job_by_asset(assetId, apiKey)
   }
 
-  // list jobs =================[WIP]
-
-  async list_jobs (createdBy, apiKey) {
-    const headers = {
-      'x-api-key': apiKey,
-      'Content-Type': 'application/json'
-    }
-
+  async _get_job_by_asset (assetId, apiKey) {
     try {
-      const response = await fetch(this._api_url + `/jobs/createdBy/${createdBy}`, {
+      const response = await fetch(this._api_url + '/api/v1/jobs/asset/' + assetId, {
         method: 'GET',
-        headers
+        headers: {
+          'x-api-key': apiKey,
+          'Content-Type': 'application/json'
+        }
       })
 
-      const data = await response.json()
-
-      if (response.status === 200) {
-        console.log('Jobs retrieved successfully!')
-        return data
-      } else {
-        console.error(`Error retrieving jobs: ${JSON.stringify(data)}`)
+      if (!response.ok) {
+        const errorDetail = await response.json()
+        console.error('Error response:', errorDetail)
+        throw new Error(`Error getting job by asset: ${response.status} ${errorDetail.detail}`)
       }
+
+      return await response.json()
     } catch (error) {
-      console.error('Error retrieving jobs:', error)
+      console.error('Internal error:', error)
+      throw error
     }
   }
 }
