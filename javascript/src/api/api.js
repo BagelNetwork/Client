@@ -65,7 +65,7 @@ class API {
     }
   }
 
-  // Create Asset===================================================================================[ADDED]
+  // -------------------New Create Asset Function ---------------------
   async create_asset (payload, apiKey) {
     // Define headers
     const headers = {
@@ -99,7 +99,7 @@ class API {
 
   // Get a particular created asset using the asset id
   // getAssetById.js
-  //= ===================================================================================[ADDED]
+  // -------------------New Get Asset by ID Function ---------------------
   async get_asset_by_Id (id, apiKey) {
     // Define headers
     const headers = {
@@ -126,7 +126,7 @@ class API {
     }
   }
 
-  // Get all assets of a particular user===============================[ADDED]
+  // -------------------New Get all assets Function ---------------------
   async get_all_assets (userId, apiKey) {
     // Define headers
     const headers = {
@@ -156,7 +156,7 @@ class API {
     }
   }
 
-  // Deletes a particular asset using its asset id==========================================[ADDED]
+  // -------------------New Delete Asset Function ---------------------
   async delete_asset (assetId, apiKey) {
     try {
       const url = this._api_url + `/asset/${assetId}`
@@ -195,7 +195,7 @@ class API {
     }
   }
 
-  // new update function added
+  // -------------------New Update asset Function ---------------------
   async update_asset (assetId, payload, apiKey) {
     return this._update_asset(assetId, payload, apiKey)
   }
@@ -362,7 +362,7 @@ class API {
     }
   }
 
-  // Add data to vector asset=================================================================================
+  // -------------------New Add data to vector asset Function ---------------------
 
   async add_data_to_asset (assetId, payload, apiKey) {
     try {
@@ -461,7 +461,7 @@ class API {
     return this._add_file(assetId, filePath, apiKey)
   };
 
-  // add file to asset====================================================================================
+  // -------------------New Add file Function ---------------------
   async _add_file (assetId, filePath, apiKey) {
     // Create a form object to send file data
     const form = new FormData()
@@ -579,7 +579,7 @@ class API {
       })
   }
 
-  // Retrieve user details for a given user ID ======================================= [NEW]
+  // -------------------New Get user details Function ---------------------
   async get_user_details (userId, apiKey) {
   // Define headers
     const headers = {
@@ -606,7 +606,7 @@ class API {
     }
   }
 
-  // Create API key
+  // -------------------New Create API Key Function ---------------------
   async create_api_key (name, userId, apiKey = '') {
     const headers = {
       'Content-Type': 'application/json'
@@ -632,111 +632,7 @@ class API {
     }
   }
 
-  // List API keys ===================================[WIP]
-  async list_api_keys (userId, apiKey) {
-    const headers = {
-      'x-api-key': apiKey,
-      'Content-Type': 'application/json'
-    }
-
-    try {
-      const response = await fetch(this._api_url + `/api_keys?userId=${userId}`, {
-        method: 'GET',
-        headers
-      })
-
-      const data = await response.json()
-
-      if (response.status === 200) {
-        console.log('API keys listed successfully!')
-        return data
-      } else {
-        console.error(`Error listing API keys: ${JSON.stringify(data)}`)
-      }
-    } catch (error) {
-      console.error('Error listing API keys:', error)
-    }
-  }
-
-  // Get notification ============================================== [WIP]
-  async get_notification (userId, apiKey) {
-    const headers = {
-      'x-api-key': apiKey,
-      'Content-Type': 'application/json'
-    }
-
-    try {
-      const response = await fetch(this._api_url + `/notification/user/${userId}`, {
-        method: 'POST',
-        headers
-      })
-
-      const data = await response.json()
-
-      if (response.status === 200) {
-        console.log('Notification recieved successfully!')
-        return data
-      } else {
-        console.error(`Error recieving notification: ${JSON.stringify(data)}`)
-      }
-    } catch (error) {
-      console.error('Error recieving notification:', error)
-    }
-  }
-
-  // Download model files ==============================[WIP]
-  async download_model_files (jobId, fileName, apiKey) {
-    const headers = {
-      'x-api-key': apiKey,
-      'Content-Type': 'application/json'
-    }
-
-    try {
-      const response = await fetch(this._api_url + `/jobs/${jobId}/files/${fileName}`, {
-        method: 'GET',
-        headers
-      })
-
-      const data = await response.json()
-
-      if (response.status === 200) {
-        console.log('File downloaded successfully!')
-        return data
-      } else {
-        console.error(`Error downloading files: ${JSON.stringify(data)}`)
-      }
-    } catch (error) {
-      console.error('Error downloading files:', error)
-    }
-  }
-
-  // list model files ===============================[WIP]
-  async list_model_files (jobId, apiKey) {
-    const headers = {
-      'x-api-key': apiKey,
-      'Content-Type': 'application/json'
-    }
-
-    try {
-      const response = await fetch(this._api_url + `/jobs/${jobId}/files`, {
-        method: 'GET',
-        headers
-      })
-
-      const data = await response.json()
-
-      if (response.status === 200) {
-        console.log('Files retrieved successfully!')
-        return data
-      } else {
-        console.error(`Error retrieving files: ${JSON.stringify(data)}`)
-      }
-    } catch (error) {
-      console.error('Error retrieving files:', error)
-    }
-  }
-
-  // Like asset ==============================[WIP]
+  // -------------------New Like asset Function --------------------- [WIP/NA]
 
   async like_dataset (assetId, userId, action, apiKey) {
     const headers = {
@@ -763,7 +659,7 @@ class API {
     }
   }
 
-  // rate asset ==============================[WIP]
+  // -------------------New Rate asset Function --------------------- [WIP/NA]
 
   async rate_dataset (assetId, userId, rating, apiKey) {
     const headers = {
@@ -826,7 +722,10 @@ class API {
 
   async _list_jobs (userId, apiKey) {
     try {
-      const response = await fetch(this._api_url + '/api/v1/jobs/created_by' + userId, {
+      const url = `${this._api_url}/jobs/created_by/${userId}`
+      console.log('Request URL:', url) // Log the URL to verify it's correct
+
+      const response = await fetch(url, {
         method: 'GET',
         headers: {
           'x-api-key': apiKey,
@@ -847,14 +746,13 @@ class API {
     }
   }
 
-  // -------------------New Get Job Function ---------------------
+  // -------------------New Get job Function ---------------------
   async get_job (jobId, apiKey) {
-    return this._get_job(jobId, apiKey)
-  }
-
-  async _get_job (jobId, apiKey) {
     try {
-      const response = await fetch(this._api_url + '/api/v1/asset' + jobId, {
+      const url = `${this._api_url}/jobs/${jobId}`
+      console.log('Request URL:', url) // Log the URL to verify it's correct
+
+      const response = await fetch(url, {
         method: 'GET',
         headers: {
           'x-api-key': apiKey,
@@ -876,13 +774,14 @@ class API {
   }
 
   // -------------------New Get job by Asset Function ---------------------
+
   async get_job_by_asset (assetId, apiKey) {
     return this._get_job_by_asset(assetId, apiKey)
   }
 
   async _get_job_by_asset (assetId, apiKey) {
     try {
-      const response = await fetch(this._api_url + '/api/v1/jobs/asset/' + assetId, {
+      const response = await fetch(`${this._api_url}/asset/${assetId}`, {
         method: 'GET',
         headers: {
           'x-api-key': apiKey,
@@ -894,6 +793,37 @@ class API {
         const errorDetail = await response.json()
         console.error('Error response:', errorDetail)
         throw new Error(`Error getting job by asset: ${response.status} ${errorDetail.detail}`)
+      }
+
+      return await response.json()
+    } catch (error) {
+      console.error('Internal error:', error)
+      throw error
+    }
+  }
+
+  // -------------------New List Model Files Function ---------------------
+  async list_model_files (assetId, apiKey) {
+    return this._list_model_files(assetId, apiKey)
+  }
+
+  async _list_model_files (assetId, apiKey) {
+    try {
+      const url = `${this._api_url}/jobs/asset/${assetId}/files`
+      console.log('Request URL:', url) // Log the URL to verify it's correct
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'x-api-key': apiKey,
+          'Content-Type': 'application/json'
+        }
+      })
+
+      if (!response.ok) {
+        const errorDetail = await response.json()
+        console.error('Error response:', errorDetail)
+        throw new Error(`Error listing model files: ${response.status} ${errorDetail.detail}`)
       }
 
       return await response.json()
