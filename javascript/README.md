@@ -303,7 +303,6 @@ const getAssets = async () => {
 getAssets();
 ```
 
-
 ### Upload File to Asset
 
 This method uploads files to a specific Asset.
