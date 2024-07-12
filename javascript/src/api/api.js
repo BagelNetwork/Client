@@ -832,6 +832,37 @@ class API {
       throw error
     }
   }
+
+  // -------------------New Download Model Files Function ---------------------
+  async download_model_file (assetId, fileName, apiKey) {
+    return this._download_model_file(assetId, fileName, apiKey)
+  }
+
+  async _download_model_file (assetId, fileName, apiKey) {
+    try {
+      const url = `${this._api_url}/api/v1/jobs/asset/${assetId}/files/${fileName}`
+      console.log('Request URL:', url) // Log the URL to verify it's correct
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'x-api-key': apiKey,
+          'Content-Type': 'application/json'
+        }
+      })
+
+      if (!response.ok) {
+        const errorDetail = await response.json()
+        console.error('Error response:', errorDetail)
+        throw new Error(`Error downloading model file: ${response.status} ${errorDetail.detail}`)
+      }
+
+      return await response.blob() // Assuming the file is binary data
+    } catch (error) {
+      console.error('Internal error:', error)
+      throw error
+    }
+  }
 }
 
 export default API

@@ -1,8 +1,10 @@
+## Dataset Management on Bagel
+
 Here's a detailed example in JavaScript that incorporates all the functions necessary for asset management using the Bagels API. The example includes functionalities to create a vector asset, add data to the vector asset, query the data, and update the asset. It also includes user interaction through a command-line interface (CLI) for better usability.
 
 ```javascript
-const readline = require("readline");
-const { Settings, Client } = require("bageldb-beta");
+import readline from "readline";
+import { Settings, Client } from "bageldb-beta";
 
 // Configure Bagel client settings
 const settings = new Settings({
@@ -20,20 +22,40 @@ const rl = readline.createInterface({
 
 // Function to prompt user for API key
 async function getApiKey() {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     rl.question("Enter your Bagel API key: ", (apiKey) => {
       resolve(apiKey.trim());
     });
   });
 }
 
+// Function to prompt user for asset details
+async function getAssetDetails() {
+  return new Promise((resolve) => {
+    rl.question("Enter the asset title: ", (title) => {
+      rl.question("Enter the asset category: ", (category) => {
+        rl.question("Enter the asset details: ", (details) => {
+          resolve({
+            title: title.trim(),
+            category: category.trim(),
+            details: details.trim(),
+          });
+        });
+      });
+    });
+  });
+}
+
 // Function to handle asset creation
-async function createVectorAsset(apiKey) {
+async function createVectorAsset() {
+  const apiKey = await getApiKey();
+  const assetDetails = await getAssetDetails();
+
   const payload = {
     dataset_type: "VECTOR",
-    title: "Example Vector Asset",
-    category: "Example Category",
-    details: "Example details about the asset",
+    title: assetDetails.title,
+    category: assetDetails.category,
+    details: assetDetails.details,
     tags: [],
     userId: "user123", // Replace with actual user ID
     embedding_model: "bagel-text",
@@ -61,17 +83,37 @@ async function createVectorAsset(apiKey) {
   }
 }
 
+// Function to prompt user for data to add to a vector asset
+async function getVectorAssetData() {
+  return new Promise((resolve) => {
+    rl.question("Enter the source of the data: ", (source) => {
+      rl.question("Enter the text data: ", (text) => {
+        rl.question("Enter the ID for the data: ", (id) => {
+          resolve({ source: source.trim(), text: text.trim(), id: id.trim() });
+        });
+      });
+    });
+  });
+}
+
 // Function to handle adding data to a vector asset
-async function addDataToVectorAsset(apiKey) {
+async function addDataToVectorAsset() {
+  const apiKey = await getApiKey();
   rl.question("Enter the asset ID of the vector asset: ", async (assetId) => {
+    const vectorAssetData = await getVectorAssetData();
+
     const payload = {
-      metadatas: [{ source: "example source" }],
-      documents: ["Example text data"],
-      ids: ["example-id"], // Replace with actual IDs as needed
+      metadatas: [{ source: vectorAssetData.source }],
+      documents: [vectorAssetData.text],
+      ids: [vectorAssetData.id],
     };
 
     try {
-      const response = await client.add_data_to_asset(assetId, payload, apiKey);
+      const response = await client.add_data_to_asset(
+        assetId.trim(),
+        payload,
+        apiKey
+      );
       console.log("Data successfully added to vector asset:");
       console.log(response);
 
@@ -93,7 +135,8 @@ async function addDataToVectorAsset(apiKey) {
 }
 
 // Function to handle querying a vector asset
-async function queryVectorAsset(apiKey) {
+async function queryVectorAsset() {
+  const apiKey = await getApiKey();
   rl.question("Enter the asset ID to query: ", async (assetId) => {
     const payload = {
       where: {
@@ -109,7 +152,11 @@ async function queryVectorAsset(apiKey) {
     };
 
     try {
-      const response = await client.query_asset(assetId, payload, apiKey);
+      const response = await client.query_asset(
+        assetId.trim(),
+        payload,
+        apiKey
+      );
       console.log("Query result for vector asset:");
       console.log(response);
 
@@ -131,7 +178,8 @@ async function queryVectorAsset(apiKey) {
 }
 
 // Function to handle updating a vector asset
-async function updateVectorAsset(apiKey) {
+async function updateVectorAsset() {
+  const apiKey = await getApiKey();
   rl.question("Enter the asset ID to update: ", async (assetId) => {
     const payload = {
       price: 200,
@@ -142,7 +190,11 @@ async function updateVectorAsset(apiKey) {
     };
 
     try {
-      const response = await client.update_asset(assetId, payload, apiKey);
+      const response = await client.update_asset(
+        assetId.trim(),
+        payload,
+        apiKey
+      );
       console.log("Asset updated successfully:");
       console.log(response);
 
@@ -175,20 +227,16 @@ function showMainMenu() {
   rl.question("Select an option (1-5): ", async (option) => {
     switch (option) {
       case "1":
-        const apiKey = await getApiKey();
-        await createVectorAsset(apiKey);
+        await createVectorAsset();
         break;
       case "2":
-        const apiKey2 = await getApiKey();
-        await addDataToVectorAsset(apiKey2);
+        await addDataToVectorAsset();
         break;
       case "3":
-        const apiKey3 = await getApiKey();
-        await queryVectorAsset(apiKey3);
+        await queryVectorAsset();
         break;
       case "4":
-        const apiKey4 = await getApiKey();
-        await updateVectorAsset(apiKey4);
+        await updateVectorAsset();
         break;
       case "5":
         rl.close();
