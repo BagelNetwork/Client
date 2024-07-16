@@ -915,7 +915,6 @@ class API {
       console.error('Error downloading files:', error)
     }
   }
-
 }
 
 export default API
