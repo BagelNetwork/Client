@@ -32,7 +32,7 @@
 To install the Bagel JavaScript client, use npm:
 
 ```bash
-npm install bageldb-beta
+npm install bagelML
 ```
 
 ## Overview

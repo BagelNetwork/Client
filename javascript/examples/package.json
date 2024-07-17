@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "bageldb-beta": "^1.0.1",
+    "bagelML": "^1.0.1",
     "uuid": "^9.0.0"
   }
 }

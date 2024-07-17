@@ -1,5 +1,5 @@
 // imports
-const {Settings, Client} = require('./BagelDB.js');
+const {Settings, Client} = require('./Bagel.js');
 
 
 // example for new javascript api

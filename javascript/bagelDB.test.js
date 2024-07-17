@@ -1,14 +1,14 @@
 const axios = require('axios');
-const BagelDB = require('./BagelDB'); // assuming the client and test file are in the same directory
+const Bagel = require('./Bagel'); // assuming the client and test file are in the same directory
 
 // Mocking the axios module
 jest.mock('axios');
 
-describe('BagelDB', () => {
-  let bagelDB;
+describe('Bagel', () => {
+  let bagel;
 
   beforeEach(() => {
-    bagelDB = new BagelDB();
+    bagel = new Bagel();
     // Reset the mock status of axios before each test
     axios.get.mockReset();
     axios.post.mockReset();
@@ -18,10 +18,10 @@ describe('BagelDB', () => {
     const responseData = { status: 'ok' };
     axios.get.mockResolvedValue({ data: responseData });
 
-    const result = await bagelDB.ping();
+    const result = await bagel.ping();
 
     expect(result).toEqual(responseData);
-    expect(axios.get).toHaveBeenCalledWith(`${bagelDB.baseURL}/v0/ping`);
+    expect(axios.get).toHaveBeenCalledWith(`${bagel.baseURL}/v0/ping`);
   });
 
   test('getOpenAIEmbedding', async () => {
@@ -32,13 +32,13 @@ describe('BagelDB', () => {
     };
     axios.post.mockResolvedValue({ data: responseData });
   
-    const result = await bagelDB.getOpenAIEmbedding(inputText, model);
+    const result = await bagel.getOpenAIEmbedding(inputText, model);
   
     expect(result).toEqual(responseData);
-    expect(axios.post).toHaveBeenCalledWith(`${bagelDB.openAIURL}/v1/embeddings`, { input: inputText, model: model }, {
+    expect(axios.post).toHaveBeenCalledWith(`${bagel.openAIURL}/v1/embeddings`, { input: inputText, model: model }, {
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${bagelDB.openAIKey}`,
+        'Authorization': `Bearer ${bagel.openAIKey}`,
       },
     });
   });  
@@ -61,10 +61,10 @@ describe('BagelDB', () => {
     const responseData = { status: 'ok' };
     axios.post.mockResolvedValue({ data: responseData });
 
-    const result = await bagelDB.insert(index, vectors);
+    const result = await bagel.insert(index, vectors);
 
     expect(result).toEqual(responseData);
-    expect(axios.post).toHaveBeenCalledWith(`${bagelDB.baseURL}/v0/insert`, { index, vectors });
+    expect(axios.post).toHaveBeenCalledWith(`${bagel.baseURL}/v0/insert`, { index, vectors });
   });
 
   test('search', async () => {
@@ -77,9 +77,9 @@ describe('BagelDB', () => {
     };
     axios.post.mockResolvedValue({ data: responseData });
 
-    const result = await bagelDB.search(index, vector);
+    const result = await bagel.search(index, vector);
 
     expect(result).toEqual(responseData);
-    expect(axios.post).toHaveBeenCalledWith(`${bagelDB.baseURL}/v0/search`, { index, vector });
+    expect(axios.post).toHaveBeenCalledWith(`${bagel.baseURL}/v0/search`, { index, vector });
   });
 });

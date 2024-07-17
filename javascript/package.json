@@ -1,8 +1,8 @@
 {
-  "name": "bageldb-beta",
+  "name": "bagelML",
   "version": "1.0.24",
-  "description": "A npm client for BagelDB.",
-  "main": "BagelDB.js",
+  "description": "A npm client for Bagel Finetuning API.",
+  "main": "Bagel.js",
   "type": "module",
   "scripts": {
     "test": "jest"
@@ -10,9 +10,11 @@
   "keywords": [
     "bageldb",
     "database",
-    "client"
+    "client",
+    "bagelJS",
+    "bagelML"
   ],
-  "author": "Your Name <yourname@example.com>",
+  "author": "Bidhan Roy <bidhan@bagel.net>",
   "license": "MIT",
   "dependencies": {
     "axios": "^0.21.4",

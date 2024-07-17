@@ -1,8 +1,8 @@
 // example.js
-const BagelDB = require('bageldb-beta'); // Import the BagelDB client
+const Bagel = require('bagelML'); // Import the Bagel client
 
 const main = async () => {
-  const db = new BagelDB(); // Create a new instance of BagelDB
+  const db = new Bagel(); // Create a new instance of Bagel
 
   // Ping the server to check if it's responding
   try {
@@ -24,7 +24,7 @@ const main = async () => {
     console.error('An error occurred while getting embedding:', error);
   }
 
-  // Insert the embedding into BagelDB
+  // Insert the embedding into Bagel
   const index = 'myEmbeddingsIndex';
   const vectors = [
     {
