@@ -1,470 +1,3 @@
-// // imports
-// const axios = require('axios')
-// const fetch = require('node-fetch')
-// const { Cluster } = require('../model/cluster.js')
-// const { v4: uuidv4 } = require('uuid')
-// const FormData = require('form-data')
-// const Buffer = require('buffer').Buffer
-
-// // Class to interact with the Bagel API
-// class API {
-//   // Constructor
-//   constructor(settings) {
-//     const urlPrefix = settings.bagel_server_ssl_enabled ? 'https' : 'http'
-//     if (!settings.bagel_server_host) {
-//       throw new Error(
-//         "Missing required config values 'bagel_server_host' and/or 'bagel_server_http_port'"
-//       )
-//     }
-//     let port
-//     if (settings.bagel_server_http_port) {
-//       port = settings.bagel_server_http_port
-//     } else if (
-//       settings.bagel_server_ssl_enabled &&
-//       settings.bagel_server_https_port
-//     ) {
-//       port = settings.bagel_server_https_port
-//     } else {
-//       port = 80
-//     }
-
-//     this._api_url = `${urlPrefix}://${settings.bagel_server_host}:${port}/api/v1`
-//   }
-
-//   // Methods
-
-//   // ping the Bagel API
-//   async ping() {
-//     try {
-//       const response = await axios.get(this._api_url)
-//       if (!response.data) {
-//         throw new Error('Empty response data received')
-//       }
-//       if (parseInt(response.data['nanosecond heartbeat']) > 0) {
-//         return 'pong'
-//       }
-//     } catch (error) {
-//       console.error('Error:', error)
-//     }
-//   }
-
-//   // get the Bagel API version
-//   async get_version() {
-//     try {
-//       const response = await axios.get(this._api_url + '/version')
-//       if (!response.data) {
-//         throw new Error('Empty response data received')
-//       }
-//       return response.data
-//     } catch (error) {
-//       console.error('Error:', error)
-//     }
-//   }
-
-//   // get all clusters
-//   async get_all_clusters() {
-//     try {
-//       const response = await axios.get(this._api_url + '/clusters')
-//       if (!response.data) {
-//         throw new Error('Empty response data received')
-//       }
-//       const json_clusters = response.data
-//       const clusters = json_clusters.map(
-//         (json_cluster) => new Cluster(this, json_cluster)
-//       )
-//       return clusters
-//     } catch (error) {
-//       console.error('Error:', error)
-//     }
-//   }
-
-//   // create a cluster
-//   async create_cluster(name, metadata = null, get_or_create = false) {
-//     try {
-//       const response = await axios.post(this._api_url + '/clusters', {
-//         name,
-//         metadata,
-//         get_or_create,
-//       })
-//       if (!response.data) {
-//         throw new Error('Empty response data received')
-//       }
-//       return new Cluster(this, response.data)
-//     } catch (error) {
-//       console.error('Error:', error)
-//       // throw error;
-//     }
-//   }
-
-//   // get or create a cluster
-//   async get_or_create_cluster(name, metadata = null) {
-//     try {
-//       const response = await axios.post(this._api_url + '/clusters', {
-//         name,
-//         metadata,
-//         get_or_create: true,
-//       })
-//       if (!response.data) {
-//         throw new Error('Empty response data received')
-//       }
-//       return new Cluster(this, response.data)
-//     } catch (error) {
-//       console.error('Error:', error.response)
-//     }
-//   }
-
-//   // get a cluster
-//   async delete_cluster(name) {
-//     try {
-//       const resp = await axios.delete(this._api_url + '/clusters/' + name)
-//       if (resp.status == 200) {
-//         console.log(`Cluster with name ${name} deleted successfully`)
-//       }
-//     } catch (error) {
-//       if (error == "IndexError('list index out of range')") {
-//         console.error('Error', 'Cluster does not exist')
-//       }
-//     }
-//   }
-
-//   // reset the database
-//   async reset() {
-//     try {
-//       await axios.post(this._api_url + '/reset')
-//     } catch (error) {
-//       console.error('Error:', error)
-//     }
-//   }
-
-//   // persist the database on disk
-//   async persist() {
-//     try {
-//       await axios.post(this._api_url + '/persist')
-//     } catch (error) {
-//       console.error('Error:', error)
-//     }
-//   }
-
-//   // use raw sql to query the database
-//   //async raw_sql(sql) {
-//   //    try {
-//   //        const response = await axios.post(
-//   //            this._api_url + "/raw_sql",
-//   //            { raw_sql: sql }
-//   //        );
-//   //        if (!response.data) {
-//   //            throw new Error("Empty response data received");
-//   //        }
-//   //        return response.data;
-//   //    } catch (error) {
-//   //        console.error("Error:", error);
-//   //    }
-//   //};
-
-//   // get count of data within a cluster
-//   async _count(cluster_id) {
-//     try {
-//       const response = await axios.get(
-//         this._api_url + '/clusters/' + cluster_id + '/count'
-//       )
-//       if (!response.data) {
-//         throw new Error('Empty response data received')
-//       }
-//       return parseInt(response.data)
-//     } catch (error) {
-//       console.error('Error:', error)
-//     }
-//   }
-
-//   // get data within a cluster
-//   async _get(
-//     cluster_id,
-//     ids = null,
-//     where = {},
-//     sort = null,
-//     limit = null,
-//     offset = null,
-//     page = null,
-//     page_size = null,
-//     where_document = {},
-//     include = ['metadatas', 'documents']
-//   ) {
-//     if (page && page_size) {
-//       offset = (page - 1) * page_size
-//       limit = page_size
-//     }
-
-//     try {
-//       const response = await axios.post(
-//         this._api_url + '/clusters/' + cluster_id + '/get',
-//         {
-//           ids,
-//           where,
-//           sort,
-//           limit,
-//           offset,
-//           where_document,
-//           include,
-//         }
-//       )
-//       if (!response.data) {
-//         throw new Error('Empty response data received')
-//       }
-//       const { ids: resultIds, embeddings, metadatas, documents } = response.data
-//       return {
-//         ids: resultIds,
-//         embeddings: embeddings ? embeddings : null,
-//         metadatas: metadatas ? metadatas : null,
-//         documents: documents ? documents : null,
-//       }
-//     } catch (error) {
-//       console.error('Error:', error)
-//     }
-//   }
-
-//   // get top n data within a cluster
-//   async _peek(cluster_id, n = 10) {
-//     let ids
-//     let where
-//     let sort
-//     let limit
-//     let offset
-//     let page
-//     let page_size
-//     let where_document
-//     let include
-
-//     return this._get(
-//       cluster_id,
-//       (ids = null),
-//       (where = {}),
-//       (sort = null),
-//       (limit = n),
-//       (offset = null),
-//       (page = null),
-//       (page_size = null),
-//       (where_document = {}),
-//       (include = ['embeddings', 'documents', 'metadatas'])
-//     )
-//   }
-
-//   // modify cluster name and metadata
-//   async _modify(cluster_id, new_name = null, new_metadata = null) {
-//     try {
-//       const response = await axios.put(
-//         this._api_url + '/clusters/' + cluster_id,
-//         { new_metadata: new_metadata, new_name: new_name },
-//         { headers: { 'Content-Type': 'application/json' } }
-//       )
-//       return 'success'
-//     } catch (error) {
-//       console.error('Error:', error)
-//     }
-//   }
-
-//   // add data to a cluster
-//   async _add(
-//     cluster_id,
-//     ids,
-//     embeddings,
-//     metadatas = null,
-//     documents = null,
-//     increment_index = true
-//   ) {
-//     try {
-//       const response = await axios.post(
-//         this._api_url + '/clusters/' + cluster_id + '/add',
-//         {
-//           ids: ids,
-//           embeddings: embeddings,
-//           metadatas: metadatas,
-//           documents: documents,
-//           increment_index: increment_index,
-//         }
-//       )
-//       if (!response.data) {
-//         throw new Error('Empty response data received')
-//       }
-//       //console.log(response.data);
-//       return response.data
-//     } catch (error) {
-//       console.error('Error:', error)
-//     }
-//   }
-
-//   // delete data from a cluster
-//   async _delete(cluster_id, ids = null, where = {}, where_document = {}) {
-//     try {
-//       const url = this._api_url + '/clusters/' + cluster_id + '/delete'
-//       const requestOpts = {
-//         method: 'POST',
-//         headers: { 'Content-Type': 'application/json' },
-//         body: JSON.stringify({ ids, where, where_document }),
-//       }
-//       const response = await fetch(url, requestOpts)
-//       return response.json()
-//     } catch (error) {
-//       console.error('Error:', error)
-//     }
-//   }
-
-//   // update data in a cluster
-//   async _update(
-//     cluster_id,
-//     ids,
-//     embeddings = null,
-//     metadatas = null,
-//     documents = null
-//   ) {
-//     try {
-//       const response = await axios.post(
-//         this._api_url + '/clusters/' + cluster_id + '/update',
-//         { ids, embeddings, metadatas, documents }
-//       )
-//       if (!response.data) {
-//         throw new Error('Empty response data received')
-//       }
-//       return response.data
-//     } catch (error) {
-//       console.error('Error:', error.message)
-//       throw error
-//     }
-//   }
-
-//   // upsert data in a cluster
-//   async _upsert(
-//     cluster_id,
-//     ids,
-//     embeddings = null,
-//     metadatas = null,
-//     documents = null,
-//     increment_index = true
-//   ) {
-//     try {
-//       const response = await axios.post(
-//         this._api_url + '/clusters/' + cluster_id + '/upsert',
-//         { ids, embeddings, metadatas, documents, increment_index }
-//       )
-//       if (!response.data) {
-//         throw new Error('Empty response data received')
-//       }
-//       return response.data
-//     } catch (error) {
-//       console.error('Error:', error.message)
-//       throw error
-//     }
-//   }
-
-//   // query a cluster
-//   async _query(
-//     cluster_id,
-//     query_embeddings,
-//     n_results = 10,
-//     where = {},
-//     where_document = {},
-//     include = ['metadatas', 'documents', 'distances'],
-//     query_texts = null
-//   ) {
-//     try {
-//       const response = await axios.post(
-//         this._api_url + '/clusters/' + `${cluster_id}` + '/query',
-//         {
-//           query_embeddings: query_embeddings,
-//           n_results: n_results,
-//           where: where,
-//           where_document: where_document,
-//           include: include,
-//           query_texts: query_texts,
-//         }
-//       )
-//       console.log(JSON.stringify(response.data))
-//       if (!response.data) {
-//         throw new Error('Empty response data received')
-//       }
-//       const { ids, embeddings, documents, metadatas, distances } = JSON.parse(
-//         JSON.stringify(response.data)
-//       )
-//       return {
-//         ids: ids,
-//         embeddings: embeddings ? embeddings : null,
-//         documents: documents ? documents : null,
-//         metadatas: metadatas ? metadatas : null,
-//         distances: distances ? distances : null,
-//       }
-//     } catch (error) {
-//       console.error('Error:', error.message)
-//       throw error
-//     }
-//   }
-
-//   // create index for a cluster
-//   async _create_index(cluster_name) {
-//     try {
-//       await axios.post(
-//         this._api_url + '/clusters/' + cluster_name + '/create_index'
-//       )
-//     } catch (error) {
-//       console.error('Error:', error.message)
-//       throw error
-//     }
-//   }
-
-//   // add image to a cluster
-//   async _add_image(cluster_id, image_name, image_data) {
-//     console.log('add_image', image_data)
-//     const uid = uuidv4()
-
-//     const data = {
-//       metadata: [{ filename: image_name.toString() }],
-//       ids: [String(uid)],
-//       increment_index: true,
-//     }
-
-//     const formData = new FormData()
-//     formData.append('image', image_data, {
-//       contentType: 'image/jpeg',
-//       filename: image_name.toString(),
-//     })
-//     formData.append('data', JSON.stringify(data), {
-//       contentType: 'application/json',
-//     })
-
-//     // Send the POST request
-//     await fetch(this._api_url + '/clusters/' + cluster_id + '/add_image', {
-//       method: 'POST',
-//       body: formData,
-//     })
-//       .then((response) => response.json())
-//       .then((data) => {
-//         return data
-//       })
-//       .catch((error) => {
-//         console.error('Error:', error)
-//       })
-//   }
-
-//   // add images to a cluster via web form
-//   async _add_image_web(cluster_id, formData) {
-//     console.log('add_image_web', formData)
-//     const resp = await fetch(
-//       this._api_url + '/clusters/' + cluster_id + '/add_image',
-//       {
-//         method: 'POST',
-//         body: formData,
-//       }
-//     )
-//       .then((response) => response.json())
-//       .then((data) => {
-//         return data
-//       })
-//       .catch((error) => {
-//         console.error('Error:', error)
-//       })
-//   }
-// }
-
-// export default API
-
 // imports
 import axios from 'axios'
 import fetch from 'node-fetch'
@@ -480,7 +13,7 @@ import fs from 'fs'
 // Class to interact with the Bagel API====================================================================================
 class API {
   // Constructor
-  constructor(settings) {
+  constructor (settings) {
     const urlPrefix = settings.bagel_server_ssl_enabled ? 'https' : 'http'
     if (!settings.bagel_server_host) {
       throw new Error(
@@ -505,7 +38,7 @@ class API {
   // Methods
 
   // ping the Bagel API====================================================================================
-  async ping() {
+  async ping () {
     try {
       const response = await fetch(this._api_url)
       if (!response.data) {
@@ -520,7 +53,7 @@ class API {
   }
 
   // get the Bagel API version====================================================================================
-  async get_version() {
+  async get_version () {
     try {
       const response = await fetch(this._api_url + '/version')
       if (!response.data) {
@@ -533,18 +66,18 @@ class API {
   }
 
   // -------------------New Create Asset Function ---------------------
-  async create_asset(payload, apiKey) {
+  async create_asset (payload, apiKey) {
     // Define headers
     const headers = {
       'x-api-key': apiKey,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     }
 
     try {
       const response = await fetch(this._api_url + '/asset', {
         method: 'POST',
         headers,
-        body: JSON.stringify(payload),
+        body: JSON.stringify(payload)
       })
 
       const data = await response.json()
@@ -567,17 +100,17 @@ class API {
   // Get a particular created asset using the asset id
   // getAssetById.js
   // -------------------New Get Asset by ID Function ---------------------
-  async get_asset_by_Id(id, apiKey) {
+  async get_asset_by_Id (id, apiKey) {
     // Define headers
     const headers = {
       'x-api-key': apiKey,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     }
 
     try {
       const response = await fetch(this._api_url + `/asset/${id}`, {
         method: 'GET',
-        headers,
+        headers
       })
 
       const data = await response.json()
@@ -594,11 +127,11 @@ class API {
   }
 
   // -------------------New Get all assets Function ---------------------
-  async get_all_assets(userId, apiKey) {
+  async get_all_assets (userId, apiKey) {
     // Define headers
     const headers = {
       'x-api-key': apiKey,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     }
 
     try {
@@ -606,7 +139,7 @@ class API {
         this._api_url + `/datasets?owner=${userId}`,
         {
           method: 'GET',
-          headers,
+          headers
         }
       )
 
@@ -624,7 +157,7 @@ class API {
   }
 
   // -------------------New Delete Asset Function ---------------------
-  async delete_asset(assetId, apiKey) {
+  async delete_asset (assetId, apiKey) {
     try {
       const url = this._api_url + `/asset/${assetId}`
 
@@ -632,13 +165,13 @@ class API {
       const headers = {
         'Content-Type': 'application/json',
         Accept: 'application/json',
-        'X-API-Key': apiKey,
+        'X-API-Key': apiKey
       }
 
       // Make DELETE request to delete the asset
       const response = await fetch(url, {
         method: 'DELETE',
-        headers,
+        headers
       })
 
       if (!response.ok) {
@@ -652,10 +185,10 @@ class API {
   }
 
   // reset the database====================================================================================
-  async reset() {
+  async reset () {
     try {
       await fetch(this._api_url + '/reset', {
-        method: 'POST',
+        method: 'POST'
       })
     } catch (error) {
       console.error('Error:', error)
@@ -663,19 +196,19 @@ class API {
   }
 
   // -------------------New Update asset Function ---------------------
-  async update_asset(assetId, payload, apiKey) {
+  async update_asset (assetId, payload, apiKey) {
     return this._update_asset(assetId, payload, apiKey)
   }
 
-  async _update_asset(assetId, payload, apiKey) {
+  async _update_asset (assetId, payload, apiKey) {
     try {
       const response = await fetch(this._api_url + '/datasets/' + assetId, {
         method: 'PUT',
         headers: {
           'x-api-key': apiKey,
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(payload)
       })
 
       if (!response.ok) {
@@ -692,10 +225,10 @@ class API {
   }
 
   // persist the database on disk====================================================================================
-  async persist() {
+  async persist () {
     try {
       await fetch(this._api_url + '/persist', {
-        method: 'POST',
+        method: 'POST'
       })
     } catch (error) {
       console.error('Error:', error)
@@ -703,12 +236,12 @@ class API {
   }
 
   // get count of data within a cluster====================================================================================
-  async _count(clusterId) {
+  async _count (clusterId) {
     try {
       const response = await fetch(
         this._api_url + '/clusters/' + clusterId + '/count',
         {
-          method: 'GET',
+          method: 'GET'
         }
       )
       if (!response.data) {
@@ -721,7 +254,7 @@ class API {
   }
 
   // get data within a dataset====================================================================================
-  async _get(
+  async _get (
     clusterId,
     ids = null,
     where = {},
@@ -751,9 +284,9 @@ class API {
             limit,
             offset,
             whereDocument,
-            include,
+            include
           }),
-          headers: { 'Content-Type': 'application/json' }, // Set content type header
+          headers: { 'Content-Type': 'application/json' } // Set content type header
         }
       )
 
@@ -771,7 +304,7 @@ class API {
         ids: data.ids,
         embeddings: data.embeddings ? data.embeddings : null,
         metadatas: data.metadatas ? data.metadatas : null,
-        documents: data.documents ? data.documents : null,
+        documents: data.documents ? data.documents : null
       }
     } catch (error) {
       console.error('Error:', error.message)
@@ -779,13 +312,13 @@ class API {
   }
 
   // modify cluster name and metadata====================================================================================
-  async _modify(clusterId, newName = null, newMetadata = null) {
+  async _modify (clusterId, newName = null, newMetadata = null) {
     try {
       const data = { newMetadata, newName } // Combine data into a single object
       const response = await fetch(this._api_url + '/clusters/' + clusterId, {
         method: 'PUT', // Use PUT for modifying existing data
         body: JSON.stringify(data), // Convert data to JSON string
-        headers: { 'Content-Type': 'application/json' }, // Set content type header
+        headers: { 'Content-Type': 'application/json' } // Set content type header
       })
 
       if (!response.ok) {
@@ -800,7 +333,7 @@ class API {
 
   //= ===================================================================================
   // add data to a cluster
-  async _add(
+  async _add (
     clusterId,
     ids,
     embeddings,
@@ -816,7 +349,7 @@ class API {
           embeddings,
           metadatas,
           documents,
-          incrementIndex,
+          incrementIndex
         }
       )
       if (!response.data) {
@@ -831,7 +364,7 @@ class API {
 
   // -------------------New Add data to vector asset Function ---------------------
 
-  async add_data_to_asset(assetId, payload, apiKey) {
+  async add_data_to_asset (assetId, payload, apiKey) {
     try {
       const response = await fetch(
         `https://api.bageldb.ai/api/v1/asset/${assetId}/add`,
@@ -839,9 +372,9 @@ class API {
           method: 'POST',
           headers: {
             'x-api-key': apiKey,
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json'
           },
-          body: JSON.stringify(payload),
+          body: JSON.stringify(payload)
         }
       )
 
@@ -861,11 +394,11 @@ class API {
   }
 
   // -------------------New Query Asset Function ---------------------
-  async query_asset(assetId, payload, apiKey) {
+  async query_asset (assetId, payload, apiKey) {
     return this._query_asset(assetId, payload, apiKey)
   }
 
-  async _query_asset(assetId, payload, apiKey) {
+  async _query_asset (assetId, payload, apiKey) {
     try {
       const response = await fetch(
         this._api_url + '/asset/' + assetId + '/query',
@@ -873,9 +406,9 @@ class API {
           method: 'POST',
           headers: {
             'x-api-key': apiKey,
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json'
           },
-          body: JSON.stringify(payload),
+          body: JSON.stringify(payload)
         }
       )
 
@@ -893,13 +426,13 @@ class API {
   } // ------------------- Query Asset ---------------------
 
   // delete data from a cluster====================================================================================
-  async _delete(clusterId, ids = null, where = {}, whereDocument = {}) {
+  async _delete (clusterId, ids = null, where = {}, whereDocument = {}) {
     try {
       const url = this._api_url + '/clusters/' + clusterId + '/delete'
       const requestOpts = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ids, where, whereDocument }),
+        body: JSON.stringify({ ids, where, whereDocument })
       }
       const response = await fetch(url, requestOpts)
       return response.json()
@@ -909,7 +442,7 @@ class API {
   }
 
   // update data in a cluster====================================================================================
-  async _update(
+  async _update (
     clusterId,
     ids,
     embeddings = null,
@@ -932,26 +465,26 @@ class API {
   }
 
   // helper method for accessing the private add file method outside the class ===========================================
-  async add_file(assetId, filePath, apiKey) {
+  async add_file (assetId, filePath, apiKey) {
     return this._add_file(assetId, filePath, apiKey)
   }
 
   // -------------------New Add file Function ---------------------
-  async _add_file(assetId, filePath, apiKey) {
+  async _add_file (assetId, filePath, apiKey) {
     // Create a form object to send file data
     const form = new FormData()
     form.append('data_file', fs.createReadStream(filePath))
 
     const headers = {
       'x-api-key': apiKey,
-      ...form.getHeaders(), // Include headers from the form
+      ...form.getHeaders() // Include headers from the form
     }
 
     try {
       const response = await fetch(this._api_url + `/asset/${assetId}/upload`, {
         method: 'POST',
         body: form,
-        headers,
+        headers
       })
 
       const responseData = await response.text() // Get response text
@@ -969,7 +502,7 @@ class API {
   }
 
   // upsert data in a cluster====================================================================================
-  async _upsert(
+  async _upsert (
     clusterId,
     ids,
     embeddings = null,
@@ -993,7 +526,7 @@ class API {
   }
 
   // create index for a cluster====================================================================================
-  async _create_index(clusterName) {
+  async _create_index (clusterName) {
     try {
       await axios.post(
         this._api_url + '/clusters/' + clusterName + '/create_index'
@@ -1005,29 +538,29 @@ class API {
   }
 
   // add image to a cluster====================================================================================
-  async _add_image(clusterId, imageName, imageData) {
+  async _add_image (clusterId, imageName, imageData) {
     console.log('add_image', imageData)
     const uid = uuidv4()
 
     const data = {
       metadata: [{ filename: imageName.toString() }],
       ids: [String(uid)],
-      incrementIndex: true,
+      incrementIndex: true
     }
 
     const formData = new FormData()
     formData.append('image', imageData, {
       contentType: 'image/jpeg',
-      filename: imageName.toString(),
+      filename: imageName.toString()
     })
     formData.append('data', JSON.stringify(data), {
-      contentType: 'application/json',
+      contentType: 'application/json'
     })
 
     // Send the POST request====================================================================================
     await fetch(this._api_url + '/clusters/' + clusterId + '/add_image', {
       method: 'POST',
-      body: formData,
+      body: formData
     })
       .then((response) => response.json())
       .then((data) => {
@@ -1039,11 +572,11 @@ class API {
   }
 
   // add images to a cluster via web form====================================================================================
-  async _add_image_web(clusterId, formData) {
+  async _add_image_web (clusterId, formData) {
     console.log('add_image_web', formData)
     await fetch(this._api_url + '/clusters/' + clusterId + '/add_image', {
       method: 'POST',
-      body: formData,
+      body: formData
     })
       .then((response) => response.json())
       .then((data) => {
@@ -1055,17 +588,17 @@ class API {
   }
 
   // -------------------New Get user details Function ---------------------
-  async get_user_details(userId, apiKey) {
+  async get_user_details (userId, apiKey) {
     // Define headers
     const headers = {
       'x-api-key': apiKey,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     }
 
     try {
       const response = await fetch(this._api_url + `/user?userId=${userId}`, {
         method: 'GET',
-        headers,
+        headers
       })
 
       const data = await response.json()
@@ -1082,16 +615,16 @@ class API {
   }
 
   // -------------------New Create API Key Function ---------------------
-  async create_api_key(name, userId, apiKey = '') {
+  async create_api_key (name, userId, apiKey = '') {
     const headers = {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     }
 
     try {
       const response = await fetch(this._api_url + '/api_keys', {
         method: 'POST',
         headers,
-        body: JSON.stringify({ name, api_key: apiKey, userId }),
+        body: JSON.stringify({ name, api_key: apiKey, userId })
       })
 
       const data = await response.json()
@@ -1109,10 +642,10 @@ class API {
 
   // -------------------New Like asset Function --------------------- [WIP/NA]
 
-  async like_dataset(assetId, userId, action, apiKey) {
+  async like_dataset (assetId, userId, action, apiKey) {
     const headers = {
       'x-api-key': apiKey,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     }
 
     try {
@@ -1121,7 +654,7 @@ class API {
           `/datasets/${assetId}/like?userId=${userId}&action=${action}`,
         {
           method: 'POST',
-          headers,
+          headers
         }
       )
 
@@ -1140,10 +673,10 @@ class API {
 
   // -------------------New Rate asset Function --------------------- [WIP/NA]
 
-  async rate_dataset(assetId, userId, rating, apiKey) {
+  async rate_dataset (assetId, userId, rating, apiKey) {
     const headers = {
       'x-api-key': apiKey,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     }
 
     try {
@@ -1152,7 +685,7 @@ class API {
           `/datasets/${assetId}/like?userId=${userId}&rating=${rating}`,
         {
           method: 'POST',
-          headers,
+          headers
         }
       )
 
@@ -1170,19 +703,19 @@ class API {
   }
 
   // -------------------New Fine Tune Function ---------------------
-  async fine_tune(payload, apiKey) {
+  async fine_tune (payload, apiKey) {
     return this._fine_tune(payload, apiKey)
   }
 
-  async _fine_tune(payload, apiKey) {
+  async _fine_tune (payload, apiKey) {
     try {
       const response = await fetch(this._api_url + '/asset', {
         method: 'POST',
         headers: {
           'x-api-key': apiKey,
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(payload)
       })
 
       if (!response.ok) {
@@ -1199,11 +732,11 @@ class API {
   }
 
   // -------------------New List Jobs Function ---------------------
-  async list_jobs(userId, apiKey) {
+  async list_jobs (userId, apiKey) {
     return this._list_jobs(userId, apiKey)
   }
 
-  async _list_jobs(userId, apiKey) {
+  async _list_jobs (userId, apiKey) {
     try {
       const url = `${this._api_url}/jobs/created_by/${userId}`
       console.log('Request URL:', url) // Log the URL to verify it's correct
@@ -1212,8 +745,8 @@ class API {
         method: 'GET',
         headers: {
           'x-api-key': apiKey,
-          'Content-Type': 'application/json',
-        },
+          'Content-Type': 'application/json'
+        }
       })
 
       if (!response.ok) {
@@ -1232,7 +765,7 @@ class API {
   }
 
   // -------------------New Get job Function ---------------------
-  async get_job(jobId, apiKey) {
+  async get_job (jobId, apiKey) {
     try {
       const url = `${this._api_url}/jobs/${jobId}`
       console.log('Request URL:', url) // Log the URL to verify it's correct
@@ -1241,8 +774,8 @@ class API {
         method: 'GET',
         headers: {
           'x-api-key': apiKey,
-          'Content-Type': 'application/json',
-        },
+          'Content-Type': 'application/json'
+        }
       })
 
       if (!response.ok) {
@@ -1262,18 +795,18 @@ class API {
 
   // -------------------New Get job by Asset Function ---------------------
 
-  async get_job_by_asset(assetId, apiKey) {
+  async get_job_by_asset (assetId, apiKey) {
     return this._get_job_by_asset(assetId, apiKey)
   }
 
-  async _get_job_by_asset(assetId, apiKey) {
+  async _get_job_by_asset (assetId, apiKey) {
     try {
       const response = await fetch(`${this._api_url}/asset/${assetId}`, {
         method: 'GET',
         headers: {
           'x-api-key': apiKey,
-          'Content-Type': 'application/json',
-        },
+          'Content-Type': 'application/json'
+        }
       })
 
       if (!response.ok) {
@@ -1292,11 +825,11 @@ class API {
   }
 
   // -------------------New List Model Files Function ---------------------
-  async list_model_files(assetId, apiKey) {
+  async list_model_files (assetId, apiKey) {
     return this._list_model_files(assetId, apiKey)
   }
 
-  async _list_model_files(assetId, apiKey) {
+  async _list_model_files (assetId, apiKey) {
     try {
       const url = `${this._api_url}/jobs/asset/${assetId}/files`
       console.log('Request URL:', url) // Log the URL to verify it's correct
@@ -1305,8 +838,8 @@ class API {
         method: 'GET',
         headers: {
           'x-api-key': apiKey,
-          'Content-Type': 'application/json',
-        },
+          'Content-Type': 'application/json'
+        }
       })
 
       if (!response.ok) {
@@ -1325,11 +858,11 @@ class API {
   }
 
   // -------------------New Download Model Files Function ---------------------
-  async download_model_file(assetId, fileName, apiKey) {
+  async download_model_file (assetId, fileName, apiKey) {
     return this._download_model_file(assetId, fileName, apiKey)
   }
 
-  async _download_model_file(assetId, fileName, apiKey) {
+  async _download_model_file (assetId, fileName, apiKey) {
     try {
       const url = `${this._api_url}/api/v1/jobs/asset/${assetId}/files/${fileName}`
       console.log('Request URL:', url) // Log the URL to verify it's correct
@@ -1338,8 +871,8 @@ class API {
         method: 'GET',
         headers: {
           'x-api-key': apiKey,
-          'Content-Type': 'application/json',
-        },
+          'Content-Type': 'application/json'
+        }
       })
 
       if (!response.ok) {
@@ -1358,10 +891,10 @@ class API {
   }
 
   // Get notification ============================================== [WIP]
-  async get_notification(userId, apiKey) {
+  async get_notification (userId, apiKey) {
     const headers = {
       'x-api-key': apiKey,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     }
 
     try {
@@ -1369,7 +902,7 @@ class API {
         this._api_url + `/notification/user/${userId}`,
         {
           method: 'POST',
-          headers,
+          headers
         }
       )
 
@@ -1387,10 +920,10 @@ class API {
   }
 
   // Download model files ==============================[WIP]
-  async download_model_files(jobId, fileName, apiKey) {
+  async download_model_files (jobId, fileName, apiKey) {
     const headers = {
       'x-api-key': apiKey,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     }
 
     try {
@@ -1398,7 +931,7 @@ class API {
         this._api_url + `/jobs/${jobId}/files/${fileName}`,
         {
           method: 'GET',
-          headers,
+          headers
         }
       )
 
