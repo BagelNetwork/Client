@@ -689,8 +689,125 @@ class FastAPI(API):
                 self.download_dataset_files(dataset_id, target_dir, file_path)
         
         return True
+    @override
+    def create_asset(self, payload, api_key) -> str:
+    # Define the URL for creating a dataset
+        url = f"{self._api_url}/asset"
+        # Define the payload for creating a dataset
+        # Replace "your_api_key_here" with the provided API key
+        headers = {
+            "x-api-key": api_key,
+            "Content-Type": "application/json"
+        }
+
+        # Make a POST request to create a dataset
+        response_create_dataset = requests.post(url, json=payload, headers=headers)
+
+        # Check the response status code
+        if response_create_dataset.status_code == 200:
+            print("Asset created successfully!")
+            
+            # Print out the entire response content
+            print(response_create_dataset.json())
+            
+            # Extract asset ID from the response
+            dataset_info = response_create_dataset.json()
+            print("dataset info:", dataset_info)
+            if "asset_id" in dataset_info:
+                asset_id = dataset_info["asset_id"]
+                print(f"Asset ID: {asset_id}")
+        else:
+            print(f"Error creating dataset: {response_create_dataset.text}")
+            
+    
+    # delete asset function
+    @override
+    def delete_asset(self, dataset_id, api_key) -> str:
+        url = f"{self._api_url}/asset/{dataset_id}"
+
+        # Replace "your_api_key_here" with your actual API key
+
+        headers = {
+            "x-api-key": api_key
+        }
+        response = requests.delete(url, headers=headers)
+        try:
+            if response.status_code == 204:
+                print(f"Dataset with {dataset_id} deleted successfully!")
+            else:
+                print(f"Error deleting dataset: {response.text}")
 
 
+        except Exception:
+            print("Error")
+
+    @override
+    def download_file(self, asset_id, file_name, api_key) -> Document:
+        url = f"{self._api_url}/jobs/asset/{asset_id}/files/{file_name}"
+        headers = {
+            "x-api-key": api_key,
+            "Content-Type": "application.json"
+        }
+        try:
+            response = requests.get(url, headers=headers, stream=True)
+            if response.status_code == 200:
+                print("File retrieved successfully!\nPreparing for download ...")
+                with open(file_name, "wb") as f:
+                    for chunks in response.iter_content(chunk_size=8192):
+                        f.write(chunks)
+                print(f"File successfully downloaded and saved as {file_name}")
+            else:
+                print("Error downloading file")
+        except Exception as e:
+            print("Error", e)
+            
+    # @override
+    # def fine_tune(self, paylod: Document, api_key: Document) -> Document:
+    #     return super().fine_tune(payload, api_key)
+    
+    #==================
+    
+    # @override
+    # def fine_tune(
+    #         self,
+    #         payload: str,
+    #         asset_id: str,
+    #         user_id: str = DEFAULT_TENANT,
+    #         api_key: Optional[str] = None
+    # ) -> str:
+    #     """Create a dataset"""
+    #     headers, user_id = self._extract_headers_with_key_and_user_id(api_key, user_id, payload)
+    #     url = f"{self._api_url}/jobs/asset/ + {asset_id}"
+
+    #     # data = {
+    #     #     "dataset_type": dataset_type, 
+    #     #     "title": title,
+    #     #     "category": category,
+    #     #     "details": details,
+    #     #     "tags": [],
+    #     #     "user_id": user_id,
+    #     #     "fine_tune_payload": {
+    #     #         "asset_id": asset_id,
+    #     #         "model_name": model_name,
+    #     #         "base_model": base_model,
+    #     #         "file_name": file_name,
+    #     #         "user_id": user_id
+    #     #     }
+    #     # }
+    #     resp = requests.post(url, headers=headers, data=json.dumps(resp.data))
+    #     raise_bagel_error(resp)
+        
+    #     resp_json = resp.json()
+        
+    #     return resp_json
+
+    #==================
+    
+    
+    
+    
+    
+    
 def raise_bagel_error(resp: requests.Response) -> None:
     """Raises an error if the response is not ok, using a BagelError if possible"""
     if resp.ok:
@@ -713,3 +830,6 @@ def raise_bagel_error(resp: requests.Response) -> None:
         resp.raise_for_status()
     except requests.HTTPError:
         raise (Exception(resp.text))
+
+
+#===========================================================
