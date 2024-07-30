@@ -1,8 +1,7 @@
-
-
 import fetch from 'node-fetch'
 import FormData from 'form-data'
 import API from './src/api/api.js' // Adjust the path to where your API class is located
+
 
 jest.mock('node-fetch', () => jest.fn())
 jest.mock('form-data')
@@ -11,7 +10,7 @@ jest.mock('fs')
 const settings = {
   bagel_server_ssl_enabled: true,
   bagel_server_host: 'api.bageldb.ai',
-  bagel_server_https_port: 80,
+  bagel_server_https_port: 80
 }
 
 describe('API class', () => {
@@ -28,7 +27,7 @@ describe('API class', () => {
   test('ping method', async () => {
     fetch.mockResolvedValue({
       json: jest.fn().mockResolvedValue({ 'nanosecond heartbeat': '1' }),
-      data: { 'nanosecond heartbeat': '1' },
+      data: { 'nanosecond heartbeat': '1' }
     })
 
     const result = await api.ping()
@@ -38,7 +37,7 @@ describe('API class', () => {
   test('get_version method', async () => {
     fetch.mockResolvedValue({
       json: jest.fn().mockResolvedValue({ version: '1.0' }),
-      data: { version: '1.0' },
+      data: { version: '1.0' }
     })
 
     const result = await api.get_version()
@@ -51,7 +50,7 @@ describe('API class', () => {
 
     fetch.mockResolvedValue({
       json: jest.fn().mockResolvedValue({ id: '123' }),
-      status: 200,
+      status: 200
     })
 
     await api.create_asset(payload, apiKey)
@@ -59,9 +58,9 @@ describe('API class', () => {
       method: 'POST',
       headers: {
         'x-api-key': apiKey,
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(payload)
     })
   })
 
@@ -71,7 +70,7 @@ describe('API class', () => {
 
     fetch.mockResolvedValue({
       json: jest.fn().mockResolvedValue({ id: '123', name: 'test' }),
-      status: 200,
+      status: 200
     })
 
     await api.get_asset_by_Id(id, apiKey)
@@ -79,8 +78,8 @@ describe('API class', () => {
       method: 'GET',
       headers: {
         'x-api-key': apiKey,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     })
   })
 
@@ -90,7 +89,7 @@ describe('API class', () => {
 
     fetch.mockResolvedValue({
       json: jest.fn().mockResolvedValue([{ id: '123', name: 'test' }]),
-      status: 200,
+      status: 200
     })
 
     await api.get_all_assets(userId, apiKey)
@@ -100,8 +99,8 @@ describe('API class', () => {
         method: 'GET',
         headers: {
           'x-api-key': apiKey,
-          'Content-Type': 'application/json',
-        },
+          'Content-Type': 'application/json'
+        }
       }
     )
   })
@@ -114,7 +113,7 @@ describe('API class', () => {
       ok: true,
       json: jest
         .fn()
-        .mockResolvedValue({ message: 'Asset deleted successfully' }),
+        .mockResolvedValue({ message: 'Asset deleted successfully' })
     })
 
     await api.delete_asset(assetId, apiKey)
@@ -123,8 +122,8 @@ describe('API class', () => {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
-        'X-API-Key': apiKey,
-      },
+        'X-API-Key': apiKey
+      }
     })
   })
 
@@ -133,7 +132,7 @@ describe('API class', () => {
 
     await api.reset()
     expect(fetch).toHaveBeenCalledWith(`${api._api_url}/reset`, {
-      method: 'POST',
+      method: 'POST'
     })
   })
 
@@ -145,23 +144,23 @@ describe('API class', () => {
 
     fetch.mockResolvedValue({
       json: jest.fn().mockResolvedValue({ message: '' }),
-      status: 200,
+      status: 200
     })
     await api.update_asset(assetId, payload, apiKey)
     expect(fetch).toHaveBeenCalledWith(`${api._api_url}/datasets/${assetId}`, {
       method: 'PUT',
       headers: {
         'x-api-key': apiKey,
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(payload)
     })
   })
 
   // test for fine_tune function
   test('fine_tune', async () => {
     const payload = {
-      title: 'hello',
+      title: 'hello'
     }
     const apiKey = '4gB2wJPByf8qnUihAmH8dgbGYsZESEOH'
 
@@ -169,15 +168,15 @@ describe('API class', () => {
 
     fetch.mockResolvedValue({
       json: jest.fn().mockResolvedValue(res),
-      status: 200,
+      status: 200
     })
     expect(fetch).toHaveBeenCalledWith(`${api._api_url}/asset`, {
       method: 'POST',
       headers: {
         'x-api-key': apiKey,
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(payload)
     })
   })
 
@@ -189,15 +188,15 @@ describe('API class', () => {
 
     fetch.mockResolvedValue({
       json: jest.fn().mockResolvedValue(res),
-      status: 200,
+      status: 200
     })
 
     expect(fetch).toHaveBeenCalledWith(`${api._api_url}/asset/${assetId}`, {
       method: 'GET',
       headers: {
         'x-api-key': apiKey,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     })
   })
 
@@ -209,15 +208,15 @@ describe('API class', () => {
 
     fetch.mockResolvedValue({
       json: jest.fn().mockResolvedValue(res),
-      status: 200,
+      status: 200
     })
 
     expect(fetch).toHaveBeenCalledWith(`${api._api_url}/jobs/${jobId}`, {
       method: 'GET',
       headers: {
         'x-api-key': apiKey,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     })
   })
 
@@ -225,13 +224,13 @@ describe('API class', () => {
   test('query_asset', async () => {
     const assetId = ''
     const payload = {
-      title: 'man',
+      title: 'man'
     }
     const apiKey = ''
     const res = await api.query_asset(assetId, payload, apiKey)
     fetch.mockResolvedValue({
       json: jest.fn().mockResolvedValue(res),
-      status: 200,
+      status: 200
     })
     expect(fetch).toHaveBeenCalledWith(
       `${api._api_url}/asset/${assetId}/query`,
@@ -239,9 +238,9 @@ describe('API class', () => {
         method: 'POST',
         headers: {
           'x-api-key': apiKey,
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(payload)
       }
     )
   })
@@ -254,11 +253,11 @@ describe('API class', () => {
     const res = await api.add_file(assetId, filePath, apiKey)
 
     const headers = {
-      'x-api-key': apiKey,
+      'x-api-key': apiKey
     }
     fetch.mockResolvedValue({
       json: jest.fn().mockResolvedValue(res),
-      status: 200,
+      status: 200
     })
 
     expect(fetch).toHaveBeenCalledWith(
@@ -266,7 +265,7 @@ describe('API class', () => {
       {
         method: 'POST',
         body: expect.any(FormData),
-        headers,
+        headers
       }
     )
   })
@@ -280,7 +279,7 @@ describe('API class', () => {
     const res = await api.download_model_file(assetId, fileName, apiKey)
     fetch.mockResolvedValue({
       json: jest.fn().mockResolvedValue(res),
-      status: 200,
+      status: 200
     })
     expect(fetch).toHaveBeenCalledWith(
       `${api._api_url}/api/v1/jobs/asset/${assetId}/files/${fileName}`,
@@ -288,8 +287,8 @@ describe('API class', () => {
         method: 'GET',
         headers: {
           'x-api-key': apiKey,
-          'Content-Type': 'application/json',
-        },
+          'Content-Type': 'application/json'
+        }
       }
     )
   })
@@ -303,7 +302,7 @@ describe('API class', () => {
 
     fetch.mockResolvedValue({
       json: jest.fn().mockResolvedValue(res),
-      status: 200,
+      status: 200
     })
     expect(fetch).toHaveBeenCalledWith(
       `${api._api_url}/user?userId=${userId}`,
@@ -311,8 +310,8 @@ describe('API class', () => {
         method: 'GET',
         headers: {
           'x-api-key': apiKey,
-          'Content-Type': 'application/json',
-        },
+          'Content-Type': 'application/json'
+        }
       }
     )
   })
