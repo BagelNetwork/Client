@@ -8,6 +8,6 @@ export {
   API as Client,
   // utils
   Settings,
-  // cluster
+  // cluster  
   cluster as Cluster
 }
