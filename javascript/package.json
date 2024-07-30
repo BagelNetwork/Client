@@ -17,7 +17,7 @@
   "author": "Bidhan Roy <bidhan@bagel.net>",
   "license": "MIT",
   "dependencies": {
-    "axios": "^1.7.2",
+    "axios": "^0.21.4",
     "buffer": "^6.0.3",
     "form-data": "^4.0.0",
     "javascript": "^1.0.0",
@@ -29,14 +29,9 @@
     "@babel/preset-env": "^7.25.0",
     "@babel/preset-react": "^7.24.7",
     "@eslint/js": "^9.3.0",
-    "@types/jest": "^29.5.12",
+    "babel-jest": "^29.7.0",
     "eslint": "^9.3.0",
     "globals": "^15.3.0",
-    "jest": "^27.5.1"
-  },
-  "standard": {
-    "env": {
-      "jest": true
-    }
+    "jest": "^27.0.6"
   }
 }

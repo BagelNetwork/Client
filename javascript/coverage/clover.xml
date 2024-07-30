@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1722329029389" clover="3.2.0">
-  <project timestamp="1722329029389" name="All files">
+<coverage generated="1722330744771" clover="3.2.0">
+  <project timestamp="1722330744771" name="All files">
     <metrics statements="291" coveredstatements="104" conditionals="105" coveredconditionals="20" methods="49" coveredmethods="22" elements="445" coveredelements="146" complexity="0" loc="291" ncloc="291" packages="1" files="1" classes="1"/>
     <file name="api.js" path="/Users/victorkanu/Desktop/ Bagel Working Client /Client/javascript/src/api/api.js">
       <metrics statements="291" coveredstatements="104" conditionals="105" coveredconditionals="20" methods="49" coveredmethods="22"/>

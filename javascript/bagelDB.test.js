@@ -1,86 +1,319 @@
-import axios from 'axios'
-import Bagel from './Bagel' // assuming the client and test file are in the same directory
-const { jest, describe, test, beforeEach, expect } = ''
 
-// Mocking the axios module
-jest.mock('axios')
 
-describe('Bagel', () => {
-  let bagel
+import fetch from 'node-fetch'
+import FormData from 'form-data'
+import API from './src/api/api.js' // Adjust the path to where your API class is located
+
+jest.mock('node-fetch', () => jest.fn())
+jest.mock('form-data')
+jest.mock('fs')
+
+const settings = {
+  bagel_server_ssl_enabled: true,
+  bagel_server_host: 'api.bageldb.ai',
+  bagel_server_https_port: 80,
+}
+
+describe('API class', () => {
+  let api
 
   beforeEach(() => {
-    bagel = new Bagel()
-    // Reset the mock status of axios before each test
-    axios.get.mockReset()
-    axios.post.mockReset()
+    api = new API(settings)
   })
 
-  test('ping', async () => {
-    const responseData = { status: 'ok' }
-    axios.get.mockResolvedValue({ data: responseData })
-
-    const result = await bagel.ping()
-
-    expect(result).toEqual(responseData)
-    expect(axios.get).toHaveBeenCalledWith(`${bagel.baseURL}/v0/ping`)
+  afterEach(() => {
+    jest.clearAllMocks()
   })
 
-  test('getOpenAIEmbedding', async () => {
-    const inputText = 'Some input text'
-    const model = 'text-embedding-ada-002'
-    const responseData = {
-      embeddings: [0.1, 0.2, 0.3, 0.4]
-    }
-    axios.post.mockResolvedValue({ data: responseData })
+  test('ping method', async () => {
+    fetch.mockResolvedValue({
+      json: jest.fn().mockResolvedValue({ 'nanosecond heartbeat': '1' }),
+      data: { 'nanosecond heartbeat': '1' },
+    })
 
-    const result = await bagel.getOpenAIEmbedding(inputText, model)
+    const result = await api.ping()
+    expect(result).toBe('pong')
+  })
 
-    expect(result).toEqual(responseData)
-    expect(axios.post).toHaveBeenCalledWith(`${bagel.openAIURL}/v1/embeddings`, { input: inputText, model }, {
+  test('get_version method', async () => {
+    fetch.mockResolvedValue({
+      json: jest.fn().mockResolvedValue({ version: '1.0' }),
+      data: { version: '1.0' },
+    })
+
+    const result = await api.get_version()
+    expect(result).toEqual({ version: '1.0' })
+  })
+
+  test('create_asset method', async () => {
+    const payload = { name: 'test' }
+    const apiKey = '4gB2wJPByf8qnUihAmH8dgbGYsZESEOH'
+
+    fetch.mockResolvedValue({
+      json: jest.fn().mockResolvedValue({ id: '123' }),
+      status: 200,
+    })
+
+    await api.create_asset(payload, apiKey)
+    expect(fetch).toHaveBeenCalledWith(`${api._api_url}/asset`, {
+      method: 'POST',
       headers: {
+        'x-api-key': apiKey,
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${bagel.openAIKey}`
-      }
+      },
+      body: JSON.stringify(payload),
     })
   })
 
-  test('insert with valid data', async () => {
-    const index = 'bagel'
-    const vectors = [
-      {
-        id: 'vec1',
-        values: [0.1, 0.2, 0.3, 0.4],
-        metadata: { genre: 'drama' }
+  test('get_asset_by_Id method', async () => {
+    const id = '123'
+    const apiKey = '4gB2wJPByf8qnUihAmH8dgbGYsZESEOH'
+
+    fetch.mockResolvedValue({
+      json: jest.fn().mockResolvedValue({ id: '123', name: 'test' }),
+      status: 200,
+    })
+
+    await api.get_asset_by_Id(id, apiKey)
+    expect(fetch).toHaveBeenCalledWith(`${api._api_url}/asset/${id}`, {
+      method: 'GET',
+      headers: {
+        'x-api-key': apiKey,
+        'Content-Type': 'application/json',
       },
-      {
-        id: 'vec2',
-        values: [0.2, 0.3, 0.4, 0.5],
-        metadata: { genre: 'action' }
-      }
-    ]
-
-    const responseData = { status: 'ok' }
-    axios.post.mockResolvedValue({ data: responseData })
-
-    const result = await bagel.insert(index, vectors)
-
-    expect(result).toEqual(responseData)
-    expect(axios.post).toHaveBeenCalledWith(`${bagel.baseURL}/v0/insert`, { index, vectors })
+    })
   })
 
-  test('search', async () => {
-    const index = 'bagel'
-    const vector = [1.0, 2.0, 3.0, 4.0]
-    const responseData = {
-      results: {
-        matches: [{ score: 0.75, vectorId: 'vec1' }, { score: 0.65, vectorId: 'vec2' }]
+  test('get_all_assets method', async () => {
+    const userId = '101481188466180740994'
+    const apiKey = '4gB2wJPByf8qnUihAmH8dgbGYsZESEOH'
+
+    fetch.mockResolvedValue({
+      json: jest.fn().mockResolvedValue([{ id: '123', name: 'test' }]),
+      status: 200,
+    })
+
+    await api.get_all_assets(userId, apiKey)
+    expect(fetch).toHaveBeenCalledWith(
+      `${api._api_url}/datasets?owner=${userId}`,
+      {
+        method: 'GET',
+        headers: {
+          'x-api-key': apiKey,
+          'Content-Type': 'application/json',
+        },
       }
+    )
+  })
+
+  test('delete_asset method', async () => {
+    const assetId = '123'
+    const apiKey = '4gB2wJPByf8qnUihAmH8dgbGYsZESEOH'
+
+    fetch.mockResolvedValue({
+      ok: true,
+      json: jest
+        .fn()
+        .mockResolvedValue({ message: 'Asset deleted successfully' }),
+    })
+
+    await api.delete_asset(assetId, apiKey)
+    expect(fetch).toHaveBeenCalledWith(`${api._api_url}/asset/${assetId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        'X-API-Key': apiKey,
+      },
+    })
+  })
+
+  test('reset method', async () => {
+    fetch.mockResolvedValue({ ok: true })
+
+    await api.reset()
+    expect(fetch).toHaveBeenCalledWith(`${api._api_url}/reset`, {
+      method: 'POST',
+    })
+  })
+
+  // test for update
+  test('update_asset', async () => {
+    const assetId = '2c3d2be5-c5b5-428a-b96d-07b2d4d6130c'
+    const payload = { title: 'man' }
+    const apiKey = '4gB2wJPByf8qnUihAmH8dgbGYsZESEOH'
+
+    fetch.mockResolvedValue({
+      json: jest.fn().mockResolvedValue({ message: '' }),
+      status: 200,
+    })
+    await api.update_asset(assetId, payload, apiKey)
+    expect(fetch).toHaveBeenCalledWith(`${api._api_url}/datasets/${assetId}`, {
+      method: 'PUT',
+      headers: {
+        'x-api-key': apiKey,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
+  })
+
+  // test for fine_tune function
+  test('fine_tune', async () => {
+    const payload = {
+      title: 'hello',
     }
-    axios.post.mockResolvedValue({ data: responseData })
+    const apiKey = '4gB2wJPByf8qnUihAmH8dgbGYsZESEOH'
 
-    const result = await bagel.search(index, vector)
+    const res = await api.fine_tune(payload, apiKey)
 
-    expect(result).toEqual(responseData)
-    expect(axios.post).toHaveBeenCalledWith(`${bagel.baseURL}/v0/search`, { index, vector })
+    fetch.mockResolvedValue({
+      json: jest.fn().mockResolvedValue(res),
+      status: 200,
+    })
+    expect(fetch).toHaveBeenCalledWith(`${api._api_url}/asset`, {
+      method: 'POST',
+      headers: {
+        'x-api-key': apiKey,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
+  })
+
+  test('get_job_by_asset', async () => {
+    const assetId = ''
+    const apiKey = ''
+
+    const res = await api.get_job_by_asset(assetId, apiKey)
+
+    fetch.mockResolvedValue({
+      json: jest.fn().mockResolvedValue(res),
+      status: 200,
+    })
+
+    expect(fetch).toHaveBeenCalledWith(`${api._api_url}/asset/${assetId}`, {
+      method: 'GET',
+      headers: {
+        'x-api-key': apiKey,
+        'Content-Type': 'application/json',
+      },
+    })
+  })
+
+  // test for get_job function in the api.js
+  test('get_job', async () => {
+    const jobId = ''
+    const apiKey = ''
+    const res = await api.get_job(jobId, apiKey)
+
+    fetch.mockResolvedValue({
+      json: jest.fn().mockResolvedValue(res),
+      status: 200,
+    })
+
+    expect(fetch).toHaveBeenCalledWith(`${api._api_url}/jobs/${jobId}`, {
+      method: 'GET',
+      headers: {
+        'x-api-key': apiKey,
+        'Content-Type': 'application/json',
+      },
+    })
+  })
+
+  // test for query_asset function in api.js
+  test('query_asset', async () => {
+    const assetId = ''
+    const payload = {
+      title: 'man',
+    }
+    const apiKey = ''
+    const res = await api.query_asset(assetId, payload, apiKey)
+    fetch.mockResolvedValue({
+      json: jest.fn().mockResolvedValue(res),
+      status: 200,
+    })
+    expect(fetch).toHaveBeenCalledWith(
+      `${api._api_url}/asset/${assetId}/query`,
+      {
+        method: 'POST',
+        headers: {
+          'x-api-key': apiKey,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      }
+    )
+  })
+
+  // test for add_file function in the api.js
+  test('add_file', async () => {
+    const assetId = ''
+    const filePath = './somefile.txt'
+    const apiKey = ''
+    const res = await api.add_file(assetId, filePath, apiKey)
+
+    const headers = {
+      'x-api-key': apiKey,
+    }
+    fetch.mockResolvedValue({
+      json: jest.fn().mockResolvedValue(res),
+      status: 200,
+    })
+
+    expect(fetch).toHaveBeenCalledWith(
+      `${api._api_url}/asset/${assetId}/upload`,
+      {
+        method: 'POST',
+        body: expect.any(FormData),
+        headers,
+      }
+    )
+  })
+
+  // test download_model_file function in api.js
+  test('download_model_file', async () => {
+    const assetId = ''
+    const fileName = ''
+    const apiKey = ''
+
+    const res = await api.download_model_file(assetId, fileName, apiKey)
+    fetch.mockResolvedValue({
+      json: jest.fn().mockResolvedValue(res),
+      status: 200,
+    })
+    expect(fetch).toHaveBeenCalledWith(
+      `${api._api_url}/api/v1/jobs/asset/${assetId}/files/${fileName}`,
+      {
+        method: 'GET',
+        headers: {
+          'x-api-key': apiKey,
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+  })
+
+  // test get_user_details function in api.js
+  test('get_user_details', async () => {
+    const userId = ''
+    const apiKey = ''
+
+    const res = await api.get_user_details(userId, apiKey)
+
+    fetch.mockResolvedValue({
+      json: jest.fn().mockResolvedValue(res),
+      status: 200,
+    })
+    expect(fetch).toHaveBeenCalledWith(
+      `${api._api_url}/user?userId=${userId}`,
+      {
+        method: 'GET',
+        headers: {
+          'x-api-key': apiKey,
+          'Content-Type': 'application/json',
+        },
+      }
+    )
   })
 })
