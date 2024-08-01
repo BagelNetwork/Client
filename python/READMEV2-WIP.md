@@ -2,7 +2,7 @@
 
 Welcome to the Bagel Python Client! Bagel is your platform for peer-to-peer machine learning, finetuning open-source models like Llama or Mistral, and using retrieval augmented generation (RAG).
 
-One of the perks? **No need to manage complex embeddings or model integrations yourself!** The Bagel client handles these processes, saving you time and money. 🥯💰
+One of the perks? **No need to manage complex embeddings or model integrations yourself!** The Bagel client handles these processes, saving you time and money. 🥯
 
 ## Prerequisites
 
