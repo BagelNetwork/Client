@@ -1,6 +1,6 @@
 # Bagel Python Client 🥯
 
-Welcome to the Bagel Python Client Example! Bagel is your platform for peer-to-peer machine learning, finetuning open-source models like Llama or Mistral, and using retrieval augmented generation (RAG).
+Welcome to the Bagel Python Client! Bagel is your platform for peer-to-peer machine learning, finetuning open-source models like Llama or Mistral, and using retrieval augmented generation (RAG).
 
 One of the perks? **No need to manage complex embeddings or model integrations yourself!** The Bagel client handles these processes, saving you time and money. 🥯💰
 
@@ -8,7 +8,7 @@ One of the perks? **No need to manage complex embeddings or model integrations y
 
 - Python 3.6+
 - pip package manager
-- Cluster size limit 500MB (*Create a new issue if you want to increase the limit)
+- Asset size limit 500MB (*Create a new issue if you want to increase the limit)
 
 ## Installation
 
@@ -23,7 +23,6 @@ pip install bagelML
 1. **Import the necessary modules:**
 
 ```python
-import uuid
 import bagel
 from bagel.config import Settings
 ```

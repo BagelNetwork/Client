@@ -468,3 +468,21 @@ class API(Component, ABC):
             ) -> bool:
         pass
 
+    # @abstractmethod
+    # def fine_tune(self, payload: str, api_key: str) -> str:
+    #     """Fine tune the model"""
+    #     pass
+    @abstractmethod
+    def create_asset(self, payload: str, api_key: str) -> str:
+        """create asset"""
+        pass
+    
+    @abstractmethod
+    def delete_asset(self, dataset_id, api_key) -> str:
+        """delete asset"""
+        pass
+    
+    @abstractmethod
+    def download_file(self, asset_id, file_name, api_key) -> Document:
+        """Download document"""
+        pass
