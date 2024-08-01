@@ -1,7 +1,7 @@
 {
-  "name": "npm-standard",
+  "name": "npm standard",
   "version": "1.0.0",
-  "description": "A Node.js project using StandardJS for code linting.",
+  "description": "A Node.js project using StandardJS for code linting",
   "main": "index.js",
   "scripts": {
     "standard": "standard"
@@ -19,4 +19,3 @@
   "author": "halo",
   "license": "MIT"
 }
-
