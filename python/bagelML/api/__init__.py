@@ -486,3 +486,14 @@ class API(Component, ABC):
     def download_file(self, asset_id, file_name, api_key) -> Document:
         """Download document"""
         pass
+    
+    @abstractmethod
+    def query_asset(self, asset_id, payload, api_key) -> str:
+        """query asset"""
+        pass
+    
+    @abstractmethod
+    def update_asset(self, asset_id, payload, api_key) -> str:
+        """update asset"""
+        pass
+

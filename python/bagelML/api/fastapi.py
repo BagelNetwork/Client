@@ -760,7 +760,63 @@ class FastAPI(API):
                 print("Error downloading file")
         except Exception as e:
             print("Error", e)
+
+    @override
+    def query_asset(self, asset_id, payload, api_key) -> str:
+        headers = {
+            "x-api-key": api_key,
+            "Content-Type": "application/json"
+        }
+        try:
+            # Format the URL with the asset ID
+            query_url = f"{self._api_url}/asset/{asset_id}/query"
+    
+            print("Sending request with payload:", payload)
+
+            # Make a POST request to query the asset
+            response = requests.post(query_url, headers=headers, data=json.dumps(payload))
+
+            # Check the response status code
+            if response.status_code == 200:
+                print("Response received successfully!")
+                response_data = response.json()
+                print(response_data)
+            else:
+                print(f"Error querying data: {response.status_code}")
+                error_detail = response.json()  # Catch the error detail
+                print('Error response:', error_detail)
+        except Exception as e:
+            print('Internal error:', str(e))
             
+    @override
+    def update_asset(self, asset_id, payload, api_key) -> str:
+
+        headers = {
+            "x-api-key": api_key,
+            "Content-Type": "application/json"
+        }
+
+        try:
+            # Format the URL with the asset ID
+            update_url = f"{self._api_url}/datasets/{asset_id}"
+            print("Sending request with payload:", payload)
+
+            # Make a PUT request to update the asset
+            response = requests.put(update_url, headers=headers, data=json.dumps(payload))
+
+            # Check the response status code
+            if response.status_code == 200:
+                print("Response received successfully!")
+                response_data = response.json()
+                print(response_data)
+            else:
+                print(f"Error updating data: {response.status_code}")
+                error_detail = response.json()  # Catch the error detail
+                print('Error response:', error_detail)
+        except Exception as e:
+            print('Internal error:', str(e))
+
+# Call the function to update the asset
     # @override
     # def fine_tune(self, paylod: Document, api_key: Document) -> Document:
     #     return super().fine_tune(payload, api_key)
