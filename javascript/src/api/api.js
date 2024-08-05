@@ -182,7 +182,7 @@ class API {
     } catch (error) {
       console.error(error.message)
     }
-  };
+  }
 
   // reset the database====================================================================================
   async reset () {
@@ -214,7 +214,7 @@ class API {
       if (!response.ok) {
         const errorDetail = await response.json() // Changed to json to catch the error detail
         console.error('Error response:', errorDetail) // Log the full error response
-        throw new Error(`Error updating data: ${response.status}`)
+        // throw new Error(`Error updating data: ${response.status}`)
       }
 
       return await response.json()
@@ -366,19 +366,24 @@ class API {
 
   async add_data_to_asset (assetId, payload, apiKey) {
     try {
-      const response = await fetch(`https://api.bageldb.ai/api/v1/asset/${assetId}/add`, {
-        method: 'POST',
-        headers: {
-          'x-api-key': apiKey,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      })
+      const response = await fetch(
+        `https://api.bageldb.ai/api/v1/asset/${assetId}/add`,
+        {
+          method: 'POST',
+          headers: {
+            'x-api-key': apiKey,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        }
+      )
 
       if (!response.ok) {
         const errorDetail = await response.json() // Changed to json to catch the error detail
         console.error('Error response:', errorDetail) // Log the full error response
-        throw new Error(`Error adding data: ${response.status} - ${response.statusText}`)
+        throw new Error(
+          `Error adding data: ${response.status} - ${response.statusText}`
+        )
       }
 
       return await response.json()
@@ -395,19 +400,22 @@ class API {
 
   async _query_asset (assetId, payload, apiKey) {
     try {
-      const response = await fetch(this._api_url + '/asset/' + assetId + '/query', {
-        method: 'POST',
-        headers: {
-          'x-api-key': apiKey,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      })
+      const response = await fetch(
+        this._api_url + '/asset/' + assetId + '/query',
+        {
+          method: 'POST',
+          headers: {
+            'x-api-key': apiKey,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        }
+      )
 
       if (!response.ok) {
         const errorDetail = await response.json() // Changed to json to catch the error detail
         console.error('Error response:', errorDetail) // Log the full error response
-        throw new Error(`Error querying data: ${response.status}`)
+        //   throw new Error(`Error querying data: ${response.status}`)
       }
 
       return await response.json()
@@ -415,7 +423,7 @@ class API {
       console.error('Internal error:', error)
       // throw error;
     }
-  }// ------------------- Query Asset ---------------------
+  } // ------------------- Query Asset ---------------------
 
   // delete data from a cluster====================================================================================
   async _delete (clusterId, ids = null, where = {}, whereDocument = {}) {
@@ -459,7 +467,7 @@ class API {
   // helper method for accessing the private add file method outside the class ===========================================
   async add_file (assetId, filePath, apiKey) {
     return this._add_file(assetId, filePath, apiKey)
-  };
+  }
 
   // -------------------New Add file Function ---------------------
   async _add_file (assetId, filePath, apiKey) {
@@ -581,7 +589,7 @@ class API {
 
   // -------------------New Get user details Function ---------------------
   async get_user_details (userId, apiKey) {
-  // Define headers
+    // Define headers
     const headers = {
       'x-api-key': apiKey,
       'Content-Type': 'application/json'
@@ -641,10 +649,14 @@ class API {
     }
 
     try {
-      const response = await fetch(this._api_url + `/datasets/${assetId}/like?userId=${userId}&action=${action}`, {
-        method: 'POST',
-        headers
-      })
+      const response = await fetch(
+        this._api_url +
+          `/datasets/${assetId}/like?userId=${userId}&action=${action}`,
+        {
+          method: 'POST',
+          headers
+        }
+      )
 
       const data = await response.json()
 
@@ -668,10 +680,14 @@ class API {
     }
 
     try {
-      const response = await fetch(this._api_url + `/datasets/${assetId}/like?userId=${userId}&rating=${rating}`, {
-        method: 'POST',
-        headers
-      })
+      const response = await fetch(
+        this._api_url +
+          `/datasets/${assetId}/like?userId=${userId}&rating=${rating}`,
+        {
+          method: 'POST',
+          headers
+        }
+      )
 
       const data = await response.json()
 
@@ -705,10 +721,10 @@ class API {
       if (!response.ok) {
         const errorDetail = await response.json() // Changed to json to catch the error detail
         console.error('Error response:', errorDetail) // Log the full error response
-        throw new Error(`Error fine tuning: ${response.status}`)
+        // throw new Error(`Error fine tuning: ${response.status}`)
+      } else {
+        return await response.json()
       }
-
-      return await response.json()
     } catch (error) {
       console.error('Internal error:', error)
       throw error
@@ -736,7 +752,9 @@ class API {
       if (!response.ok) {
         const errorDetail = await response.json()
         console.error('Error response:', errorDetail)
-        throw new Error(`Error listing jobs: ${response.status} ${errorDetail.detail}`)
+        throw new Error(
+          `Error listing jobs: ${response.status} ${errorDetail.detail}`
+        )
       }
 
       return await response.json()
@@ -763,7 +781,9 @@ class API {
       if (!response.ok) {
         const errorDetail = await response.json()
         console.error('Error response:', errorDetail)
-        throw new Error(`Error getting job: ${response.status} ${errorDetail.detail}`)
+        // throw new Error(
+        //   `Error getting job: ${response.status} ${errorDetail.detail}`
+        // )
       }
 
       return await response.json()
@@ -792,7 +812,9 @@ class API {
       if (!response.ok) {
         const errorDetail = await response.json()
         console.error('Error response:', errorDetail)
-        throw new Error(`Error getting job by asset: ${response.status} ${errorDetail.detail}`)
+        // throw new Error(
+        //   `Error getting job by asset: ${response.status} ${errorDetail.detail}`
+        // )
       }
 
       return await response.json()
@@ -823,7 +845,9 @@ class API {
       if (!response.ok) {
         const errorDetail = await response.json()
         console.error('Error response:', errorDetail)
-        throw new Error(`Error listing model files: ${response.status} ${errorDetail.detail}`)
+        throw new Error(
+          `Error listing model files: ${response.status} ${errorDetail.detail}`
+        )
       }
 
       return await response.json()
@@ -854,10 +878,12 @@ class API {
       if (!response.ok) {
         const errorDetail = await response.json()
         console.error('Error response:', errorDetail)
-        throw new Error(`Error downloading model file: ${response.status} ${errorDetail.detail}`)
+        // // throw new Error(
+        // //   `Error downloading model file: ${response.status} ${errorDetail.detail}`
+        // )
+      } else {
+        return await response.blob() // Assuming the file is binary data
       }
-
-      return await response.blob() // Assuming the file is binary data
     } catch (error) {
       console.error('Internal error:', error)
       throw error
@@ -872,10 +898,13 @@ class API {
     }
 
     try {
-      const response = await fetch(this._api_url + `/notification/user/${userId}`, {
-        method: 'POST',
-        headers
-      })
+      const response = await fetch(
+        this._api_url + `/notification/user/${userId}`,
+        {
+          method: 'POST',
+          headers
+        }
+      )
 
       const data = await response.json()
 
@@ -898,10 +927,13 @@ class API {
     }
 
     try {
-      const response = await fetch(this._api_url + `/jobs/${jobId}/files/${fileName}`, {
-        method: 'GET',
-        headers
-      })
+      const response = await fetch(
+        this._api_url + `/jobs/${jobId}/files/${fileName}`,
+        {
+          method: 'GET',
+          headers
+        }
+      )
 
       const data = await response.json()
 
