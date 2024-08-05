@@ -478,6 +478,16 @@ class API(Component, ABC):
         pass
     
     @abstractmethod
+    def get_asset_by_id(self, asset_id, api_key) -> str:
+        """get asset by id"""
+        pass
+    
+    @abstractmethod
+    def get_all_asset(self, user_id ='', api_key = '') -> str:
+        """get all asset created by a user"""
+        pass
+
+    @abstractmethod
     def delete_asset(self, dataset_id, api_key) -> str:
         """delete asset"""
         pass
@@ -496,4 +506,33 @@ class API(Component, ABC):
     def update_asset(self, asset_id, payload, api_key) -> str:
         """update asset"""
         pass
+    
+    @abstractmethod
+    def fine_tune(self, payload, apiKey) -> str:
+        """Fine tune method"""
+        pass
 
+    @abstractmethod
+    def get_job_by_job_id(self, asset_id, api_key) -> str:
+        """get job by asset id"""
+        pass
+
+    @abstractmethod
+    def get_job(self, job_id, api_key) -> str:
+        """get job"""
+        pass
+    
+    @abstractmethod
+    def list_jobs(self, user_id, api_key) -> str:
+        """list jobs"""
+        pass
+
+    @abstractmethod
+    def download_file_by_asset_and_name(self, asset_id, file_name, api_key) -> str:
+        """download file by asset and name"""
+        pass
+    
+    @abstractmethod
+    def file_upload(self, file_path, asset_id, api_key) -> str:
+        """file upload"""
+        pass
