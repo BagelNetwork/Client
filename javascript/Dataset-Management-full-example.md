@@ -4,7 +4,7 @@ Here's a detailed example in JavaScript that incorporates all the functions nece
 
 ```javascript
 import readline from "readline";
-import { Settings, Client } from "bagelML";
+import { Settings, Client } from "bagelml";
 
 // Configure Bagel client settings
 const settings = new Settings({

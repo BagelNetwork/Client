@@ -1,5 +1,5 @@
 // example.js
-const Bagel = require('bagelML') // Import the Bagel client
+const Bagel = require('bagelml') // Import the Bagel client
 
 const main = async () => {
   const db = new Bagel() // Create a new instance of Bagel

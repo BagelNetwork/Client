@@ -6,7 +6,7 @@ Here's a detailed example in JavaScript that integrates all the necessary functi
 
 ```js
 import readline from "readline";
-import { Settings, Client } from "bagelML";
+import { Settings, Client } from "bagelml";
 
 // Configure Bagel client settings
 const settings = new Settings({

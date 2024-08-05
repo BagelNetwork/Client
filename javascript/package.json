@@ -1,6 +1,6 @@
 {
-  "name": "bagelML",
-  "version": "1.0.24",
+  "name": "bagelml",
+  "version": "0.0.1",
   "description": "A npm client for Bagel Finetuning API.",
   "main": "Bagel.js",
   "type": "module",
@@ -12,7 +12,8 @@
     "database",
     "client",
     "bagelJS",
-    "bagelML"
+    "bagelML",
+    "bagelml"
   ],
   "author": "Bidhan Roy <bidhan@bagel.net>",
   "license": "MIT",
