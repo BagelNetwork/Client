@@ -1,3 +1,6 @@
+/* eslint-disable no-undef, no-multiple-empty-lines */
+
+
 import fetch from 'node-fetch'
 import FormData from 'form-data'
 import API from './src/api/api.js' // Adjust the path to where your API class is located
