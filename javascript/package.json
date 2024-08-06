@@ -12,7 +12,7 @@
     "database",
     "client"
   ],
-  "author": "Your Name <yourname@example.com>",
+  "author": "budalebah",
   "license": "MIT",
   "dependencies": {
     "axios": "^0.21.4",
