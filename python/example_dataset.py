@@ -3,35 +3,48 @@ import bagel
 from bagel.config import Settings
 from uuid import UUID
 
-api_key = "sayapEip7OHVM0ko9PtzHhGN4cqrxb7s"
+user_id = "8f271f84-d7b8-45e8-ba7d-98c443e72e95"
+api_key = "Aag6NrHg3K5MJmYBaotqFFHHwuTo3l2s"
+os.environ["BAGEL_API_KEY"] = api_key
+os.environ["BAGEL_USER_ID"] = user_id
 
-def create_dataset(api):
-    name = "test_dataset_client2"
-    description = "Test dataset created from python client"
+def get_user_info(api):
 
-    dataset = api.create_dataset(
-        dataset_id=UUID,
-        name=name,
-        description=description,
+    user_info = api.get_user_info(
+        user_id=user_id,
         api_key=api_key
     )
-    return dataset
+    return user_info
 
-def get_dataset_info(api, dataset_id):
-    dataset = api.get_dataset_info(dataset_id)
-    return dataset
+def create_raw_asset(api):
+    name = "test_asset_client6"
+    details = "Test asset created from python client"
 
-def upload_dataset_file(api, dataset_id, file_path):
+    asset_id = api.create_raw_asset(
+        name=name,
+        details=details,
+        user_id=user_id,
+        api_key=api_key
+    )
+    return asset_id
+
+def get_asset_info(api, asset_id):
+    asset = api.get_asset_info(asset_id)
+    return asset
+
+def upload_dataset_file(api, asset_id, file_path):
     
     file_name = os.path.basename(file_path)
     with open(file_path, "rb") as file:
         file_content = file.read()
     
     message = api.upload_dataset(
-        dataset_id=dataset_id,
+        asset_id=asset_id,
         file_name=file_name,
         file_content=file_content
     )
+
+    return message
 
 def main():
     # Bagel server settings for local testing
@@ -44,21 +57,47 @@ def main():
     # Create Bagel client
     client = bagel.Client(server_settings)
 
+    user_info = get_user_info(client)
+
     # Create a dataset
-    dataset = create_dataset(client)
+    dataset = create_raw_asset(client)
+    print(dataset)
 
     file_path = "data/image.png"
 
-    # Upload a file to the dataset
-    upload_dataset_file(client, dataset, file_path)
-
-    target_dir = "downloaded_dataset"
+    # # Upload a file to the dataset
+    file_name = upload_dataset_file(client, dataset, file_path)
+    print(file_name)
 
     # Get dataset info
-    dataset_info = get_dataset_info(client, dataset)
+    asset_info = get_asset_info(client, dataset)
+    print(asset_info)
 
-    # Download all files from the dataset
-    client.download_dataset_files(dataset, target_dir)
+    # # Download all files from the dataset
+    target_dir = "data"
+    file_content, file_name, file_type = client.download_dataset(asset_id=dataset, api_key=api_key)
+    file_path = os.path.join(target_dir, file_name)
+    with open(file_path, "wb") as file:
+        file.write(file_content)
+    
+    # Delete Asset
+    client.delete_asset(asset_id=dataset, api_key=api_key)
+
+    # Create Model Asset
+    model_id = client.create_model_asset(name="model-client", 
+                                            details="Test", 
+                                            user_id=user_id,
+                                            base_model_type="gpt2",
+                                            api_key=api_key)
+
+    file_path = "data/image.png"
+
+    # # Upload a file to the dataset
+    file_name = upload_dataset_file(client, model_id, file_path)
+    print(file_name)
+    
+    # Delete Asset
+    client.delete_asset(asset_id=model_id, api_key=api_key)
 
 if __name__ == "__main__":
     main()
