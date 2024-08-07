@@ -65,37 +65,83 @@ class API {
     }
   }
 
-  // -------------------New Create Asset Function ---------------------
-  async create_asset (payload, apiKey) {
-    // Define headers
-    const headers = {
-      'x-api-key': apiKey,
-      'Content-Type': 'application/json'
-    }
+  // -------------------New Create Asset Function Merged ---------------------
+  // async create_asset (payload, apiKey) {
+  //   // Define headers
+  //   const headers = {
+  //     'x-api-key': apiKey,
+  //     'Content-Type': 'application/json'
+  //   }
 
-    try {
-      const response = await fetch(this._api_url + '/asset', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(payload)
-      })
+  //   try {
+  //     const response = await fetch(this._api_url + '/asset', {
+  //       method: 'POST',
+  //       headers,
+  //       body: JSON.stringify(payload)
+  //     })
 
-      const data = await response.json()
+  //     const data = await response.json()
 
-      if (response.status === 200) {
-        console.log('Asset created successfully!')
-        console.log(JSON.stringify(data))
+  //     if (response.status === 200) {
+  //       console.log('Asset created successfully!')
+  //       console.log(JSON.stringify(data))
 
-        // Get the asset ID from the response
-        const assetId = data
-        console.log(`Asset ID: ${assetId}`)
-      } else {
-        console.error(`Error creating Asset: ${JSON.stringify(data)}`)
-      }
-    } catch (error) {
-      console.error('Error creating Asset:', error)
-    }
+  //       // Get the asset ID from the response
+  //       const assetId = data
+  //       console.log(`Asset ID: ${assetId}`)
+  //     } else {
+  //       console.error(`Error creating Asset: ${JSON.stringify(data)}`)
+  //     }
+  //   } catch (error) {
+  //     console.error('Error creating Asset:', error)
+  //   }
+  // }
+
+
+// -------------------New Create Asset Function WAITLIST CHECK---------------------
+async create_asset(payload, apiKey) {
+  // Define headers
+  const headers = {
+    'x-api-key': apiKey,
+    'Content-Type': 'application/json'
   }
+
+  try {
+    // Get user details
+    const userDetails = await this.get_user_details(payload.user_id, apiKey)
+    if (!userDetails) {
+      throw new Error('Failed to retrieve user details')
+    }
+
+    // Check if user is in the waitlist
+    if (userDetails.role !== 'waitlist') {
+      console.log('User is not in the waitlist, access denied.')
+      console.log('Visit waitlist.bagel.net to get free credits on the Bagel model development platform.')
+      return
+    }
+
+    const response = await fetch(this._api_url + '/asset', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(payload)
+    })
+
+    const data = await response.json()
+
+    if (response.status === 200) {
+      console.log('Asset created successfully!')
+      console.log(JSON.stringify(data))
+
+      // Get the asset ID from the response
+      const assetId = data
+      console.log(`Asset ID: ${assetId}`)
+    } else {
+      console.error(`Error creating Asset: ${JSON.stringify(data)}`)
+    }
+  } catch (error) {
+    console.error('Error creating Asset:', error)
+  }
+}
 
   // Get a particular created asset using the asset id
   // getAssetById.js
