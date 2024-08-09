@@ -416,21 +416,21 @@ class API(Component, ABC):
         pass
     
     @abstractmethod
-    def create_dataset(
+    def create_raw_asset(
             self,
-            dataset_id: UUID,
             name: str,
-            description: str,
-            user_id: str = DEFAULT_TENANT,
+            details: str,
+            user_id: str,
             api_key: Optional[str] = None
     ) -> str:
-        """Create a dataset"""
+        """Create a raw asset"""
         pass
     
     @abstractmethod
-    def get_dataset_info(
-            self, 
-            dataset_id: str,
+    def get_asset_info(
+            self,
+            asset_id: str,
+            path: Optional[str] = "",
             api_key: Optional[str] = None
     ) -> str:
         """Get information about a dataset."""
@@ -439,8 +439,7 @@ class API(Component, ABC):
     @abstractmethod
     def upload_dataset(
             self,
-            dataset_id: str, 
-            chunk_number: int = 1,
+            asset_id: str,
             file_name: str = "",
             file_content: bytes = None,
             api_key: Optional[str] = None
@@ -451,20 +450,32 @@ class API(Component, ABC):
     @abstractmethod
     def download_dataset(
             self,
-            dataset_id: str,
-            file_path: Optional[str] = "",
+            asset_id: str,
             api_key: Optional[str] = None
     ) -> str:  
         """Download the full dataset."""
         pass
-    
+
+
     @abstractmethod
-    def download_dataset_files(
+    def get_user_info(
             self,
-            dataset_id: str, 
-            target_dir: str,
-            file_path: Optional[str] = "",
+            user_id: str,
             api_key: Optional[str] = None
-            ) -> bool:
+    ) -> str:
         pass
 
+    @abstractmethod
+    def delete_asset(self, asset_id, api_key) -> None:
+        pass
+
+    @abstractmethod
+    def create_model_asset(
+            self,
+            name: str,
+            details: str,
+            user_id: str,
+            base_model_type: str,
+            api_key: Optional[str] = None
+    ) -> str:
+        pass
