@@ -60,7 +60,6 @@ server_settings = Settings(
     bagel_server_host="api.bageldb.ai"
 )
 ```
-
 Here, we define the settings for connecting to the Bagel server.
 
 ## Create the Bagel client

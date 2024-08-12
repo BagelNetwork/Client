@@ -1,4 +1,4 @@
-## Dataset Management on Bagel
+## Asset Management on Bagel
 
 Here's a detailed example in JavaScript that incorporates all the functions necessary for asset management using the Bagels API. The example includes functionalities to create a vector asset, add data to the vector asset, query the data, and update the asset. It also includes user interaction through a command-line interface (CLI) for better usability.
 

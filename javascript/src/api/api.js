@@ -617,30 +617,30 @@
 //   }
 
 //   // -------------------New Create API Key Function ---------------------
-//   async create_api_key (name, userId, apiKey = '') {
-//     const headers = {
-//       'Content-Type': 'application/json'
-//     }
+  // async create_api_key (name, userId, apiKey = '') {
+  //   const headers = {
+  //     'Content-Type': 'application/json'
+  //   }
 
-//     try {
-//       const response = await fetch(this._api_url + '/api_keys', {
-//         method: 'POST',
-//         headers,
-//         body: JSON.stringify({ name, api_key: apiKey, userId })
-//       })
+  //   try {
+  //     const response = await fetch(this._api_url + '/api_keys', {
+  //       method: 'POST',
+  //       headers,
+  //       body: JSON.stringify({ name, api_key: apiKey, userId })
+  //     })
 
-//       const data = await response.json()
+  //     const data = await response.json()
 
-//       if (response.status === 200) {
-//         console.log('API key created successfully and sent to user ID:', userId)
-//         return data
-//       } else {
-//         console.error(`Error creating API key: ${JSON.stringify(data)}`)
-//       }
-//     } catch (error) {
-//       console.error('Error creating API key:', error)
-//     }
-//   }
+  //     if (response.status === 200) {
+  //       console.log('API key created successfully and sent to user ID:', userId)
+  //       return data
+  //     } else {
+  //       console.error(`Error creating API key: ${JSON.stringify(data)}`)
+  //     }
+  //   } catch (error) {
+  //     console.error('Error creating API key:', error)
+  //   }
+  // }
 
 //   // -------------------New Like asset Function --------------------- [WIP/NA]
 
@@ -1050,7 +1050,7 @@ class API {
         const assetId = data
         console.log(`Asset ID: ${assetId}`)
 
-        const ur = 'https://waitilist.bagel.net'
+        const ur = 'https://waitlist.bagel.net'
         const content = `Visit ${ur} to get free credits on the Bagel model development platform.` 
         console.log(content)
 
@@ -1082,7 +1082,7 @@ class API {
         console.log('Asset retrieved successfully!')
         console.log(data)
 
-        const ur = 'https://waitilist.bagel.net'
+        const ur = 'https://waitlist.bagel.net'
         const content = `Visit ${ur} to get free credits on the Bagel model development platform.` 
         console.log(content)
 
@@ -1117,7 +1117,7 @@ class API {
         console.log('Asset retrieved successfully!')
         console.log(data)
 
-        const ur = 'https://waitilist.bagel.net'
+        const ur = 'https://waitlist.bagel.net'
         const content = `Visit ${ur} to get free credits on the Bagel model development platform.` 
         console.log(content)
         
@@ -1153,7 +1153,7 @@ class API {
       }
       console.log('Asset deleted successfully.')
 
-      const ur = 'https://waitilist.bagel.net'
+      const ur = 'https://waitlist.bagel.net'
       const content = `Visit ${ur} to get free credits on the Bagel model development platform.` 
       console.log(content)
 
@@ -1169,7 +1169,7 @@ class API {
         method: 'POST'
       })
 
-      const ur = 'https://waitilist.bagel.net'
+      const ur = 'https://waitlist.bagel.net'
       const content = `Visit ${ur} to get free credits on the Bagel model development platform.` 
       console.log(content)
 
@@ -1203,7 +1203,7 @@ class API {
       const res = await response.json()
       console.log(res)
 
-      const ur = 'https://waitilist.bagel.net'
+      const ur = 'https://waitlist.bagel.net'
       const content = `Visit ${ur} to get free credits on the Bagel model development platform.` 
       console.log(content)
 
@@ -1220,7 +1220,7 @@ class API {
         method: 'POST'
       })
 
-      const ur = 'https://waitilist.bagel.net'
+      const ur = 'https://waitlist.bagel.net'
       const content = `Visit ${ur} to get free credits on the Bagel model development platform.` 
       console.log(content)
 
@@ -1244,7 +1244,7 @@ class API {
       const res = parseInt(response.data)
       console.log(res)
 
-      const ur = 'https://waitilist.bagel.net'
+      const ur = 'https://waitlist.bagel.net'
       const content = `Visit ${ur} to get free credits on the Bagel model development platform.` 
       console.log(content)
 
@@ -1308,7 +1308,7 @@ class API {
       }
       console.log(res)
 
-      const ur = 'https://waitilist.bagel.net'
+      const ur = 'https://waitlist.bagel.net'
       const content = `Visit ${ur} to get free credits on the Bagel model development platform.` 
       console.log(content)
 
@@ -1333,7 +1333,7 @@ class API {
 
       console.log('success') // Assuming success on 2xx status code
 
-      const ur = 'https://waitilist.bagel.net'
+      const ur = 'https://waitlist.bagel.net'
       const content = `Visit ${ur} to get free credits on the Bagel model development platform.` 
       console.log(content)
       
@@ -1370,7 +1370,7 @@ class API {
       const res = await response.data
       console.log(res)
 
-      const ur = 'https://waitilist.bagel.net'
+      const ur = 'https://waitlist.bagel.net'
       const content = `Visit ${ur} to get free credits on the Bagel model development platform.` 
       console.log(content)
 
@@ -1407,7 +1407,7 @@ class API {
       const res = await response.json()
       console.log(res)
 
-      const ur = 'https://waitilist.bagel.net'
+      const ur = 'https://waitlist.bagel.net'
       const content = `Visit ${ur} to get free credits on the Bagel model development platform.` 
       console.log(content)
 
@@ -1445,7 +1445,7 @@ class API {
       const res = await response.json()
       console.log(res)
 
-      const ur = 'https://waitilist.bagel.net'
+      const ur = 'https://waitlist.bagel.net'
       const content = `Visit ${ur} to get free credits on the Bagel model development platform.` 
       console.log(content)
 
@@ -1468,7 +1468,7 @@ class API {
       const res = await response.json()
       console.log(res)
 
-      const ur = 'https://waitilist.bagel.net'
+      const ur = 'https://waitlist.bagel.net'
       const content = `Visit ${ur} to get free credits on the Bagel model development platform.` 
       console.log(content)
 
@@ -1496,7 +1496,7 @@ class API {
       const res = await response.data
       console.log(res)
 
-      const ur = 'https://waitilist.bagel.net'
+      const ur = 'https://waitlist.bagel.net'
       const content = `Visit ${ur} to get free credits on the Bagel model development platform.` 
       console.log(content)
 
@@ -1535,7 +1535,7 @@ class API {
 
       if (response.ok) {
         console.log('Data uploaded successfully!')
-        const ur = 'https://waitilist.bagel.net'
+        const ur = 'https://waitlist.bagel.net'
         const content = `Visit ${ur} to get free credits on the Bagel model development platform.` 
         console.log(content)
       } else {
@@ -1566,7 +1566,7 @@ class API {
       const res = await response.data
       console.log(res)
 
-      const ur = 'https://waitilist.bagel.net'
+      const ur = 'https://waitlist.bagel.net'
       const content = `Visit ${ur} to get free credits on the Bagel model development platform.` 
       console.log(content)
 
@@ -1585,7 +1585,7 @@ class API {
       )
       console.log(response.json())
 
-      const ur = 'https://waitilist.bagel.net'
+      const ur = 'https://waitlist.bagel.net'
       const content = `Visit ${ur} to get free credits on the Bagel model development platform.` 
       console.log(content)
 
@@ -1623,7 +1623,7 @@ class API {
       .then((response) => response.json())
       .then((data) => {
         console.log(data)
-        const ur = 'https://waitilist.bagel.net'
+        const ur = 'https://waitlist.bagel.net'
         const content = `Visit ${ur} to get free credits on the Bagel model development platform.` 
         console.log(content)
       })
@@ -1642,7 +1642,7 @@ class API {
       .then((response) => response.json())
       .then((data) => {
         console.log(data)
-        const ur = 'https://waitilist.bagel.net'
+        const ur = 'https://waitlist.bagel.net'
         const content = `Visit ${ur} to get free credits on the Bagel model development platform.` 
         console.log(content)
       })
@@ -1671,7 +1671,7 @@ class API {
         console.log('Asset retrieved successfully!')
         console.log(data)
 
-        const ur = 'https://waitilist.bagel.net'
+        const ur = 'https://waitlist.bagel.net'
         const content = `Visit ${ur} to get free credits on the Bagel model development platform.` 
         console.log(content)
 
@@ -1702,7 +1702,7 @@ class API {
         console.log('API key created successfully and sent to user ID:', userId)
         console.log(data)
 
-        const ur = 'https://waitilist.bagel.net'
+        const ur = 'https://waitlist.bagel.net'
         const content = `Visit ${ur} to get free credits on the Bagel model development platform.` 
         console.log(content)
 
@@ -1737,7 +1737,7 @@ class API {
       if (response.status === 200) {
         console.log('Dataset liked successfully!')
         console.log(data)
-        const ur = 'https://waitilist.bagel.net'
+        const ur = 'https://waitlist.bagel.net'
         const content = `Visit ${ur} to get free credits on the Bagel model development platform.` 
         console.log(content)
       } else {
@@ -1772,7 +1772,7 @@ class API {
         console.log('Dataset rated successfully!')
         console.log(data)
 
-        const ur = 'https://waitilist.bagel.net'
+        const ur = 'https://waitlist.bagel.net'
         const content = `Visit ${ur} to get free credits on the Bagel model development platform.` 
         console.log(content)
 
@@ -1808,7 +1808,7 @@ class API {
         const res = await response.json()
         console.log(res)
 
-        const ur = 'https://waitilist.bagel.net'
+        const ur = 'https://waitlist.bagel.net'
         const content = `Visit ${ur} to get free credits on the Bagel model development platform.` 
         console.log(content)
       }
@@ -1847,7 +1847,7 @@ class API {
       const res = await response.json()
       console.log(res)
 
-      const ur = 'https://waitilist.bagel.net'
+      const ur = 'https://waitlist.bagel.net'
       const content = `Visit ${ur} to get free credits on the Bagel model development platform.` 
       console.log(content)
 
@@ -1882,7 +1882,7 @@ class API {
       const res =  await response.json()
       console.log(res)
 
-      const ur = 'https://waitilist.bagel.net'
+      const ur = 'https://waitlist.bagel.net'
       const content = `Visit ${ur} to get free credits on the Bagel model development platform.` 
       console.log(content)
 
@@ -1919,7 +1919,7 @@ class API {
       const res =  await response.json()
       console.log(res)
 
-      const ur = 'https://waitilist.bagel.net'
+      const ur = 'https://waitlist.bagel.net'
       const content = `Visit ${ur} to get free credits on the Bagel model development platform.` 
       console.log(content)
 
@@ -1958,7 +1958,7 @@ class API {
       const res = await response.json()
       console.log(res)
 
-      const ur = 'https://waitilist.bagel.net'
+      const ur = 'https://waitlist.bagel.net'
       const content = `Visit ${ur} to get free credits on the Bagel model development platform.` 
       console.log(content)
 
@@ -1996,7 +1996,7 @@ class API {
         const res = await response.blob() // Assuming the file is binary data
         console.log(res)
 
-        const ur = 'https://waitilist.bagel.net'
+        const ur = 'https://waitlist.bagel.net'
         const content = `Visit ${ur} to get free credits on the Bagel model development platform.` 
         console.log(content)
         
@@ -2029,7 +2029,7 @@ class API {
         console.log('Notification recieved successfully!')
         console.log(data)
 
-        const ur = 'https://waitilist.bagel.net'
+        const ur = 'https://waitlist.bagel.net'
         const content = `Visit ${ur} to get free credits on the Bagel model development platform.` 
         console.log(content)
 
@@ -2063,7 +2063,7 @@ class API {
         console.log('File downloaded successfully!')
         console.log(data)
 
-        const ur = 'https://waitilist.bagel.net'
+        const ur = 'https://waitlist.bagel.net'
         const content = `Visit ${ur} to get free credits on the Bagel model development platform.` 
         console.log(content)
 
