@@ -560,248 +560,201 @@ class FastAPI(API):
         return api_key, user_id
     
     @override
-    def create_dataset(
+    def create_raw_asset(
             self,
-            dataset_id: UUID,
             name: str,
-            description: str,
-            user_id: str = DEFAULT_TENANT,
+            details: str,
+            user_id: str,
             api_key: Optional[str] = None
     ) -> str:
-        """Create a dataset"""
+        """Create a raw asset"""
         headers, user_id = self._extract_headers_with_key_and_user_id(api_key, user_id)
-        url = f"{self._api_url}/dataset-git"
+        user_info = self.get_user_info(user_id=user_id,api_key=api_key)
+        if user_info['user_info']['role'] != "waitlist":
+            url = f"{self._api_url}/asset"
 
-        data = {
-            "dataset_id": str(dataset_id),
-            "dataset_type": "Tabular",
-            "title": name,
-            "tags": [
-                "Dataset"
-            ],
-            "category": "AI",
-            "details": description,
-            "user_id": user_id
-        }
-        
-        resp = requests.post(url, headers=headers, data=json.dumps(data))
-        raise_bagel_error(resp)
-        
-        resp_text = resp.text
-        uuid_clean = resp_text.strip('"')
+            data = {
+                    "dataset_type": "RAW",
+                    "title": name,
+                    "tags": [
+                        ""
+                    ],
+                    "category": "AI",
+                    "details": details,
+                    "user_id": user_id
+                }
+            
+            resp = requests.post(url, headers=headers, data=json.dumps(data))
+            raise_bagel_error(resp)
 
-        return uuid_clean
+            asset_id = resp.json()
+
+            response = {
+                "asset_id" : asset_id, 
+                "message": "waitlist.bagel.net to get free credits on the Bagel model development platform."
+                }
+
+            return response
+        else:
+            return "waitlist.bagel.net to get free credits on the Bagel model development platform."
 
     @override
-    def get_dataset_info(
+    def get_asset_info(
             self,
-            dataset_id: str,
+            asset_id: str,
             path: Optional[str] = "",
             api_key: Optional[str] = None
     ) -> str:
         """Get information about a dataset."""
-        headers = self._popuate_headers_with_api_key(api_key)
-        url = f"{self._api_url}/dataset-git"
-        
-        data = {'dataset_id': dataset_id, 'path': path}
-        
-        resp = requests.get(url, headers=headers, params=data)
+        headers, user_id = self._extract_headers_with_key_and_user_id(api_key, DEFAULT_TENANT)
+        user_info = self.get_user_info(user_id=user_id,api_key=api_key)
+        if user_info['user_info']['role'] != "waitlist":
+            url = f"{self._api_url}/asset/{asset_id}/info"
+            
+            data = {'asset_id': asset_id, 'path': path}
+            
+            resp = requests.get(url, headers=headers, params=data)
 
-        resp_json = resp.json()
-        
-        return resp_json
+            resp_json = resp.json()
+
+            response = {
+                "asset_info" : resp_json, 
+                "message": "waitlist.bagel.net to get free credits on the Bagel model development platform."
+                }
+            
+            return response
+        else:
+            return "waitlist.bagel.net to get free credits on the Bagel model development platform."
     
     @override
     def upload_dataset(
             self,
-            dataset_id: str,
-            chunk_number: int = 1,
+            asset_id: str,
             file_name: str = "",
             file_content: bytes = None,
             api_key: Optional[str] = None
     ) -> str:
         """Upload a dataset file to Bagel."""
         headers = self._popuate_headers_with_api_key(api_key)
-        url = f"{self._api_url}/datasets/{dataset_id}/upload-dataset-git"
-
-        params = {'dataset_id': dataset_id, 'chunk_number': chunk_number, 'file_name': file_name}
+        url = f"{self._api_url}/asset/{asset_id}/upload"
 
         files = {'data_file': (file_name, file_content)}
         
-        resp = requests.post(url, headers=headers, files=files, params=params)
+        resp = requests.post(url, headers=headers, files=files)
+
+        response = {
+                "file_name" : resp.json(), 
+                "message": "waitlist.bagel.net to get free credits on the Bagel model development platform."
+                }
         
-        return resp.text
+        return response
     
     @override
     def download_dataset(
             self,
-            dataset_id: str,
-            file_path: Optional[str] = "",
+            asset_id: str,
             api_key: Optional[str] = None
     ) -> str:
         """Download a specific file from dataset."""
         headers = self._popuate_headers_with_api_key(api_key)
-        url = f"{self._api_url}/download-dataset-git"
-        
-        params = {'dataset_id': dataset_id, 'file_path': file_path}
-        
-        resp = requests.get(url, headers=headers, params=params)
-        # raise_bagel_error(resp)
-        
-        file_content = resp.content
-        file_name = resp.headers.get('Content-Disposition', '').split('filename=')[1].strip('"')
-        file_type = resp.headers.get('Content-Type', '')
-        
-        return file_content, file_name, file_type
-    
-    @override
-    def download_dataset_files(
-            self, 
-            dataset_id: str, 
-            target_dir: str,
-            file_path: Optional[str] = "",
-            api_key: Optional[str] = None
-            ) -> bool:
-        
-        headers = self._popuate_headers_with_api_key(api_key)
-
-        os.makedirs(target_dir, exist_ok=True)
-        
-        dataset_info = self.get_dataset_info(dataset_id, file_path)
-        file_types = ["file", "dir"]
-
-        repo_info = dataset_info['repo_info']
-        files = repo_info['files']
-
-        for file_info in files:
-            file_path = file_info['path']
-            if file_info['type'] == file_types[0]:
-                file_content, file_name, file_type = self.download_dataset(
-                    dataset_id=dataset_id,
-                    file_path=file_path
-                )
-
-                file_path = os.path.join(target_dir, file_name)
-                with open(file_path, "wb") as file:
-                    file.write(file_content)
-
-            elif file_info['type'] == file_types[1]:
-                self.download_dataset_files(dataset_id, target_dir, file_path)
-        
-        return True
-    @override
-    def create_asset(self, payload, api_key) -> str:
-    # Define the URL for creating a dataset
-        url = f"{self._api_url}/asset"
-        # Define the payload for creating a dataset
-        # Replace "your_api_key_here" with the provided API key
-        headers = {
-            "x-api-key": api_key,
-            "Content-Type": "application/json"
-        }
-
-        # Make a POST request to create a dataset
-        response_create_dataset = requests.post(url, json=payload, headers=headers)
-
-        # Check the response status code
-        if response_create_dataset.status_code == 200:
-            print("Asset created successfully!")
-            
-            # Print out the entire response content
-            print(response_create_dataset.json())
-            
-            # Extract asset ID from the response
-            dataset_info = response_create_dataset.json()
-            print("dataset info:", dataset_info)
-            if "asset_id" in dataset_info:
-                asset_id = dataset_info["asset_id"]
-                print(f"Asset ID: {asset_id}")
-        else:
-            print(f"Error creating dataset: {response_create_dataset.text}")
-            
-    
-    # delete asset function
-    @override
-    def delete_asset(self, dataset_id, api_key) -> str:
-        url = f"{self._api_url}/asset/{dataset_id}"
-
-        # Replace "your_api_key_here" with your actual API key
-
-        headers = {
-            "x-api-key": api_key
-        }
-        response = requests.delete(url, headers=headers)
+        url = f"{self._api_url}/asset/{asset_id}/download"
+        resp = requests.get(url, headers=headers)
         try:
-            if response.status_code == 204:
-                print(f"Dataset with {dataset_id} deleted successfully!")
+            if resp.status_code == 200:
+                print(f"Successfully Downloaded! Asset ID: {asset_id}")
+                
+                file_content = resp.content
+                file_name = resp.headers.get('Content-Disposition', '').split('filename=')[1].strip('"')
+                file_type = resp.headers.get('Content-Type', '')
+                
+                return file_content, file_name, file_type
             else:
-                print(f"Error deleting dataset: {response.text}")
+                return "Error downloading the asset!"
+        except Exception as e:
+            return ("Error", e)
+    
+    @override
+    def get_user_info(
+            self,
+            user_id: str,
+            api_key: Optional[str] = None
+    ) -> str:
+        """Get information about user."""
+        headers = self._popuate_headers_with_api_key(api_key)
+        url = f"{self._api_url}/user"
+        
+        data = {'user_id': user_id}
+        
+        resp = requests.get(url, headers=headers, params=data)
 
+        resp_json = resp.json()
 
-        except Exception:
-            print("Error")
+        response = {
+                "user_info" : resp_json, 
+                "message": "waitlist.bagel.net to get free credits on the Bagel model development platform."
+                }
+        
+        return response
 
     @override
-    def download_file(self, asset_id, file_name, api_key) -> Document:
-        url = f"{self._api_url}/jobs/asset/{asset_id}/files/{file_name}"
+    def delete_asset(self, asset_id, api_key) -> None:
+        url = f"{self._api_url}/asset/{asset_id}"
         headers = {
             "x-api-key": api_key,
             "Content-Type": "application.json"
         }
         try:
-            response = requests.get(url, headers=headers, stream=True)
-            if response.status_code == 200:
-                print("File retrieved successfully!\nPreparing for download ...")
-                with open(file_name, "wb") as f:
-                    for chunks in response.iter_content(chunk_size=8192):
-                        f.write(chunks)
-                print(f"File successfully downloaded and saved as {file_name}")
+            response = requests.delete(url, headers=headers, stream=True)
+            if response.status_code == 204:
+                resp = {
+                    f"Asset ID: {asset_id}" : "Successfully Deleted!", 
+                    "message": "waitlist.bagel.net to get free credits on the Bagel model development platform."
+                    }
+                return resp
             else:
-                print("Error downloading file")
+                return "Error deleting the asset!"
         except Exception as e:
             print("Error", e)
+
+    @override
+    def create_model_asset(
+            self,
+            name: str,
+            details: str,
+            user_id: str,
+            base_model_type: str,
+            api_key: Optional[str] = None
+    ) -> str:
+        """Create a raw asset"""
+        headers, user_id = self._extract_headers_with_key_and_user_id(api_key, user_id)
+        user_info = self.get_user_info(user_id=user_id,api_key=api_key)
+        if user_info['user_info']['role'] != "waitlist":
+            url = f"{self._api_url}/asset"
+
+            data = {
+                    "dataset_type": "MODEL",
+                    "title": name,
+                    "category": "ai",
+                    "details": details,
+                    "tags": [],
+                    "user_id": user_id,
+                    "base_model_type": base_model_type
+                    }
             
-    # @override
-    # def fine_tune(self, paylod: Document, api_key: Document) -> Document:
-    #     return super().fine_tune(payload, api_key)
-    
-    #==================
-    
-    # @override
-    # def fine_tune(
-    #         self,
-    #         payload: str,
-    #         asset_id: str,
-    #         user_id: str = DEFAULT_TENANT,
-    #         api_key: Optional[str] = None
-    # ) -> str:
-    #     """Create a dataset"""
-    #     headers, user_id = self._extract_headers_with_key_and_user_id(api_key, user_id, payload)
-    #     url = f"{self._api_url}/jobs/asset/ + {asset_id}"
+            resp = requests.post(url, headers=headers, data=json.dumps(data))
+            raise_bagel_error(resp)
 
-    #     # data = {
-    #     #     "dataset_type": dataset_type, 
-    #     #     "title": title,
-    #     #     "category": category,
-    #     #     "details": details,
-    #     #     "tags": [],
-    #     #     "user_id": user_id,
-    #     #     "fine_tune_payload": {
-    #     #         "asset_id": asset_id,
-    #     #         "model_name": model_name,
-    #     #         "base_model": base_model,
-    #     #         "file_name": file_name,
-    #     #         "user_id": user_id
-    #     #     }
-    #     # }
-    #     resp = requests.post(url, headers=headers, data=json.dumps(resp.data))
-    #     raise_bagel_error(resp)
-        
-    #     resp_json = resp.json()
-        
-    #     return resp_json
+            asset_id = resp.json()
 
-    #==================
+            response = {
+                    "model_id": f"{asset_id}", 
+                    "message": "waitlist.bagel.net to get free credits on the Bagel model development platform."
+                    }
+
+            return response
+        else:
+            return "waitlist.bagel.net to get free credits on the Bagel model development platform."
+            
     
     
     
