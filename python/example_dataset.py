@@ -3,8 +3,8 @@ import bagel
 from bagel.config import Settings
 from uuid import UUID
 
-user_id = "8f271f84-d7b8-45e8-ba7d-98c443e72e95"
-api_key = "Aag6NrHg3K5MJmYBaotqFFHHwuTo3l2s"
+user_id = "116158400265137886010"
+api_key = "MHh30EVG4V6FoePnagraY8fdMG0WgxR6"
 os.environ["BAGEL_API_KEY"] = api_key
 os.environ["BAGEL_USER_ID"] = user_id
 
@@ -66,22 +66,23 @@ def main():
     file_path = "data/image.png"
 
     # # Upload a file to the dataset
-    file_name = upload_dataset_file(client, dataset, file_path)
+    file_name = upload_dataset_file(client, dataset["asset_id"], file_path)
     print(file_name)
 
     # Get dataset info
-    asset_info = get_asset_info(client, dataset)
+    asset_info = get_asset_info(client, dataset["asset_id"])
     print(asset_info)
 
     # # Download all files from the dataset
     target_dir = "data"
-    file_content, file_name, file_type = client.download_dataset(asset_id=dataset, api_key=api_key)
+    file_content, file_name, file_type = client.download_dataset(asset_id=dataset["asset_id"], api_key=api_key)
     file_path = os.path.join(target_dir, file_name)
     with open(file_path, "wb") as file:
         file.write(file_content)
     
     # Delete Asset
-    client.delete_asset(asset_id=dataset, api_key=api_key)
+    message = client.delete_asset(asset_id=dataset["asset_id"], api_key=api_key)
+    print(message)
 
     # Create Model Asset
     model_id = client.create_model_asset(name="model-client", 
@@ -89,15 +90,16 @@ def main():
                                             user_id=user_id,
                                             base_model_type="gpt2",
                                             api_key=api_key)
-
+    print(model_id)
     file_path = "data/image.png"
 
     # # Upload a file to the dataset
-    file_name = upload_dataset_file(client, model_id, file_path)
+    file_name = upload_dataset_file(client, model_id["model_id"], file_path)
     print(file_name)
     
     # Delete Asset
-    client.delete_asset(asset_id=model_id, api_key=api_key)
+    message = client.delete_asset(asset_id=model_id["model_id"], api_key=api_key)
+    print(message)
 
 if __name__ == "__main__":
     main()

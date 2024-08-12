@@ -570,7 +570,7 @@ class FastAPI(API):
         """Create a raw asset"""
         headers, user_id = self._extract_headers_with_key_and_user_id(api_key, user_id)
         user_info = self.get_user_info(user_id=user_id,api_key=api_key)
-        if user_info["role"] != "waitlist":
+        if user_info['user_info']['role'] != "waitlist":
             url = f"{self._api_url}/asset"
 
             data = {
@@ -589,7 +589,12 @@ class FastAPI(API):
 
             asset_id = resp.json()
 
-            return asset_id
+            response = {
+                "asset_id" : asset_id, 
+                "message": "waitlist.bagel.net to get free credits on the Bagel model development platform."
+                }
+
+            return response
         else:
             return "waitlist.bagel.net to get free credits on the Bagel model development platform."
 
@@ -603,7 +608,7 @@ class FastAPI(API):
         """Get information about a dataset."""
         headers, user_id = self._extract_headers_with_key_and_user_id(api_key, DEFAULT_TENANT)
         user_info = self.get_user_info(user_id=user_id,api_key=api_key)
-        if user_info["role"] != "waitlist":
+        if user_info['user_info']['role'] != "waitlist":
             url = f"{self._api_url}/asset/{asset_id}/info"
             
             data = {'asset_id': asset_id, 'path': path}
@@ -611,8 +616,13 @@ class FastAPI(API):
             resp = requests.get(url, headers=headers, params=data)
 
             resp_json = resp.json()
+
+            response = {
+                "asset_info" : resp_json, 
+                "message": "waitlist.bagel.net to get free credits on the Bagel model development platform."
+                }
             
-            return resp_json
+            return response
         else:
             return "waitlist.bagel.net to get free credits on the Bagel model development platform."
     
@@ -631,8 +641,13 @@ class FastAPI(API):
         files = {'data_file': (file_name, file_content)}
         
         resp = requests.post(url, headers=headers, files=files)
+
+        response = {
+                "file_name" : resp.json(), 
+                "message": "waitlist.bagel.net to get free credits on the Bagel model development platform."
+                }
         
-        return resp.json()
+        return response
     
     @override
     def download_dataset(
@@ -673,8 +688,13 @@ class FastAPI(API):
         resp = requests.get(url, headers=headers, params=data)
 
         resp_json = resp.json()
+
+        response = {
+                "user_info" : resp_json, 
+                "message": "waitlist.bagel.net to get free credits on the Bagel model development platform."
+                }
         
-        return resp_json
+        return response
 
     @override
     def delete_asset(self, asset_id, api_key) -> None:
@@ -686,7 +706,11 @@ class FastAPI(API):
         try:
             response = requests.delete(url, headers=headers, stream=True)
             if response.status_code == 204:
-                return f"Successfully Deleted! Asset ID: {asset_id}"
+                resp = {
+                    f"Asset ID: {asset_id}" : "Successfully Deleted!", 
+                    "message": "waitlist.bagel.net to get free credits on the Bagel model development platform."
+                    }
+                return resp
             else:
                 return "Error deleting the asset!"
         except Exception as e:
@@ -704,7 +728,7 @@ class FastAPI(API):
         """Create a raw asset"""
         headers, user_id = self._extract_headers_with_key_and_user_id(api_key, user_id)
         user_info = self.get_user_info(user_id=user_id,api_key=api_key)
-        if user_info["role"] != "waitlist":
+        if user_info['user_info']['role'] != "waitlist":
             url = f"{self._api_url}/asset"
 
             data = {
@@ -722,7 +746,12 @@ class FastAPI(API):
 
             asset_id = resp.json()
 
-            return asset_id
+            response = {
+                    "model_id": f"{asset_id}", 
+                    "message": "waitlist.bagel.net to get free credits on the Bagel model development platform."
+                    }
+
+            return response
         else:
             return "waitlist.bagel.net to get free credits on the Bagel model development platform."
             
