@@ -1577,6 +1577,40 @@ class API {
     }
   }
 
+//-------------------Buy Asset Function ---------------------
+async buy_asset(assetId, userId, apiKey) {
+  const headers = {
+    'x-api-key': apiKey,
+    'Content-Type': 'application/json',
+  };
+  
+  try {
+    // Make GET request to buy asset
+    const response = await fetch(`${this._api_url}/asset/${assetId}/buy/${userId}`, {
+      method: 'GET',
+      headers,
+    });
+
+    const data = await response.json();
+
+    if (response.status === 200) {
+      console.log('Asset purchase successful!');
+      return data;
+    } else {
+      console.error(`Error purchasing asset: ${JSON.stringify(data)}`);
+      return null;
+    }
+  } catch (error) {
+    console.error('Error purchasing asset:', error);
+    return null;
+  }
+}
+
+
+
+
+
+
   // create index for a cluster====================================================================================
   async _create_index (clusterName) {
     try {
