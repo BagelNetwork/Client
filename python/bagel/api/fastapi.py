@@ -979,10 +979,11 @@ class FastAPI(API):
         }
         try:
             url = f"{self._api_url}/asset/{asset_id}/upload"
+            file_name = os.path.basename(file_path)
 
             with open(file_path, "rb") as file:
-                files = {"data_file": file.read()}
-                response = requests.post(url, files=files, headers=headers)
+                files = {"data_file":(file_name, file.read())}
+            response = requests.post(url, files=files, headers=headers)
 
             if response.status_code == 200:
                 print("Data uploaded successfully!")
@@ -990,6 +991,23 @@ class FastAPI(API):
                 print(f"Error uploading data: {response.text}")
         except Exception as e:
             print("Error: ", e)
+
+    @override
+    def buy_asset(self, asset_id, user_id, api_key):
+        url = f"{self._api_url}/api/v1/asset/{asset_id}/buy/{user_id}"
+        headers = {
+            "x-api-key": api_key,
+            "Content-Type": "application/json"
+        }
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            print(f"Asset {asset_id} bought successfully by user {user_id}!")
+            return response.json()
+        else:
+            print(f"Error buying asset: {response.text}")
+        
+
+        
     
 # Call the function to update the asset
     # @override

@@ -1606,11 +1606,6 @@ async buy_asset(assetId, userId, apiKey) {
   }
 }
 
-
-
-
-
-
   // create index for a cluster====================================================================================
   async _create_index (clusterName) {
     try {

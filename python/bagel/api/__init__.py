@@ -536,3 +536,9 @@ class API(Component, ABC):
     def file_upload(self, file_path, asset_id, api_key) -> str:
         """file upload"""
         pass
+
+    @abstractmethod
+    def buy_asset(self, asset_id, user_id, api_key) -> str:
+        """buy asset"""
+        pass
+        
