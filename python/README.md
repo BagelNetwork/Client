@@ -1,14 +1,39 @@
 # Bagel Python Client 🥯
 
-Welcome to the Bagel Python Client Example! Bagel is your platform for peer-to-peer machine learning, finetuning open-source models like Llama or Mistral, and using retrieval augmented generation (RAG).
+Welcome to the Bagel Python Client! Bagel is your platform for peer-to-peer machine learning, fine-tuning open-source models like Llama or Mistral, and using retrieval augmented generation (RAG).
 
-One of the perks? **No need to manage complex embeddings or model integrations yourself!** The Bagel client handles these processes, saving you time and money. 🥯💰
+One of the perks? **No need to manage complex embeddings or model integrations yourself!** The Bagel client handles these processes, saving you time and money. 🥯
+
+## Table of Contents
+
+1. [Prerequisites](#prerequisites)
+2. [Installation](#installation)
+3. [Import the necessary modules](#import-the-necessary-modules)
+4. [Define the Bagel server settings](#define-the-bagel-server-settings)
+5. [Create the Bagel client](#create-the-bagel-client)
+6. [Ping the Bagel server](#ping-the-bagel-server)
+7. [Get the Bagel server version](#get-the-bagel-server-version)
+8. [Create an Asset](#create-an-asset)
+9. [Delete an Asset](#delete-an-asset)
+10. [Download Model Files](#download-model-files)
+11. [Query Asset](#query-asset)
+12. [Update Asset](#update-asset)
+13. [Download file](#download-file)
+14. [File Upload](#file-upload)
+15. [Fine-tune](#fine-tune)
+16. [Get all assets](#get-all-assets)
+17. [Get all assets by Id](#get-all-assets-by-id)
+18. [Get finetuned model](#get-finetuned-model)
+19. [Get job by job id](#get-job-by-job-id)
+20. [Get job](#get-job)
+21. [List Job](#list-job)
+22. [Add data to asset](#add-data-to-asset)
 
 ## Prerequisites
 
 - Python 3.6+
 - pip package manager
-- Cluster size limit 500MB (*Create a new issue if you want to increase the limit)
+- Asset size limit 500MB (\*Create a new issue if you want to increase the limit)
 
 ## Installation
 
@@ -18,9 +43,7 @@ To install the Bagel Python client, run the following command in your terminal:
 pip install bagelML
 ```
 
-## Usage
-
-1. **Import the necessary modules:**
+## Import the necessary modules
 
 ```python
 import uuid
@@ -28,9 +51,9 @@ import bagel
 from bagel.config import Settings
 ```
 
-This snippet imports the required modules for using Bagel, including the uuid module for generating unique identifiers.
+This snippet imports the required modules for using Bagel.
 
-2. **Define the Bagel server settings:**
+## Define the Bagel server settings
 
 ```python
 server_settings = Settings(
@@ -40,7 +63,7 @@ server_settings = Settings(
 ```
 Here, we define the settings for connecting to the Bagel server.
 
-3. **Create the Bagel client:**
+## Create the Bagel client
 
 ```python
 client = bagel.Client(server_settings)
@@ -48,7 +71,7 @@ client = bagel.Client(server_settings)
 
 Create an instance of the Bagel client using the previously defined server settings.
 
-4. **Ping the Bagel server:**
+## Ping the Bagel server
 
 ```python
 print(client.ping())
@@ -56,7 +79,7 @@ print(client.ping())
 
 This checks the connectivity to the Bagel server.
 
-5. **Get the Bagel server version:**
+## Get the Bagel server version
 
 ```python
 print(client.get_version())
@@ -64,123 +87,254 @@ print(client.get_version())
 
 Retrieves and prints the version of the Bagel server.
 
-6. **Create and delete a cluster:**
+## Create an Asset
+
+Assets in Bagel serve as powerful containers for large datasets, encapsulating embeddings — high-dimensional vectors that represent various data forms, such as text, images, or audio. These Assets enable efficient similarity searches, which are fundamental to a wide range of applications, from recommendation systems and search engines to data analytics tools.
 
 ```python
-name = str(uuid.uuid4())
-client.create_cluster(name)
-client.delete_cluster(name)
+api_key = 'insert api key'
+payload = {
+    "dataset_type": "RAW",
+    "title": "",
+    "category": "",
+    "details": "Testing",
+    "tags": ["AI", "DEMO", "TEST"],
+    "user_id": 'insert user id'
+}
+
+client.create_asset(payload, api_key)
 ```
-Generates a unique name for a cluster, creates it, and then deletes it. This demonstrates basic cluster management.
 
-
-7. **Create, add documents, and query a cluster:**
+## Delete an Asset
 
 ```python
-cluster = client.get_or_create_cluster("testing")
+api_key = 'insert api key'
+dataset_id = 'insert dataset/asset id'
+client.delete_asset(dataset_id, api_key)
+```
 
-cluster.add(
-    documents=["This is doc", "This is gooogle doc"],
-    metadatas=[{"source": "notion"},
-               {"source": "google-doc"}],
-    ids=[str(uuid.uuid4()), str(uuid.uuid4())],
+This method deletes a specific Asset.
+
+## Download Model Files
+
+```python
+api_key = 'insert api key'
+asset_id = 'insert dataset/asset id'
+file_name = "insert file .txt"
+
+client.download_file(asset_id, file_name, api_key)
+```
+
+Downloads a file associated with a specific Asset.
+
+## Query Asset
+
+```python
+api_key = ""
+asset_id = ""
+
+payload = {
+    "where": {
+        # "category": "Cat2",
+    },
+    "where_document": {
+        # "is_published": True,
+    },
+    # "query_embeddings": [em],
+    "n_results": 1,
+    "include": ["metadatas", "documents", "distances"],
+    "query_texts": ["insert query text"],
+    "padding": False,
+}
+
+client.query_asset(asset_id, payload, api_key)
+```
+
+Queries a specific Asset with detailed parameters.
+
+## Update Asset
+
+```python
+import bagel
+from bagel.config import Settings
+
+api_key = ""
+asset_id = ""
+
+payload = {
+   "title": "Updated dataset title",
+    "category": "Updated category",
+    "details": "Updated dataset description.",
+    "tags": ["Updated", "Tags"]
+}
+
+server_settings = Settings(
+    bagel_api_impl="rest",
+    bagel_server_host="api.bageldb.ai",
+    bagel_server_http_port="80",
 )
+client = bagel.Client(server_settings)
 
-results = cluster.find(query_texts=["query"], n_results=5)
+client.update_asset(asset_id, payload, api_key)
 ```
 
-Creates a cluster or retrieves an existing one, adds documents with metadata. Here `ids` are unique identifiers for each documents. Bagel generates embeddings using its model. And performs a text-based query/search. Here `n_results` is to limit number of results.
+Updates the details of an existing Asset.
 
-
-8. **Add embeddings and query (without needing to generate embeddings yourself!):**
+## Download file
 
 ```python
-cluster = client.get_or_create_cluster("new_testing")
+api_key = ""
+asset_id = ""
+file_name = ""
 
-cluster.add(embeddings=[[1.1, 2.3], [4.5, 6.9]],
-            metadatas=[{"info": "M1"}, {"info": "M1"}],
-            documents=["doc1", "doc2"],
-            ids=["id1", "id2"])
-
-results = cluster.find(query_embeddings=[[1.1, 2.3]], n_results=2)
+client.download_file(asset_id, file_name, api_key)
 ```
 
-This is similar to the previous example but uses pre-calculated embeddings for documents and performs a query based on those embeddings.
+Downloads a specific file from an Asset.
 
-9. **Modify cluster name:**
+## File Upload
 
 ```python
-cluster.modify(name="new_name")
+api_key = ""
+dataset_id = ""
+file_path = ""
+
+client.file_upload(file_path, dataset_id, api_key)
 ```
 
-Changes the name of the cluster.
+Uploads a file to a specific Asset.
 
-10. **Update document metadata:**
+## Fine-tune
 
 ```python
-cluster.update(ids=["id1"], metadatas=[{"new":"metadata"}])
+# Define the URL for the fine-tune function
+apiKey = ""
+# Define the payload for the fine-tune function
+payload = {
+  "dataset_type": 'RAW',
+  "title": 'what!',
+  "category": '',
+  "details": '',
+  "tags": [],
+  "user_id": '',
+  "fine_tune_payload": {
+    "asset_id": '', # Move asset_id here
+    "model_name": '', # Same as the title
+    "base_model": '',
+    "file_name": 'catch.txt',
+    "user_id": '',
+  }
+}
+
+client.fine_tune(payload, apiKey)
 ```
 
-Updates the metadata of a specific document in the cluster.
+Fine-tunes a model using a specific Asset and provided parameters.
 
-11. **Upsert documents:**
+## Get all assets
 
 ```python
-cluster.upsert(documents=["new doc"],
-               metadatas=[{"new": "metadata"}],
-               ids=["doc1"])
+user_Id = ""
+api_key = ""
+
+client.get_all_asset(user_Id, api_key)
 ```
 
-Inserts or updates documents in the cluster based on provided IDs.
+Retrieves all assets for a specific user.
 
-12. **Get cluster size:**
-```python
-cluster = client.get_or_create_cluster("new_testing")
-print(f"cluster size {cluster.cluster_size} mb")
-```
-Get the size of the cluster in megabytes. For each cluster max size is 500MB.
-
-13. **Add image:**
-
-In Bagel we can add image also. Here is an example of adding image to cluster. It supports almost every image format.
+## Get all assets by Id
 
 ```python
-filename = "your_img.png"
-resp = cluster.add_image(filename)
+asset_id = ""
+api_key = ""
+
+client.get_asset_by_id(asset_id, api_key)
 ```
-14. **Embedding size:**
+
+Retrieves a specific asset by its ID.
+
+## Get finetuned model
 
 ```python
-print(f"Embedding size {cluster.embedding_size}")
+# Replace these values with actual ones
+api_key = ""
+asset_id = ""
+file_name = "train.txt"
+
+# Call the function
+client.download_file_by_asset_and_name(asset_id, file_name)
 ```
 
-Initially, if no data is added to the cluster, the value of `embedding_size` is None. After adding data, the `embedding_size` is set or assigned.
+Downloads a fine-tuned model by asset ID and file name.
 
-
-15. **Add image by image download URLs:**
-
-Multiple images can be added to a Bagel cluster using URLs. It's recommended to add fewer than 20 images at a time using this function. Upon execution, the function will return the URLs of successfully added images and those that failed. Here's an example:
+## Get job by job id
 
 ```python
-cluster = api.get_or_create_cluster("new_testing")
-urls = [
-    "https://bagel-public-models-s3-download.s3.eu-north-1.amazonaws.com/cat/60de145c79609acaba3bbe08974a9ff5.jpg",
-    "https://bagel-public-models-s3-download.s3.eu-north-1.amazonaws.com/cat/black-white-cat-wallpaper.jpg",
-]
-ids = [str(uuid.uuid4()) for i in range(len(urls))]
-resp = cluster.add_image_urls(ids=ids, urls=urls)
+job_id = ""  # Replace with the actual job ID
+api_key = ""  # Replace with the actual API key
+
+client.get_job(job_id, api_key)
 ```
-## Tutorials
 
-Explore additional tutorials for more insights.
+Retrieves the status of a specific job by job ID.
 
-- [Python Client Example](https://colab.research.google.com/drive/1PXRoP4vIsqQqsD9AGUrQ90D3x0x79F_w)
-- [Using Bagel with Llama Index](https://colab.research.google.com/drive/13F3PxNgF10ZGlpZS20hQtwwkd8BiMcTS)
-- [Using Bagel with Langchain](https://colab.research.google.com/drive/1UBWkuihFHvxbzeP61HT1-ttTsURcEXIS?usp=sharing)
-- [Build an image search engine in 10 minutes using Bagel](https://colab.research.google.com/drive/1J_QlpqvnVloWHg_Q87s-hbp_VGq4wLQz)
+## Get job
 
-<br>
+```python
+job_id = ""  # Replace with the actual job ID
+api_key = ""  # Replace with the actual API key
 
-Need more dough-tails? See the [example code](example.py) for a more comprehensive guide on using the Bagel Python client.
+client.get_job(job_id, api_key)
+```
 
-Happy coding and enjoy your fresh Bagels! 🥯👩‍💻👨‍💻
+Retrieves details of a job.
+
+## List Job
+
+```python
+# Replace "your_api_key_here" with the provided API key
+api_key = ""
+user_id = ""
+
+# Call the function
+client.list_jobs(user_id, api_key)
+```
+
+Lists all jobs for a specific user.
+
+## Add data to asset
+
+```python
+asset_id = ""
+api_key = ""
+
+payload = {
+  "metadatas": [{ "source": "testing" }],
+  "documents": ["Hi man"],
+  "ids": ["xxxx-xxxx-xxxx-xxxx--xxxxx"], #manually generated by you
+}
+
+client.add_data_to_asset(asset_id, payload, api_key)
+```
+
+Adds data to an existing asset.
+
+## Download Finetuned Model 
+
+```python
+api_key = "insert api key"
+asset_id = "insert asset id"
+
+response = client.download_model(asset_id, api_key)
+```
+
+## Buy Asset 
+
+```python
+api_key = "insert api key"
+asset_id = "insert asset id"
+user_id = "insert userid"
+
+client.buy_asset(asset_id, user_id, api_key)      
+```
+
