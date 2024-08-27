@@ -46,6 +46,7 @@ pip install bagelML
 ## Import the necessary modules
 
 ```python
+import uuid
 import bagel
 from bagel.config import Settings
 ```
@@ -317,3 +318,23 @@ client.add_data_to_asset(asset_id, payload, api_key)
 ```
 
 Adds data to an existing asset.
+
+## Download Finetuned Model 
+
+```python
+api_key = "insert api key"
+asset_id = "insert asset id"
+
+response = client.download_model(asset_id, api_key)
+```
+
+## Buy Asset 
+
+```python
+api_key = "insert api key"
+asset_id = "insert asset id"
+user_id = "insert userid"
+
+client.buy_asset(asset_id, user_id, api_key)      
+```
+

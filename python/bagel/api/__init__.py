@@ -538,7 +538,16 @@ class API(Component, ABC):
         pass
 
     @abstractmethod
-    def buy_asset(self, asset_id, user_id, api_key) -> str:
+    def buy_asset(self, asset_id, user_id, api_key) -> Any:
         """buy asset"""
         pass
+    
+    # @abstractmethod
+    # def download_finetuned_model(self, asset_id, file_path, api_key) -> str:
+    #     """dowload fine-tuned model"""
+    #     pass
         
+    @abstractmethod
+    def download_model(self, asset_id, api_key) -> Any:
+        """download model"""
+        pass

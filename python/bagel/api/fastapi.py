@@ -796,6 +796,53 @@ class FastAPI(API):
         except Exception as e:
             print("Error", e)
 
+
+    # @override    
+    # def download_finetuned_model(self, asset_id, file_path, api_key) -> str:
+    #     """dowload fine-tuned model"""
+    #     headers = {
+    #         "x-api-key": api_key,
+    #         "Content-Type": "application/json",
+    #     }
+        
+    #     try:
+    #         url = f"{self._api_url}/asset/{asset_id}/download"
+    #         response = requests.get(url, headers=headers, stream=True)
+    #         if response.status_code == 200:
+    #             print("File retrieved successfully!\nPreparing for download ...")
+    #             with open(file_path, "wb") as f:
+    #                 for chunks in response.iter_content(chunk_size=8192):
+    #                     f.write(chunks)
+    #             print(f"File successfully downloaded and saved as {file_path}")
+    #         else:
+    #             print("Error downloading file")
+    #             print(response.json())
+    #     except Exception as e:
+    #         print("Error: ", e)
+
+    @override
+    def download_model(self, asset_id, api_key) -> Any:
+        """download model"""
+        headers = {
+            "x-api-key": api_key,
+            "Content-Type": "application/json",
+        }
+        file_b = "modeling"
+        try:
+            url = f"{self._api_url}/jobs/asset/{asset_id}/download" 
+            file_name = f'{asset_id}.zip'
+            response = requests.get(url, headers=headers, stream=True)
+            if response.status_code == 200:
+                with open(file_name, "wb") as f:
+                    for chunks in response.iter_content(chunk_size=8192):
+                        f.write(chunks)
+                print(f"Successfully donwloaded")
+            else:
+                print("Error downloading file")
+        except Exception as e:
+            print("Error: ", e)
+
+
     @override
     def query_asset(self, asset_id, payload, api_key) -> str:
         headers = {
@@ -992,21 +1039,37 @@ class FastAPI(API):
         except Exception as e:
             print("Error: ", e)
 
+    # @override
+    # def buy_asset(self, asset_id, user_id, api_key):
+    #     url = f"{self._api_url}/api/v1/asset/{asset_id}/buy/{user_id}"
+    #     headers = {
+    #         "x-api-key": api_key,
+    #         "Content-Type": "application/json"
+    #     }
+    #     response = requests.get(url, headers=headers)
+    #     if response.status_code == 200:
+    #         print(f"Asset {asset_id} bought successfully by user {user_id}!")
+    #         return response.json()
+    #     else:
+    #         print(f"Error buying asset: {response.text}")
+        
     @override
-    def buy_asset(self, asset_id, user_id, api_key):
-        url = f"{self._api_url}/api/v1/asset/{asset_id}/buy/{user_id}"
+    def buy_asset(self, asset_id, user_id, api_key) -> Any:
+        """buy asset"""
         headers = {
             "x-api-key": api_key,
             "Content-Type": "application/json"
         }
-        response = requests.get(url, headers=headers)
-        if response.status_code == 200:
-            print(f"Asset {asset_id} bought successfully by user {user_id}!")
-            return response.json()
-        else:
-            print(f"Error buying asset: {response.text}")
-        
 
+        try:
+            url = f"{self._api_url}/asset/{asset_id}/buy/{user_id}"
+            response = requests.get(url, headers=headers)
+            if response.status_code == 200:
+                print("Buy asset successful")
+                # print(response.json())
+            return response.json()
+        except Exception as e:
+            print("Error: ", e)
         
     
 # Call the function to update the asset
