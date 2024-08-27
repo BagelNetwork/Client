@@ -468,3 +468,86 @@ class API(Component, ABC):
             ) -> bool:
         pass
 
+    # @abstractmethod
+    # def fine_tune(self, payload: str, api_key: str) -> str:
+    #     """Fine tune the model"""
+    #     pass
+    @abstractmethod
+    def create_asset(self, payload: str, api_key: str) -> str:
+        """create asset"""
+        pass
+    
+    @abstractmethod
+    def get_asset_by_id(self, asset_id, api_key) -> str:
+        """get asset by id"""
+        pass
+    
+    @abstractmethod
+    def get_all_asset(self, user_id ='', api_key = '') -> str:
+        """get all asset created by a user"""
+        pass
+
+    @abstractmethod
+    def delete_asset(self, dataset_id, api_key) -> str:
+        """delete asset"""
+        pass
+    
+    @abstractmethod
+    def download_file(self, asset_id, file_name, api_key) -> Document:
+        """Download document"""
+        pass
+    
+    @abstractmethod
+    def query_asset(self, asset_id, payload, api_key) -> str:
+        """query asset"""
+        pass
+    
+    @abstractmethod
+    def update_asset(self, asset_id, payload, api_key) -> str:
+        """update asset"""
+        pass
+    
+    @abstractmethod
+    def fine_tune(self, payload, apiKey) -> str:
+        """Fine tune method"""
+        pass
+
+    @abstractmethod
+    def get_job_by_job_id(self, asset_id, api_key) -> str:
+        """get job by asset id"""
+        pass
+
+    @abstractmethod
+    def get_job(self, job_id, api_key) -> str:
+        """get job"""
+        pass
+    
+    @abstractmethod
+    def list_jobs(self, user_id, api_key) -> str:
+        """list jobs"""
+        pass
+
+    @abstractmethod
+    def download_file_by_asset_and_name(self, asset_id, file_name, api_key) -> str:
+        """download file by asset and name"""
+        pass
+    
+    @abstractmethod
+    def file_upload(self, file_path, asset_id, api_key) -> str:
+        """file upload"""
+        pass
+
+    @abstractmethod
+    def buy_asset(self, asset_id, user_id, api_key) -> Any:
+        """buy asset"""
+        pass
+    
+    # @abstractmethod
+    # def download_finetuned_model(self, asset_id, file_path, api_key) -> str:
+    #     """dowload fine-tuned model"""
+    #     pass
+        
+    @abstractmethod
+    def download_model(self, asset_id, api_key) -> Any:
+        """download model"""
+        pass

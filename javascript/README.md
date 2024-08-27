@@ -32,7 +32,7 @@
 To install the Bagel JavaScript client, use npm:
 
 ```bash
-npm install bageldb-beta
+npm install bagelML
 ```
 
 ## Overview
@@ -252,16 +252,6 @@ getAsset();
 Updates data in the Asset
 
 ```js
-import { Settings, Client } from "bageldb-beta";
-
-// Settings config
-const settings = new Settings({
-  bagel_api_impl: "rest",
-  bagel_server_host: "api.bageldb.ai",
-});
-
-const client = new Client(settings);
-
 const assetId = "f4013273-03fa-4d2a-bfb4-d36bda4d5a1c";
 const apiKey = "4gB2wJPByf8qnUihAmH8dgbGYsZESEOH";
 
