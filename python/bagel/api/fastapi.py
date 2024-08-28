@@ -689,43 +689,67 @@ class FastAPI(API):
                 self.download_dataset_files(dataset_id, target_dir, file_path)
         
         return True
+    
     @override
-    def create_asset(self, payload, api_key) -> str:
+    def create_asset(self, payload: dict, api_key: str) -> str:
     # Define the URL for creating a dataset
         url = f"{self._api_url}/asset"
         # Define the payload for creating a dataset
-        # Replace "your_api_key_here" with the provided API key
         headers = {
             "x-api-key": api_key,
             "Content-Type": "application/json"
         }
 
         # Make a POST request to create a dataset
-        response_create_dataset = requests.post(url, json=payload, headers=headers)
+        response = requests.post(url, json=payload, headers=headers)
 
         # Check the response status code
-        if response_create_dataset.status_code == 200:
-            print("Asset created successfully!")
-            
-            # Print out the entire response content
-            print(response_create_dataset.json())
-            
-            # Extract asset ID from the response
-            dataset_info = response_create_dataset.json()
-            print("dataset info:", dataset_info)
-            if "asset_id" in dataset_info:
-                asset_id = dataset_info["asset_id"]
-                print(f"Asset ID: {asset_id}")
+        if response.status_code == 200:
+            asset_id = response.json()
+            return asset_id
         else:
-            print(f"Error creating dataset: {response_create_dataset.text}")
-            
+            return (f"Error creating dataset: {response.json()}")
     
+    @override
+    def get_assets_list(self, user_id ='', api_key = '') -> str:
+        headers ={
+            "x-api-key": api_key,
+            "Content-Type": "application/json",
+        }
+        try:
+            url = f"{self._api_url}/datasets?owner=${user_id}"
+            response = requests.get(url, headers=headers)
+            if response.status_code == 200:
+                assets_list = response.json()
+                return assets_list
+            else:
+                return ('Error retrieving data: ', response.json())
+        except Exception as e:
+            return ("Error", e.text)
+            
+    @override
+    def get_asset_info(self, asset_id, api_key) -> str:
+        headers = {
+            "x-api-key": api_key,
+            "Content-Type": "application/json",
+        }
+        try:
+            url = f"{self._api_url}/asset/{asset_id}"
+            
+            response = requests.get(url, headers=headers)
+            
+            if response.status_code == 200:
+                asset_info = response.json()
+                return asset_info
+            else:
+                return "Error retrieving data"
+        except Exception as e:
+            return ("Error occured: ", e)
+            
     # delete asset function
     @override
     def delete_asset(self, dataset_id, api_key) -> str:
         url = f"{self._api_url}/asset/{dataset_id}"
-
-        # Replace "your_api_key_here" with your actual API key
 
         headers = {
             "x-api-key": api_key
@@ -733,16 +757,16 @@ class FastAPI(API):
         response = requests.delete(url, headers=headers)
         try:
             if response.status_code == 204:
-                print(f"Dataset with {dataset_id} deleted successfully!")
+                return (f"Dataset {dataset_id} deleted successfully!")
             else:
-                print(f"Error deleting dataset: {response.text}")
+                return (f"Error deleting dataset: {response.text}")
 
 
-        except Exception:
-            print("Error")
+        except Exception as e:
+            return ("Error: ", e)
 
     @override
-    def download_file(self, asset_id, file_name, api_key) -> Document:
+    def download_model_file(self, asset_id, file_name, api_key) -> Document:
         url = f"{self._api_url}/jobs/asset/{asset_id}/files/{file_name}"
         headers = {
             "x-api-key": api_key,
@@ -751,61 +775,201 @@ class FastAPI(API):
         try:
             response = requests.get(url, headers=headers, stream=True)
             if response.status_code == 200:
-                print("File retrieved successfully!\nPreparing for download ...")
                 with open(file_name, "wb") as f:
                     for chunks in response.iter_content(chunk_size=8192):
                         f.write(chunks)
-                print(f"File successfully downloaded and saved as {file_name}")
+                return (f"File successfully downloaded and saved as {file_name}")
             else:
-                print("Error downloading file")
+                return ("Error downloading file")
         except Exception as e:
-            print("Error", e)
+            return ("Error", e)
+
+    @override
+    def download_model(self, asset_id, api_key) -> Any:
+        """download model"""
+        headers = {
+            "x-api-key": api_key,
+            "Content-Type": "application/json",
+        }
+        try:
+            url = f"{self._api_url}/jobs/asset/{asset_id}/download" 
+            file_name = f'{asset_id}.zip'
+            response = requests.get(url, headers=headers, stream=True)
+            if response.status_code == 200:
+                with open(file_name, "wb") as f:
+                    for chunks in response.iter_content(chunk_size=8192):
+                        f.write(chunks)
+                return (f"Successfully donwloaded! Model ID: {asset_id}")
+            else:
+                return ("Error downloading file")
+        except Exception as e:
+            return ("Error: ", e)
+
+
+    @override
+    def query_asset(self, asset_id, payload, api_key) -> str:
+        headers = {
+            "x-api-key": api_key,
+            "Content-Type": "application/json"
+        }
+        try:
+            # Format the URL with the asset ID
+            query_url = f"{self._api_url}/asset/{asset_id}/query"
+
+            # Make a POST request to query the asset
+            response = requests.post(query_url, headers=headers, data=json.dumps(payload))
+
+            # Check the response status code
+            if response.status_code == 200:
+                response_data = response.json()
+                return (response_data)
+            else:
+                error_detail = response.json()  # Catch the error detail
+                return ('Error response:', error_detail)
+        except Exception as e:
+            return ('Internal error:', str(e))
             
-    # @override
-    # def fine_tune(self, paylod: Document, api_key: Document) -> Document:
-    #     return super().fine_tune(payload, api_key)
-    
-    #==================
-    
-    # @override
-    # def fine_tune(
-    #         self,
-    #         payload: str,
-    #         asset_id: str,
-    #         user_id: str = DEFAULT_TENANT,
-    #         api_key: Optional[str] = None
-    # ) -> str:
-    #     """Create a dataset"""
-    #     headers, user_id = self._extract_headers_with_key_and_user_id(api_key, user_id, payload)
-    #     url = f"{self._api_url}/jobs/asset/ + {asset_id}"
+    @override
+    def update_asset(self, asset_id, payload, api_key) -> str:
 
-    #     # data = {
-    #     #     "dataset_type": dataset_type, 
-    #     #     "title": title,
-    #     #     "category": category,
-    #     #     "details": details,
-    #     #     "tags": [],
-    #     #     "user_id": user_id,
-    #     #     "fine_tune_payload": {
-    #     #         "asset_id": asset_id,
-    #     #         "model_name": model_name,
-    #     #         "base_model": base_model,
-    #     #         "file_name": file_name,
-    #     #         "user_id": user_id
-    #     #     }
-    #     # }
-    #     resp = requests.post(url, headers=headers, data=json.dumps(resp.data))
-    #     raise_bagel_error(resp)
-        
-    #     resp_json = resp.json()
-        
-    #     return resp_json
+        headers = {
+            "x-api-key": api_key,
+            "Content-Type": "application/json"
+        }
 
-    #==================
+        try:
+            # Format the URL with the asset ID
+            update_url = f"{self._api_url}/datasets/{asset_id}"
+
+            # Make a PUT request to update the asset
+            response = requests.put(update_url, headers=headers, data=json.dumps(payload))
+
+            # Check the response status code
+            if response.status_code == 200:
+                response_data = response.json()
+                return (response_data)
+            else:
+                error_detail = response.json()  # Catch the error detail
+                return ('Error response:', error_detail)
+        except Exception as e:
+            return ('Internal error:', str(e))
     
-    
-    
-    
+    @override
+    def fine_tune(self, title: str, user_id: str, asset_id: str, file_name: str, 
+                  base_model: str, epochs: Optional[int], learning_rate: Optional[float], apiKey: str) -> str:
+        url = f"{self._api_url}/asset"
+        headers = {
+            "x-api-key": apiKey, # insert api key
+            "Content-Type": "application/json"
+        }
+        try:
+            payload = {
+                    "dataset_type": "MODEL",
+                    "title": title,
+                    "category": "AI",
+                    "details": "",
+                    "tags": [],
+                    "user_id": user_id,
+                    "fine_tune_payload": {
+                        "asset_id": asset_id,
+                        "model_name": title,
+                        "base_model": base_model,
+                        "file_name": file_name,
+                        "epochs": epochs,
+                        "learning_rate": learning_rate,
+                        "user_id": user_id
+                    }
+                }
+            response = requests.post(url, json=payload, headers=headers)
+            
+            # Check the response status code
+            if response.status_code == 200:
+                return (f"Fine-tune operation has been started! Model ID: {response.json()}")
+            else:
+                error_detail = response.json()  # Catch the error detail
+                return ('Error response:', error_detail)
+        except Exception as e:
+            return ('Internal error:', str(e))
+
+    @override
+    def get_job_by_asset_id(self, asset_id, api_key) -> str:
+        headers = {
+            "x-api-key": api_key,
+            "Content-Type": "application/json"
+        }
+
+        try:
+            # Format the URL with the asset ID
+            url = f"{self._api_url}/jobs/asset/{asset_id}"
+
+            # Make a GET request to get job by asset
+            response = requests.get(url, headers=headers)
+
+            # Check the response status code
+            if response.status_code == 200:
+                return ('Job retrieved successfully! Job Info:', response.json())
+            else:
+                error_detail = response.json()  # Catch the error detail
+                return ('Error response:', error_detail)
+        except Exception as e:
+            return ('Internal error:', str(e))
+        
+        
+    @override
+    def list_jobs(self, user_id, api_key) -> str:
+        headers = {
+            "x-api-key": api_key,
+            "Content-Type": "application/json"
+        }
+
+        url = f"{self._api_url}/jobs/created_by/{user_id}"
+
+        response = requests.get(url, headers=headers)
+
+        if response.status_code == 200:
+            return ('List jobs response:', response.json())
+        else:
+            error_detail = response.json()
+            return ('Error response:', error_detail)
+
+    @override
+    def file_upload(self, file_path, asset_id, api_key) -> str:
+        headers = {
+            "x-api-key": api_key,
+            # "Content-Type": "application/json",
+        }
+        try:
+            url = f"{self._api_url}/asset/{asset_id}/upload"
+            file_name = os.path.basename(file_path)
+
+            with open(file_path, "rb") as file:
+                files = {"data_file":(file_name, file.read())}
+            response = requests.post(url, files=files, headers=headers)
+
+            if response.status_code == 200:
+                return (f"Data uploaded successfully! {response.json()}")
+            else:
+                return (f"Error uploading data: {response.json()}")
+        except Exception as e:
+            return ("Error: ", e)
+        
+    @override
+    def buy_asset(self, asset_id, user_id, api_key) -> Any:
+        """buy asset"""
+        headers = {
+            "x-api-key": api_key,
+            "Content-Type": "application/json"
+        }
+
+        try:
+            url = f"{self._api_url}/asset/{asset_id}/buy/{user_id}"
+            response = requests.get(url, headers=headers)
+            if response.status_code == 200:
+                return (f"Buy asset successful {response.json()}")
+            else:
+                return response.json()
+        except Exception as e:
+            return ("Error: ", e)
     
     
 def raise_bagel_error(resp: requests.Response) -> None:
