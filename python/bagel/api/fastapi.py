@@ -691,7 +691,7 @@ class FastAPI(API):
         return True
     
     @override
-    def create_asset(self, payload, api_key) -> str:
+    def create_asset(self, payload: dict, api_key: str) -> str:
     # Define the URL for creating a dataset
         url = f"{self._api_url}/asset"
         # Define the payload for creating a dataset
@@ -757,7 +757,7 @@ class FastAPI(API):
         response = requests.delete(url, headers=headers)
         try:
             if response.status_code == 204:
-                return (f"Dataset with {dataset_id} deleted successfully!")
+                return (f"Dataset {dataset_id} deleted successfully!")
             else:
                 return (f"Error deleting dataset: {response.text}")
 
@@ -855,14 +855,31 @@ class FastAPI(API):
             return ('Internal error:', str(e))
     
     @override
-    def fine_tune(self, payload, apiKey) -> str:
+    def fine_tune(self, title: str, user_id: str, asset_id: str, file_name: str, 
+                  base_model: str, epochs: Optional[int], learning_rate: Optional[float], apiKey: str) -> str:
         url = f"{self._api_url}/asset"
         headers = {
             "x-api-key": apiKey, # insert api key
             "Content-Type": "application/json"
         }
         try:
-            print("Sending request with payload:", payload)
+            payload = {
+                    "dataset_type": "MODEL",
+                    "title": title,
+                    "category": "AI",
+                    "details": "",
+                    "tags": [],
+                    "user_id": user_id,
+                    "fine_tune_payload": {
+                        "asset_id": asset_id,
+                        "model_name": title,
+                        "base_model": base_model,
+                        "file_name": file_name,
+                        "epochs": epochs,
+                        "learning_rate": learning_rate,
+                        "user_id": user_id
+                    }
+                }
             response = requests.post(url, json=payload, headers=headers)
             
             # Check the response status code
@@ -890,7 +907,7 @@ class FastAPI(API):
 
             # Check the response status code
             if response.status_code == 200:
-                return ('Job retrieved successfully! Job Info:\n', response.json())
+                return ('Job retrieved successfully! Job Info:', response.json())
             else:
                 error_detail = response.json()  # Catch the error detail
                 return ('Error response:', error_detail)
@@ -932,7 +949,7 @@ class FastAPI(API):
             if response.status_code == 200:
                 return (f"Data uploaded successfully! {response.json()}")
             else:
-                return (f"Error uploading data: {response.text}")
+                return (f"Error uploading data: {response.json()}")
         except Exception as e:
             return ("Error: ", e)
         
@@ -949,6 +966,8 @@ class FastAPI(API):
             response = requests.get(url, headers=headers)
             if response.status_code == 200:
                 return (f"Buy asset successful {response.json()}")
+            else:
+                return response.json()
         except Exception as e:
             return ("Error: ", e)
     

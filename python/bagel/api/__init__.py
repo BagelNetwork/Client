@@ -473,7 +473,7 @@ class API(Component, ABC):
     #     """Fine tune the model"""
     #     pass
     @abstractmethod
-    def create_asset(self, payload: str, api_key: str) -> str:
+    def create_asset(self, payload: dict, api_key: str) -> str:
         """create asset"""
         pass
     
@@ -493,7 +493,7 @@ class API(Component, ABC):
         pass
     
     @abstractmethod
-    def download_file(self, asset_id, file_name, api_key) -> Document:
+    def download_model_file(self, asset_id, file_name, api_key) -> Document:
         """Download document"""
         pass
     
@@ -508,7 +508,8 @@ class API(Component, ABC):
         pass
     
     @abstractmethod
-    def fine_tune(self, payload, apiKey) -> str:
+    def fine_tune(self, title: str, user_id: str, asset_id: str, file_name: str, 
+                  base_model: str, epochs: Optional[int], learning_rate: Optional[float], apiKey: str) -> str:
         """Fine tune method"""
         pass
 
