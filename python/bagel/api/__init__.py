@@ -478,62 +478,73 @@ class API(Component, ABC):
         pass
     
     @abstractmethod
-    def get_asset_info(self, asset_id, api_key) -> str:
+    def get_asset_info(self, asset_id: str, api_key: Optional[str] = None) -> str:
         """get asset by id"""
         pass
     
     @abstractmethod
-    def get_assets_list(self, user_id ='', api_key = '') -> str:
+    def get_assets_list(self, user_id: str, api_key: Optional[str] = None) -> str:
         """get all asset created by a user"""
         pass
 
     @abstractmethod
-    def delete_asset(self, dataset_id, api_key) -> str:
+    def delete_asset(self, dataset_id: str, api_key: Optional[str] = None) -> str:
         """delete asset"""
         pass
     
     @abstractmethod
-    def download_model_file(self, asset_id, file_name, api_key) -> Document:
+    def download_model_file(self, asset_id: str, file_name: str, api_key: Optional[str] = None) -> Document:
         """Download document"""
+        pass
+
+    @abstractmethod
+    def download_model(self, asset_id: str, api_key: Optional[str] = None) -> Any:
+        """download model"""
         pass
     
     @abstractmethod
-    def query_asset(self, asset_id, payload, api_key) -> str:
+    def query_asset(self, asset_id: str, payload: dict, api_key: Optional[str] = None) -> str:
         """query asset"""
         pass
     
     @abstractmethod
-    def update_asset(self, asset_id, payload, api_key) -> str:
+    def update_asset(self, asset_id: str, payload: dict, api_key: Optional[str] = None) -> str:
         """update asset"""
         pass
     
     @abstractmethod
     def fine_tune(self, title: str, user_id: str, asset_id: str, file_name: str, 
-                  base_model: str, epochs: Optional[int], learning_rate: Optional[float], apiKey: str) -> str:
+                  base_model: str, epochs: Optional[int], learning_rate: Optional[float], 
+                  api_key: Optional[str] = None) -> str:
         """Fine tune method"""
         pass
 
     @abstractmethod
-    def get_job_by_asset_id(self, asset_id, api_key) -> str:
+    def get_job_by_asset_id(self, asset_id: str, api_key: Optional[str] = None) -> str:
         """get job by asset id"""
         pass
     
     @abstractmethod
-    def list_jobs(self, user_id, api_key) -> str:
+    def list_jobs(self, user_id: str, api_key: Optional[str] = None) -> str:
         """list jobs"""
         pass
     
     @abstractmethod
-    def file_upload(self, file_path, asset_id, api_key) -> str:
+    def file_upload(self, file_path: str, asset_id: str, api_key: Optional[str] = None) -> str:
         """file upload"""
         pass
 
     @abstractmethod
-    def buy_asset(self, asset_id, user_id, api_key) -> Any:
+    def buy_asset(self, asset_id: str, user_id: str, api_key: Optional[str] = None) -> str:
         """buy asset"""
         pass
-        
+
     @abstractmethod
-    def download_model(self, asset_id, api_key) -> Any:
-        """download model"""
+    def get_download_url(self, asset_id: str, file_name: str, api_key: Optional[str] = None) -> dict:
+        """get download URL"""
+        pass
+
+    @abstractmethod
+    def get_model_files_list(self, asset_id: str, api_key: Optional[str] = None):
+        """get model files"""
         pass
