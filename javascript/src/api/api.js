@@ -6,9 +6,8 @@ import { v4 as uuidv4 } from 'uuid'
 // const { v4: uuidv4 } = require('uuid')
 import FormData from 'form-data'
 import fs from 'fs'
-// const FormData = require('form-data')
-// import {Buffer} from 'buffer'
-// // const Buffer = require('buffer').Buffer
+import { pipeline } from 'stream'
+import { promisify } from 'util'
 
 // Class to interact with the Bagel API====================================================================================
 class API {
@@ -857,36 +856,32 @@ class API {
     }
   }
 
-  // -------------------New Download Model Files Function ---------------------
-  async download_model_file (assetId, fileName, apiKey) {
-    return this._download_model_file(assetId, fileName, apiKey)
+  // download model function
+  async download_model (assetId, apiKey) {
+    return this._downloadModel(assetId, apiKey)
   }
 
-  async _download_model_file (assetId, fileName, apiKey) {
+  async _downloadModel (assetId, apiKey = null) {
+    const streamPipeline = promisify(pipeline)
+
+    // Populate headers with API key
+    const headers = apiKey ? { 'x-api-key': apiKey, 'Content-Type': 'application/json' } : {}
+    const url = `${this._api_url}/jobs/asset/${assetId}/download`
+    const fileName = `${assetId}.zip`
+
     try {
-      const url = `${this._api_url}/api/v1/jobs/asset/${assetId}/files/${fileName}`
-      console.log('Request URL:', url) // Log the URL to verify it's correct
+      const response = await fetch(url, { method: 'GET', headers })
 
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'x-api-key': apiKey,
-          'Content-Type': 'application/json'
-        }
-      })
+      if (response.ok) {
+        const fileStream = fs.createWriteStream(fileName)
+        await streamPipeline(response.body, fileStream)
 
-      if (!response.ok) {
-        const errorDetail = await response.json()
-        console.error('Error response:', errorDetail)
-        // // throw new Error(
-        // //   `Error downloading model file: ${response.status} ${errorDetail.detail}`
-        // )
+        return `Successfully downloaded! Model ID: ${assetId}`
       } else {
-        return await response.blob() // Assuming the file is binary data
+        return 'Error downloading file'
       }
     } catch (error) {
-      console.error('Internal error:', error)
-      throw error
+      return `Error: ${error.message}`
     }
   }
 
@@ -919,32 +914,28 @@ class API {
     }
   }
 
-  // Download model files ==============================[WIP]
-  async download_model_files (jobId, fileName, apiKey) {
-    const headers = {
-      'x-api-key': apiKey,
-      'Content-Type': 'application/json'
-    }
+  // buy asset function
+  async buy_asset (assetId, userId, apiKey) {
+    return this._buy_asset(assetId, userId, apiKey)
+  }
+
+  async _buy_asset (assetId, userId, apiKey = null) {
+    // Populate headers with API key
+    const headers = apiKey ? { 'x-api-key': apiKey, 'Content-Type': 'application/json' } : {}
+    const url = `${this._api_url}/asset/${assetId}/buy/${userId}`
 
     try {
-      const response = await fetch(
-        this._api_url + `/jobs/${jobId}/files/${fileName}`,
-        {
-          method: 'GET',
-          headers
-        }
-      )
+      const response = await fetch(url, { method: 'GET', headers })
 
-      const data = await response.json()
-
-      if (response.status === 200) {
-        console.log('File downloaded successfully!')
-        return data
+      if (response.ok) {
+        const data = await response.json()
+        return `Buy asset successful: ${JSON.stringify(data)}`
       } else {
-        console.error(`Error downloading files: ${JSON.stringify(data)}`)
+        const errorData = await response.json()
+        return JSON.stringify(errorData)
       }
     } catch (error) {
-      console.error('Error downloading files:', error)
+      return `Error: ${error.message}`
     }
   }
 }

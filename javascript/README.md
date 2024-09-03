@@ -49,6 +49,7 @@ Also, install the following dependencies:
 4. uuid: `npm install uuid`
 5. Buffer: `npm install buffer`
 
+
 The full source code with examples is available on [GitHub](https://github.com/BagelNetwork/Client/tree/main/javascript).
 
 ## Client
@@ -388,6 +389,41 @@ const createApiKey = async (userId) => {
 
 createApiKey(userId);
 ```
+
+### Buy Asset
+
+```js
+
+const assetId = ''
+const apiKey = ''
+const userId = ''
+
+const buyAsset = async () => {
+  // get version
+  const asset = await client.buy_asset(assetId, userId, apiKey)
+  console.log(asset)
+}
+
+buyAsset()
+```
+
+
+### Download Model Files
+```js
+const assetId = ''
+const apiKey = ''
+
+const downloadModel = async () => {
+  // get version
+  const asset = await client.download_model(assetId, apiKey)
+  console.log(asset)
+}
+
+downloadModel()
+```
+
+
+
 
 
 ### Finetuning
