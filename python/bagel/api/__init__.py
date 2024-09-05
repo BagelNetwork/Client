@@ -501,6 +501,14 @@ class API(Component, ABC):
     def download_model(self, asset_id: str, api_key: Optional[str] = None) -> Any:
         """download model"""
         pass
+
+    @abstractmethod
+    def add_text(self, asset_id: str, payload: dict, api_key: Optional[str] = None) -> dict:
+        pass
+
+    @abstractmethod
+    def add_image(self, asset_id: str, file_path: str, api_key: Optional[str] = None):
+        pass
     
     @abstractmethod
     def query_asset(self, asset_id: str, payload: dict, api_key: Optional[str] = None) -> str:

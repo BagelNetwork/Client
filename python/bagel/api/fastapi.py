@@ -788,6 +788,54 @@ class FastAPI(API):
         except Exception as e:
             return ("Error: ", e)
 
+    @override
+    def add_text(self, asset_id: str, payload: dict, api_key: Optional[str] = None) -> dict:
+        headers = self._popuate_headers_with_api_key(api_key)
+        try:
+            url = f"{self._api_url}/asset/{asset_id}/add"
+            payload = {
+                        "metadatas": [
+                            {"source": payload['source']}
+                        ],
+                        "documents": [
+                            payload['documents']
+                        ],
+                        "ids": [
+                            str(UUID)
+                        ]
+                    }
+            # Make a POST request to query the asset
+            response = requests.post(url, headers=headers, data=json.dumps(payload))
+            # Check the response status code
+            if response.status_code == 201:
+                response_data = response.json()
+                return (response_data)
+            else:
+                error_detail = response.json()  # Catch the error detail
+                return ('Error response:', error_detail)
+        except Exception as e:
+            return ('Internal error:', str(e))
+    
+    @override
+    def add_image(self, asset_id: str, file_path: str, api_key: Optional[str] = None):
+        headers = self._popuate_headers_with_api_key(api_key)
+        try:
+            url = f"{self._api_url}/asset/{asset_id}/add_image_file"
+            file_name = os.path.basename(file_path)
+
+            with open(file_path, "rb") as file:
+                files = {"image_file":(file_name, file.read())}
+            # Make a POST request to query the asset
+            response = requests.post(url, headers=headers, files=files)
+            # Check the response status code
+            if response.status_code == 200:
+                return "Image embedding successful!"
+            else:
+                error_detail = response.json()  # Catch the error detail
+                return ('Error response:', error_detail)
+        except Exception as e:
+            return ('Internal error:', str(e))
+
 
     @override
     def query_asset(self, asset_id: str, payload: dict, api_key: Optional[str] = None) -> str:
