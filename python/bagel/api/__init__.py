@@ -501,6 +501,14 @@ class API(Component, ABC):
     def download_model(self, asset_id: str, api_key: Optional[str] = None) -> Any:
         """download model"""
         pass
+
+    @abstractmethod
+    def add_text(self, asset_id: str, payload: dict, api_key: Optional[str] = None) -> dict:
+        pass
+
+    @abstractmethod
+    def add_image(self, asset_id: str, file_path: str, api_key: Optional[str] = None):
+        pass
     
     @abstractmethod
     def query_asset(self, asset_id: str, payload: dict, api_key: Optional[str] = None) -> str:
@@ -514,7 +522,7 @@ class API(Component, ABC):
     
     @abstractmethod
     def fine_tune(self, title: str, user_id: str, asset_id: str, file_name: str, 
-                  base_model: str, epochs: Optional[int], learning_rate: Optional[float], 
+                  base_model: str, epochs: Optional[int] = 3, learning_rate: Optional[float] = 0.001, 
                   api_key: Optional[str] = None) -> str:
         """Fine tune method"""
         pass
