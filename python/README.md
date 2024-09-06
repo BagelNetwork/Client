@@ -373,7 +373,7 @@ print(response)
 
 Downloads a fine-tuned model by asset ID and file name.
 
-## Get job by job id
+## Get job by asset id 
 
 ```python
 import os
@@ -389,13 +389,16 @@ DEMO_KEY_IN_USE = getpass("Enter your API key: ")
 # Set environment variable
 api_key = os.environ['BAGEL_API_KEY'] = DEMO_KEY_IN_USE
 
-job_id = ""  # Replace with the actual job ID
+asset_id = "" # Replace with asset ID of fine-tuned model. e.g "eR57yd73b-7gt4-4a71-b0fd-afKJUIY6578Ge" 
 
-response = client.get_job(job_id, api_key)
+# Function to get job by asset
+
+# Call the function
+response = client.get_job_by_asset_id(asset_id, api_key)
 print(response)
 ```
 
-Retrieves the status of a specific job by job ID.
+Retrieves the status of a specific job by asset ID.
 
 ## Get job
 
