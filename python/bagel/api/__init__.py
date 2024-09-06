@@ -522,7 +522,7 @@ class API(Component, ABC):
     
     @abstractmethod
     def fine_tune(self, title: str, user_id: str, asset_id: str, file_name: str, 
-                  base_model: str, epochs: Optional[int], learning_rate: Optional[float], 
+                  base_model: str, epochs: Optional[int] = 3, learning_rate: Optional[float] = 0.001, 
                   api_key: Optional[str] = None) -> str:
         """Fine tune method"""
         pass

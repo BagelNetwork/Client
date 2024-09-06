@@ -881,7 +881,7 @@ class FastAPI(API):
     
     @override
     def fine_tune(self, title: str, user_id: str, asset_id: str, file_name: str, 
-                  base_model: str, epochs: Optional[int], learning_rate: Optional[float], 
+                  base_model: str, epochs: Optional[int] = 3, learning_rate: Optional[float] = 0.001, 
                   api_key: Optional[str] = None) -> str:
         url = f"{self._api_url}/asset"
         headers = self._popuate_headers_with_api_key(api_key)
