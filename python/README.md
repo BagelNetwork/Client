@@ -122,7 +122,7 @@ api_key = 'insert api key'
 asset_id = 'insert dataset/asset id'
 file_name = "insert file .txt"
 
-client.download_file(asset_id, file_name, api_key)
+client.download_model_file(asset_id, file_name, api_key)
 ```
 
 Downloads a file associated with a specific Asset.
