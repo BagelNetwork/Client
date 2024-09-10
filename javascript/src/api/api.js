@@ -6,8 +6,8 @@ import { v4 as uuidv4 } from 'uuid'
 // const { v4: uuidv4 } = require('uuid')
 import FormData from 'form-data'
 import fs from 'fs'
-import { pipeline } from 'stream'
-import { promisify } from 'util'
+import path from 'path'
+import { streamPipeline } from 'stream/promises'
 
 // Class to interact with the Bagel API====================================================================================
 class API {
@@ -861,29 +861,50 @@ class API {
     return this._downloadModel(assetId, apiKey)
   }
 
-  async _downloadModel (assetId, apiKey = null) {
-    const streamPipeline = promisify(pipeline)
+async _downloadModel(assetId, apiKey = null) {
+    const fileName = `${assetId}.zip`;
+    const filePath = path.resolve(__dirname, fileName);
 
-    // Populate headers with API key
-    const headers = apiKey ? { 'x-api-key': apiKey, 'Content-Type': 'application/json' } : {}
-    const url = `${this._api_url}/jobs/asset/${assetId}/download`
-    const fileName = `${assetId}.zip`
+    const headers = apiKey ? { 'x-api-key': apiKey, 'Content-Type': 'application/json' } : {};
 
     try {
-      const response = await fetch(url, { method: 'GET', headers })
+        const url = `${this._api_url}/jobs/asset/${assetId}/download`;
 
-      if (response.ok) {
-        const fileStream = fs.createWriteStream(fileName)
-        await streamPipeline(response.body, fileStream)
+        // Check if the file already exists and determine its current size (for resuming)
+        let startByte = 0;
+        if (fs.existsSync(filePath)) {
+            const stats = fs.statSync(filePath);
+            startByte = stats.size;
+            console.log(`Resuming from byte: ${startByte}`);
+        }
 
-        return `Successfully downloaded! Model ID: ${assetId}`
-      } else {
-        return 'Error downloading file'
-      }
+        // Set the Range header for resuming the download
+        headers['Range'] = `bytes=${startByte}-`;
+
+        const response = await axios.get(url, {
+            headers: headers,
+            responseType: 'stream',
+            timeout: 10000
+        });
+
+        const writer = fs.createWriteStream(filePath, { flags: 'a' });
+
+        // Track download progress
+        let downloadedBytes = startByte;
+
+        response.data.on('data', (chunk) => {
+            downloadedBytes += chunk.length;
+            const progress = downloadedBytes / (fs.existsSync(filePath) ? downloadedBytes : 1);
+            console.log(`Downloaded ${downloadedBytes} bytes (${(progress * 100).toFixed(2)}%)`);
+        });
+
+        await streamPipeline(response.data, writer);
+
+        return `Successfully downloaded! Model ID: ${assetId}`;
     } catch (error) {
-      return `Error: ${error.message}`
+        return `Error: ${error.message}`;
     }
-  }
+}
 
   // Get notification ============================================== [WIP]
   async get_notification (userId, apiKey) {
