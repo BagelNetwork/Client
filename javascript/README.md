@@ -392,6 +392,8 @@ createApiKey(userId);
 
 ### Buy Asset
 
+This code purchases an asset of your choice by passing in the following parameters:
+
 ```js
 
 const assetId = ''

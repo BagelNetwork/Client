@@ -11,11 +11,11 @@ import { promisify } from 'util'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
-const streamPipeline = promisify(pipeline);
+const streamPipeline = promisify(pipeline)
 
 // Manually define __dirname in ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 // const FormData = require('form-data')
 // import {Buffer} from 'buffer'
 // // const Buffer = require('buffer').Buffer
@@ -94,7 +94,6 @@ class API {
 
       if (response.status === 200) {
         return `Asset created successfully! ${JSON.stringify(data)}`
-
       } else {
         return `Error creating Asset: ${JSON.stringify(data)}`
       }
@@ -890,8 +889,8 @@ class API {
     }
   }
 
-    // download model function
-  async download_model(assetId, apiKey){
+  // download model function
+  async download_model (assetId, apiKey) {
     return this._downloadModel(assetId, apiKey)
   }
 
@@ -919,51 +918,50 @@ class API {
   //     }
   // }
 
-  async _downloadModel(assetId, apiKey = null) {
-      const fileName = `${assetId}.zip`
-      const filePath = path.resolve(__dirname, fileName)
+  async _downloadModel (assetId, apiKey = null) {
+    const fileName = `${assetId}.zip`
+    const filePath = path.resolve(__dirname, fileName)
 
-      const headers = apiKey ? { 'x-api-key': apiKey, 'Content-Type': 'application/json' } : {}
+    const headers = apiKey ? { 'x-api-key': apiKey, 'Content-Type': 'application/json' } : {}
 
-      try {
-          const url = `${this._api_url}/jobs/asset/${assetId}/download`
+    try {
+      const url = `${this._api_url}/jobs/asset/${assetId}/download`
 
-          // Check if the file already exists and determine its current size (for resuming)
-          let startByte = 0;
-          if (fs.existsSync(filePath)) {
-              const stats = fs.statSync(filePath);
-              startByte = stats.size;
-              return `Resuming from byte: ${startByte}`
-          }
-
-          // Set the Range header for resuming the download
-          headers['Range'] = `bytes=${startByte}-`
-
-          const response = await axios.get(url, {
-              headers: headers,
-              responseType: 'stream',
-              timeout: 10000
-          })
-
-          const writer = fs.createWriteStream(filePath, { flags: 'a' })
-
-          // Track download progress
-          let downloadedBytes = startByte
-
-          response.data.on('data', (chunk) => {
-              downloadedBytes += chunk.length;
-              const progress = downloadedBytes / (fs.existsSync(filePath) ? downloadedBytes : 1)
-              return `Downloaded ${downloadedBytes} bytes (${(progress * 100).toFixed(2)}%)`
-          });
-
-          await streamPipeline(response.data, writer);
-
-          return `Successfully downloaded! Model ID: ${assetId}`
-      } catch (error) {
-          return `Error: ${error.message}`
+      // Check if the file already exists and determine its current size (for resuming)
+      let startByte = 0
+      if (fs.existsSync(filePath)) {
+        const stats = fs.statSync(filePath)
+        startByte = stats.size
+        return `Resuming from byte: ${startByte}`
       }
-  }
 
+      // Set the Range header for resuming the download
+      headers.Range = `bytes=${startByte}-`
+
+      const response = await axios.get(url, {
+        headers,
+        responseType: 'stream',
+        timeout: 10000
+      })
+
+      const writer = fs.createWriteStream(filePath, { flags: 'a' })
+
+      // Track download progress
+      let downloadedBytes = startByte
+
+      response.data.on('data', (chunk) => {
+        downloadedBytes += chunk.length
+        const progress = downloadedBytes / (fs.existsSync(filePath) ? downloadedBytes : 1)
+        return `Downloaded ${downloadedBytes} bytes (${(progress * 100).toFixed(2)}%)`
+      })
+
+      await streamPipeline(response.data, writer)
+
+      return `Successfully downloaded! Model ID: ${assetId}`
+    } catch (error) {
+      return `Error: ${error.message}`
+    }
+  }
 
   // Download model files ==============================[WIP]
   async download_model_files (jobId, fileName, apiKey) {
@@ -994,31 +992,29 @@ class API {
   }
 
   // buy asset function
-  async buy_asset(assetId, userId, apiKey){
+  async buy_asset (assetId, userId, apiKey) {
     return this._buy_asset(assetId, userId, apiKey)
   }
-  async _buy_asset(assetId, userId, apiKey = null) {
-      // Populate headers with API key
-      const headers = apiKey ? { 'x-api-key': apiKey, 'Content-Type': 'application/json' } : {};
-      const url = `${this._api_url}/asset/${assetId}/buy/${userId}`;
 
-      try {
-          const response = await fetch(url, { method: 'GET', headers });
+  async _buy_asset (assetId, userId, apiKey = null) {
+    // Populate headers with API key
+    const headers = apiKey ? { 'x-api-key': apiKey, 'Content-Type': 'application/json' } : {}
+    const url = `${this._api_url}/asset/${assetId}/buy/${userId}`
 
-          if (response.ok) {
-              const data = await response.json();
-              return `Buy asset successful: ${JSON.stringify(data)}`;
-          } else {
-              const errorData = await response.json();
-              return JSON.stringify(errorData);
-          }
-      } catch (error) {
-          return `Error: ${error.message}`;
+    try {
+      const response = await fetch(url, { method: 'GET', headers })
+
+      if (response.ok) {
+        const data = await response.json()
+        return `Buy asset successful: ${JSON.stringify(data)}`
+      } else {
+        const errorData = await response.json()
+        return JSON.stringify(errorData)
       }
+    } catch (error) {
+      return `Error: ${error.message}`
+    }
   }
-
 }
-
-
 
 export default API
