@@ -913,6 +913,29 @@ class FastAPI(API):
                 return ('Error response:', error_detail)
         except Exception as e:
             return ('Internal error:', str(e))
+        
+
+
+    @override
+    def get_job(self, job_id, api_key) -> str:
+
+        headers = {
+            'x-api-key': api_key,
+            'Content-Type': 'application/json'
+        }
+        try:
+            url = f"{self._api_url}/jobs/{job_id}"  # Replace with the actual base URL
+            response = requests.get(url, headers=headers)
+            if response.status_code != 200:
+                error_detail = response.json()
+                print('Error response:', error_detail)
+                raise Exception(f"Error getting job: {response.status_code} {error_detail.get('detail')}")
+            else:
+                print("Job gotten successfully", response.text)
+                # return response.json()
+        except Exception as error:
+            print('Internal error:', error)
+            raise error
 
     @override
     def get_job_by_asset_id(self, asset_id: str, api_key: Optional[str] = None) -> str:

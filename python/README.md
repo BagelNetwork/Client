@@ -272,26 +272,20 @@ DEMO_KEY_IN_USE = getpass("Enter your API key: ")
 # Set environment variable
 api_key = os.environ['BAGEL_API_KEY'] = DEMO_KEY_IN_USE
 
-# Define the payload for the fine-tune function
-payload = {
-  "dataset_type": 'MODEL', 
-  "title": '', # e.g 'what!'
-  "category": 'AI', # e.g 'come here'
-  "details": '', 
-  "tags": ['AI'], 
-  "user_id": '', 
-  "fine_tune_payload": {
-    "asset_id": '', # raw containing dataset
-    "model_name": 'we make things happen', #  This is same as the title 'what!'
-    "base_model": '', # LLama3 model that was purchased 
-    "file_name": '', # e.g 'catch'
-    "user_id": '', # The same as your user id, input it again. e.g '231243124466184567909'
-    "epochs": 3,
-    "learning_rate": 0.01 
-  }
-}
+user_id = "" #insert user id
+asset_id = "" #insert RAW asset id containing dataset 
+base_model = "" # model id of purchased base model from marketplace 
+file_name = "" # name of file in raw asset 
+title = ""  # choose a title 
 
-response = client.fine_tune(payload, apiKey)
+response = client.fine_tune(title=title,
+                            user_id=user_id,
+                            asset_id = asset_id,
+                            file_name = file_name,
+                            base_model = base_model,
+                            epochs = 3,
+                            learning_rate = 0.01
+                            )
 print(response)
 ```
 
