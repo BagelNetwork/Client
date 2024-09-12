@@ -709,7 +709,7 @@ class API {
 
       if (!response.ok) {
         const errorDetail = await response.json() // Changed to json to catch the error detail
-        return 'Error response:', errorDetail // Log the full error response
+        return `Error response: ${errorDetail} \n Error Finetuning: ${response.status} ${errorDetail.detail}`
         // throw new Error(`Error fine tuning: ${response.status}`)
       } else {
         return await response.json()
