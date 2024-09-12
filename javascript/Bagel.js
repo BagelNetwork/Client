@@ -7,7 +7,7 @@ import cluster from './src/model/cluster.js'
 const settings = new Settings({
   bagel_api_impl: 'rest',
   bagel_server_host: 'api.bageldb.ai',
-  bagel_server_http_port: '80',
+  bagel_server_http_port: '80'
 })
 const api = new API(settings)
 export {
