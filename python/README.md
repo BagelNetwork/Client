@@ -47,26 +47,17 @@ pip install bagelML
 
 ```python
 import uuid
+import os
 import bagel
-from bagel.config import Settings
+from dotenv import load_dotenv
 ```
 
 This snippet imports the required modules for using Bagel.
 
-## Define the Bagel server settings
-
-```python
-server_settings = Settings(
-    bagel_api_impl="rest",
-    bagel_server_host="api.bageldb.ai"
-)
-```
-Here, we define the settings for connecting to the Bagel server.
-
 ## Create the Bagel client
 
 ```python
-client = bagel.Client(server_settings)
+client = bagel.Client()
 ```
 
 Create an instance of the Bagel client using the previously defined server settings.
@@ -87,12 +78,25 @@ print(client.get_version())
 
 Retrieves and prints the version of the Bagel server.
 
+
 ## Create an Asset
 
 Assets in Bagel serve as powerful containers for large datasets, encapsulating embeddings — high-dimensional vectors that represent various data forms, such as text, images, or audio. These Assets enable efficient similarity searches, which are fundamental to a wide range of applications, from recommendation systems and search engines to data analytics tools.
 
 ```python
-api_key = 'insert api key'
+import os
+import bagel
+from getpass import getpass
+
+# Create the asset using the API key from environment variables
+client = bagel.Client()
+
+# Copy & Paste the API Key from https://bakery.bagel.net/api-key
+DEMO_KEY_IN_USE = getpass("Enter your API key: ")
+
+# Set environment variable
+api_key = os.environ['BAGEL_API_KEY'] = DEMO_KEY_IN_USE
+
 payload = {
     "dataset_type": "RAW",
     "title": "",
@@ -102,35 +106,53 @@ payload = {
     "user_id": 'insert user id'
 }
 
-client.create_asset(payload, api_key)
+response = client.create_asset(payload, api_key)
+print(response)
 ```
+
+`Note`: This code prompts the user to enter their API key securely (without displaying it on the screen) and then sets it as an environment variable named BAGEL_API_KEY
+
 
 ## Delete an Asset
 
 ```python
-api_key = 'insert api key'
+import os
+import bagel
+from getpass import getpass
+
+# Create the asset using the API key from environment variables
+client = bagel.Client()
+
+# Copy & Paste the API Key from https://bakery.bagel.net/api-key
+DEMO_KEY_IN_USE = getpass("Enter your API key: ")
+
+# Set environment variable
+api_key = os.environ['BAGEL_API_KEY'] = DEMO_KEY_IN_USE
+
 dataset_id = 'insert dataset/asset id'
-client.delete_asset(dataset_id, api_key)
+
+response = client.delete_asset(dataset_id, api_key)
+print(response)
 ```
 
 This method deletes a specific Asset.
 
-## Download Model Files
-
-```python
-api_key = 'insert api key'
-asset_id = 'insert dataset/asset id'
-file_name = "insert file .txt"
-
-client.download_file(asset_id, file_name, api_key)
-```
-
-Downloads a file associated with a specific Asset.
-
 ## Query Asset
 
 ```python
-api_key = ""
+import os
+import bagel
+from getpass import getpass
+
+# Create the asset using the API key from environment variables
+client = bagel.Client()
+
+# Copy & Paste the API Key from https://bakery.bagel.net/api-key
+DEMO_KEY_IN_USE = getpass("Enter your API key: ")
+
+# Set environment variable
+api_key = os.environ['BAGEL_API_KEY'] = DEMO_KEY_IN_USE
+
 asset_id = ""
 
 payload = {
@@ -147,7 +169,8 @@ payload = {
     "padding": False,
 }
 
-client.query_asset(asset_id, payload, api_key)
+response = client.query_asset(asset_id, payload, api_key)
+print(response)
 ```
 
 Queries a specific Asset with detailed parameters.
@@ -155,10 +178,19 @@ Queries a specific Asset with detailed parameters.
 ## Update Asset
 
 ```python
+import os
 import bagel
-from bagel.config import Settings
+from getpass import getpass
 
-api_key = ""
+# Create the asset using the API key from environment variables
+client = bagel.Client()
+
+# Copy & Paste the API Key from https://bakery.bagel.net/api-key
+DEMO_KEY_IN_USE = getpass("Enter your API key: ")
+
+# Set environment variable
+api_key = os.environ['BAGEL_API_KEY'] = DEMO_KEY_IN_USE
+
 asset_id = ""
 
 payload = {
@@ -168,14 +200,8 @@ payload = {
     "tags": ["Updated", "Tags"]
 }
 
-server_settings = Settings(
-    bagel_api_impl="rest",
-    bagel_server_host="api.bageldb.ai",
-    bagel_server_http_port="80",
-)
-client = bagel.Client(server_settings)
-
-client.update_asset(asset_id, payload, api_key)
+response = client.update_asset(asset_id, payload, api_key)
+print(response)
 ```
 
 Updates the details of an existing Asset.
@@ -183,11 +209,24 @@ Updates the details of an existing Asset.
 ## Download file
 
 ```python
-api_key = ""
+import os
+import bagel
+from getpass import getpass
+
+# Create the asset using the API key from environment variables
+client = bagel.Client()
+
+# Copy & Paste the API Key from https://bakery.bagel.net/api-key
+DEMO_KEY_IN_USE = getpass("Enter your API key: ")
+
+# Set environment variable
+api_key = os.environ['BAGEL_API_KEY'] = DEMO_KEY_IN_USE
+
 asset_id = ""
 file_name = ""
 
-client.download_file(asset_id, file_name, api_key)
+response = client.download_file(asset_id, file_name, api_key)
+print(response)
 ```
 
 Downloads a specific file from an Asset.
@@ -195,11 +234,24 @@ Downloads a specific file from an Asset.
 ## File Upload
 
 ```python
-api_key = ""
+import os
+import bagel
+from getpass import getpass
+
+# Create the asset using the API key from environment variables
+client = bagel.Client()
+
+# Copy & Paste the API Key from https://bakery.bagel.net/api-key
+DEMO_KEY_IN_USE = getpass("Enter your API key: ")
+
+# Set environment variable
+api_key = os.environ['BAGEL_API_KEY'] = DEMO_KEY_IN_USE
+
 dataset_id = ""
 file_path = ""
 
-client.file_upload(file_path, dataset_id, api_key)
+response = client.file_upload(file_path, dataset_id, api_key)
+print(response)
 ```
 
 Uploads a file to a specific Asset.
@@ -207,48 +259,84 @@ Uploads a file to a specific Asset.
 ## Fine-tune
 
 ```python
-# Define the URL for the fine-tune function
-apiKey = ""
-# Define the payload for the fine-tune function
-payload = {
-  "dataset_type": 'RAW',
-  "title": 'what!',
-  "category": '',
-  "details": '',
-  "tags": [],
-  "user_id": '',
-  "fine_tune_payload": {
-    "asset_id": '', # Move asset_id here
-    "model_name": '', # Same as the title
-    "base_model": '',
-    "file_name": 'catch.txt',
-    "user_id": '',
-  }
-}
+import os
+import bagel
+from getpass import getpass
 
-client.fine_tune(payload, apiKey)
+# Create the asset using the API key from environment variables
+client = bagel.Client()
+
+# Copy & Paste the API Key from https://bakery.bagel.net/api-key
+DEMO_KEY_IN_USE = getpass("Enter your API key: ")
+
+# Set environment variable
+api_key = os.environ['BAGEL_API_KEY'] = DEMO_KEY_IN_USE
+
+user_id = "" #insert user id
+asset_id = "" #insert RAW asset id containing dataset 
+base_model = "" # model id of purchased base model from marketplace 
+file_name = "" # name of file in raw asset 
+title = ""  # choose a title 
+
+response = client.fine_tune(title=title,
+                            user_id=user_id,
+                            asset_id = asset_id,
+                            file_name = file_name,
+                            base_model = base_model,
+                            epochs = 3,
+                            learning_rate = 0.01
+                            )
+print(response)
 ```
 
 Fine-tunes a model using a specific Asset and provided parameters.
 
+`Note`: Epochs & learning rate are optional. By default, epochs = 3 & learning rate = 0.001. Users can change it according to their requirements. 
+
 ## Get all assets
 
 ```python
-user_Id = ""
-api_key = ""
+import os
+import bagel
+from getpass import getpass
 
-client.get_all_asset(user_Id, api_key)
+# Create the asset using the API key from environment variables
+client = bagel.Client()
+
+# Copy & Paste the API Key from https://bakery.bagel.net/api-key
+DEMO_KEY_IN_USE = getpass("Enter your API key: ")
+
+# Set environment variable
+api_key = os.environ['BAGEL_API_KEY'] = DEMO_KEY_IN_USE
+
+user_Id = ""
+
+response = client.get_all_asset(user_Id, api_key)
+print(response)
 ```
 
 Retrieves all assets for a specific user.
 
-## Get all assets by Id
+## Get assets by Id
 
 ```python
-asset_id = ""
-api_key = ""
+import os
+import bagel
+from getpass import getpass
 
-client.get_asset_by_id(asset_id, api_key)
+# Create the asset using the API key from environment variables
+client = bagel.Client()
+
+# Copy & Paste the API Key from https://bakery.bagel.net/api-key
+DEMO_KEY_IN_USE = getpass("Enter your API key: ")
+
+# Set environment variable
+api_key = os.environ['BAGEL_API_KEY'] = DEMO_KEY_IN_USE
+
+asset_id = ""
+
+response = client.get_asset_by_id(asset_id, api_key)
+print(response)
 ```
 
 Retrieves a specific asset by its ID.
@@ -256,35 +344,76 @@ Retrieves a specific asset by its ID.
 ## Get finetuned model
 
 ```python
-# Replace these values with actual ones
-api_key = ""
+import os
+import bagel
+from getpass import getpass
+
+# Create the asset using the API key from environment variables
+client = bagel.Client()
+
+# Copy & Paste the API Key from https://bakery.bagel.net/api-key
+DEMO_KEY_IN_USE = getpass("Enter your API key: ")
+
+# Set environment variable
+api_key = os.environ['BAGEL_API_KEY'] = DEMO_KEY_IN_USE
+
 asset_id = ""
 file_name = "train.txt"
 
 # Call the function
-client.download_file_by_asset_and_name(asset_id, file_name)
+response = client.download_file_by_asset_and_name(asset_id, file_name)
+print(response)
 ```
 
 Downloads a fine-tuned model by asset ID and file name.
 
-## Get job by job id
+## Get job by asset id 
 
 ```python
-job_id = ""  # Replace with the actual job ID
-api_key = ""  # Replace with the actual API key
+import os
+import bagel
+from getpass import getpass
 
-client.get_job(job_id, api_key)
+# Create the asset using the API key from environment variables
+client = bagel.Client()
+
+# Copy & Paste the API Key from https://bakery.bagel.net/api-key
+DEMO_KEY_IN_USE = getpass("Enter your API key: ")
+
+# Set environment variable
+api_key = os.environ['BAGEL_API_KEY'] = DEMO_KEY_IN_USE
+
+asset_id = "" # Replace with asset ID of fine-tuned model. e.g "eR57yd73b-7gt4-4a71-b0fd-afKJUIY6578Ge" 
+
+# Function to get job by asset
+
+# Call the function
+response = client.get_job_by_asset_id(asset_id, api_key)
+print(response)
 ```
 
-Retrieves the status of a specific job by job ID.
+Retrieves the status of a specific job by asset ID.
 
 ## Get job
 
 ```python
-job_id = ""  # Replace with the actual job ID
-api_key = ""  # Replace with the actual API key
+import os
+import bagel
+from getpass import getpass
 
-client.get_job(job_id, api_key)
+# Create the asset using the API key from environment variables
+client = bagel.Client()
+
+# Copy & Paste the API Key from https://bakery.bagel.net/api-key
+DEMO_KEY_IN_USE = getpass("Enter your API key: ")
+
+# Set environment variable
+api_key = os.environ['BAGEL_API_KEY'] = DEMO_KEY_IN_USE
+
+job_id = ""  # Replace with the actual job ID
+
+response = client.get_job(job_id, api_key)
+print(response)
 ```
 
 Retrieves details of a job.
@@ -292,12 +421,24 @@ Retrieves details of a job.
 ## List Job
 
 ```python
-# Replace "your_api_key_here" with the provided API key
-api_key = ""
+import os
+import bagel
+from getpass import getpass
+
+# Create the asset using the API key from environment variables
+client = bagel.Client()
+
+# Copy & Paste the API Key from https://bakery.bagel.net/api-key
+DEMO_KEY_IN_USE = getpass("Enter your API key: ")
+
+# Set environment variable
+api_key = os.environ['BAGEL_API_KEY'] = DEMO_KEY_IN_USE
+
 user_id = ""
 
 # Call the function
-client.list_jobs(user_id, api_key)
+response = client.list_jobs(user_id, api_key)
+print(response)
 ```
 
 Lists all jobs for a specific user.
@@ -305,8 +446,18 @@ Lists all jobs for a specific user.
 ## Add data to asset
 
 ```python
-asset_id = ""
-api_key = ""
+import os
+import bagel
+from getpass import getpass
+
+# Create the asset using the API key from environment variables
+client = bagel.Client()
+
+# Copy & Paste the API Key from https://bakery.bagel.net/api-key
+DEMO_KEY_IN_USE = getpass("Enter your API key: ")
+
+# Set environment variable
+api_key = os.environ['BAGEL_API_KEY'] = DEMO_KEY_IN_USE
 
 payload = {
   "metadatas": [{ "source": "testing" }],
@@ -314,7 +465,8 @@ payload = {
   "ids": ["xxxx-xxxx-xxxx-xxxx--xxxxx"], #manually generated by you
 }
 
-client.add_data_to_asset(asset_id, payload, api_key)
+response = client.add_data_to_asset(asset_id, payload, api_key)
+print(response)
 ```
 
 Adds data to an existing asset.
@@ -322,19 +474,45 @@ Adds data to an existing asset.
 ## Download Finetuned Model 
 
 ```python
-api_key = "insert api key"
+import os
+import bagel
+from getpass import getpass
+
+# Create the asset using the API key from environment variables
+client = bagel.Client()
+
+# Copy & Paste the API Key from https://bakery.bagel.net/api-key
+DEMO_KEY_IN_USE = getpass("Enter your API key: ")
+
+# Set environment variable
+api_key = os.environ['BAGEL_API_KEY'] = DEMO_KEY_IN_USE
+
 asset_id = "insert asset id"
 
 response = client.download_model(asset_id, api_key)
+print(response)
 ```
 
 ## Buy Asset 
 
 ```python
-api_key = "insert api key"
+import os
+import bagel
+from getpass import getpass
+
+# Create the asset using the API key from environment variables
+client = bagel.Client()
+
+# Copy & Paste the API Key from https://bakery.bagel.net/api-key
+DEMO_KEY_IN_USE = getpass("Enter your API key: ")
+
+# Set environment variable
+api_key = os.environ['BAGEL_API_KEY'] = DEMO_KEY_IN_USE
+
 asset_id = "insert asset id"
 user_id = "insert userid"
 
-client.buy_asset(asset_id, user_id, api_key)      
+response = client.buy_asset(asset_id, user_id, api_key)     
+print(response) 
 ```
 

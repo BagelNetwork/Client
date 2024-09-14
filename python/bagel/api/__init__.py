@@ -528,6 +528,11 @@ class API(Component, ABC):
         pass
 
     @abstractmethod
+    def get_job(self, job_id, api_key) -> str:
+        """get job"""
+        pass
+
+    @abstractmethod
     def get_job_by_asset_id(self, asset_id: str, api_key: Optional[str] = None) -> str:
         """get job by asset id"""
         pass
