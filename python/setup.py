@@ -43,7 +43,7 @@ classifiers = [
 # Configuration of package setup
 setup(
     name="bagelML",
-    version="0.0.20",
+    version="0.0.21",
     description="BagelML is a library for Bagel's finetuning API.",
     long_description=long_description,
     long_description_content_type="text/markdown",
