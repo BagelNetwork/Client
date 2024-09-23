@@ -696,6 +696,18 @@ class FastAPI(API):
         # Define the payload for creating a dataset
         headers = self._popuate_headers_with_api_key(api_key)
 
+        if not payload or not isinstance(payload, dict):
+            raise ValueError("Payload must be a non-empty dictionary")
+        
+        required_fields = ['dataset_type', 'title', 'user_id']
+        missing_fields = [field for field in required_fields if field not in payload]
+        
+        if missing_fields:
+            raise ValueError(f"Missing required fields in payload: {', '.join(missing_fields)}")
+
+        if payload['dataset_type'] not in ['RAW', 'MODEL', 'VECTOR']:
+            raise ValueError("Invalid dataset_type. Must be 'RAW', 'MODEL', or 'VECTOR'")
+
         # Make a POST request to create a dataset
         response = requests.post(url, json=payload, headers=headers)
 
@@ -708,6 +720,9 @@ class FastAPI(API):
     
     @override
     def get_assets_list(self, user_id: str, api_key: Optional[str] = None) -> str:
+        if not user_id:
+            raise ValueError("User ID must be provided")
+        
         headers = self._popuate_headers_with_api_key(api_key)
 
         try:
@@ -723,6 +738,8 @@ class FastAPI(API):
             
     @override
     def get_asset_info(self, asset_id: str, api_key: Optional[str] = None) -> str:
+        if not asset_id:
+            raise ValueError("Asset ID must be provided")
         headers = self._popuate_headers_with_api_key(api_key)
         try:
             url = f"{self._api_url}/asset/{asset_id}"
@@ -740,6 +757,8 @@ class FastAPI(API):
     # delete asset function
     @override
     def delete_asset(self, dataset_id: str, api_key: Optional[str] = None) -> str:
+        if not dataset_id:
+            raise ValueError("Dataset ID must be provided")
         url = f"{self._api_url}/asset/{dataset_id}"
 
         headers = self._popuate_headers_with_api_key(api_key)
@@ -756,6 +775,8 @@ class FastAPI(API):
 
     @override
     def download_model_file(self, asset_id: str, file_name: str, api_key: Optional[str] = None) -> Document:
+        if not asset_id or not file_name:
+            raise ValueError("Both asset ID and file name must be provided")
         url = f"{self._api_url}/jobs/asset/{asset_id}/files/{file_name}"
         headers = self._popuate_headers_with_api_key(api_key)
         try:
@@ -772,6 +793,8 @@ class FastAPI(API):
 
     @override
     def download_model(self, asset_id: str, api_key: Optional[str] = None) -> Any:
+        if not asset_id:
+            raise ValueError("Asset ID must be provided")
         """download model"""
         headers = self._popuate_headers_with_api_key(api_key)
         try:
@@ -790,6 +813,34 @@ class FastAPI(API):
 
     @override
     def add_text(self, asset_id: str, payload: dict, api_key: Optional[str] = None) -> dict:
+        if not asset_id:
+            raise ValueError("Asset ID must be provided")
+
+        if not payload or not isinstance(payload, dict):
+            raise ValueError("Payload must be a non-empty dictionary")
+
+        required_keys = ['metadatas', 'documents', 'ids']
+        missing_keys = [key for key in required_keys if key not in payload]
+
+        if missing_keys:
+            raise ValueError(f"Missing required keys in payload: {', '.join(missing_keys)}")
+
+        # Additional validations
+        if not isinstance(payload['metadatas'], list) or not payload['metadatas']:
+            raise ValueError("'metadatas' must be a non-empty list")
+        
+        if not isinstance(payload['documents'], list) or not payload['documents']:
+            raise ValueError("'documents' must be a non-empty list")
+        
+        if not isinstance(payload['ids'], list) or not payload['ids']:
+            raise ValueError("'ids' must be a non-empty list")
+
+        if len(payload['metadatas']) != len(payload['documents']) or len(payload['documents']) != len(payload['ids']):
+            raise ValueError("'metadatas', 'documents', and 'ids' must have the same length")
+
+        for metadata in payload['metadatas']:
+            if not isinstance(metadata, dict) or 'source' not in metadata:
+                raise ValueError("Each item in 'metadatas' must be a dictionary with a 'source' key")
         headers = self._popuate_headers_with_api_key(api_key)
         try:
             url = f"{self._api_url}/asset/{asset_id}/add"
@@ -818,6 +869,10 @@ class FastAPI(API):
     
     @override
     def add_image(self, asset_id: str, file_path: str, api_key: Optional[str] = None):
+        if not asset_id or not file_path:
+            raise ValueError("Both asset ID and file path must be provided")
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(f"File not found: {file_path}")
         headers = self._popuate_headers_with_api_key(api_key)
         try:
             url = f"{self._api_url}/asset/{asset_id}/add_image_file"
@@ -839,6 +894,23 @@ class FastAPI(API):
 
     @override
     def query_asset(self, asset_id: str, payload: dict, api_key: Optional[str] = None) -> str:
+        if not asset_id or not payload:
+            raise ValueError("Both asset ID and payload must be provided")
+
+        if not payload or not isinstance(payload, dict):
+            raise ValueError("Payload must be a non-empty dictionary")
+
+        required_keys = ['n_results', 'include', 'query_texts', 'padding']
+        missing_keys = [key for key in required_keys if key not in payload]
+
+        if missing_keys:
+            raise ValueError(f"Missing required keys in payload: {', '.join(missing_keys)}")
+        
+        if not isinstance(payload['query_texts'], list) or not payload['query_texts']:
+            raise ValueError("'query_texts' must be a non-empty list")
+        if not isinstance(payload['n_results'], int) or payload['n_results'] <= 0:
+            raise ValueError("'n_results' must be a positive integer")
+        
         headers = self._popuate_headers_with_api_key(api_key)
         try:
             # Format the URL with the asset ID
@@ -883,6 +955,14 @@ class FastAPI(API):
     def fine_tune(self, title: str, user_id: str, asset_id: str, file_name: str, 
                   base_model: str, epochs: Optional[int] = 3, learning_rate: Optional[float] = 0.001, 
                   api_key: Optional[str] = None) -> str:
+        required_params = {
+            'title': title, 'user_id': user_id, 'asset_id': asset_id,
+            'file_name': file_name, 'base_model': base_model
+        }
+        missing_params = [param for param, value in required_params.items() if not value]
+        
+        if missing_params:
+            raise ValueError(f"Missing required parameters: {', '.join(missing_params)}")
         url = f"{self._api_url}/asset"
         headers = self._popuate_headers_with_api_key(api_key)
         try:
@@ -939,6 +1019,8 @@ class FastAPI(API):
 
     @override
     def get_job_by_asset_id(self, asset_id: str, api_key: Optional[str] = None) -> str:
+        if not asset_id:
+            raise ValueError("Asset ID must be provided")
         headers = self._popuate_headers_with_api_key(api_key)
 
         try:
@@ -974,6 +1056,10 @@ class FastAPI(API):
 
     @override
     def file_upload(self, file_path: str, asset_id: str, api_key: Optional[str] = None) -> str:
+        if not file_path or not asset_id:
+            raise ValueError("Both file path and asset ID must be provided")
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(f"File not found: {file_path}")
         headers = self._popuate_headers_with_api_key(api_key)
         try:
             url = f"{self._api_url}/asset/{asset_id}/upload"
@@ -993,6 +1079,8 @@ class FastAPI(API):
     @override
     def buy_asset(self, asset_id: str, user_id: str, api_key: Optional[str] = None) -> str:
         """buy asset"""
+        if not asset_id or not user_id:
+            raise ValueError("Both asset ID and user ID must be provided")
         headers = self._popuate_headers_with_api_key(api_key)
 
         try:
@@ -1007,6 +1095,8 @@ class FastAPI(API):
     
     @override
     def get_download_url(self, asset_id: str, file_name: str, api_key: Optional[str] = None) -> dict:
+        if not asset_id or not file_name:
+            raise ValueError("Both asset ID and file name must be provided")
         url = f"{self._api_url}/asset/{asset_id}/files/{file_name}"
         # Define the payload for creating a dataset
         headers = self._popuate_headers_with_api_key(api_key)
@@ -1023,6 +1113,8 @@ class FastAPI(API):
         
     @override
     def get_model_files_list(self, asset_id: str, api_key: Optional[str] = None):
+        if not asset_id:
+            raise ValueError("Asset ID must be provided")
         url = f"{self._api_url}/jobs/asset/{asset_id}/files"
         # Define the payload for creating a dataset
         headers = self._popuate_headers_with_api_key(api_key)
