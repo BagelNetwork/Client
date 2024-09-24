@@ -6,6 +6,16 @@ import { v4 as uuidv4 } from 'uuid'
 // const { v4: uuidv4 } = require('uuid')
 import FormData from 'form-data'
 import fs from 'fs'
+import { pipeline } from 'stream'
+import { promisify } from 'util'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+const streamPipeline = promisify(pipeline)
+
+// Manually define __dirname in ES modules
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 // const FormData = require('form-data')
 // import {Buffer} from 'buffer'
 // // const Buffer = require('buffer').Buffer
@@ -16,7 +26,7 @@ class API {
   constructor (settings) {
     const urlPrefix = settings.bagel_server_ssl_enabled ? 'https' : 'http'
     if (!settings.bagel_server_host) {
-      throw new Error(
+      return (
         "Missing required config values 'bagel_server_host' and/or 'bagel_server_http_port'"
       )
     }
@@ -42,13 +52,13 @@ class API {
     try {
       const response = await fetch(this._api_url)
       if (!response.data) {
-        throw new Error('Empty response data received')
+        return 'Empty response data received'
       }
       if (parseInt(response.data['nanosecond heartbeat']) > 0) {
         return 'pong'
       }
     } catch (error) {
-      console.error('Error:', error)
+      return `Error: ${error.message}`
     }
   }
 
@@ -57,11 +67,11 @@ class API {
     try {
       const response = await fetch(this._api_url + '/version')
       if (!response.data) {
-        throw new Error('Empty response data received')
+        return 'Empty response data received'
       }
       return response.data
     } catch (error) {
-      console.error('Error:', error)
+      return `Error ${error.message}`
     }
   }
 
@@ -83,17 +93,12 @@ class API {
       const data = await response.json()
 
       if (response.status === 200) {
-        console.log('Asset created successfully!')
-        console.log(JSON.stringify(data))
-
-        // Get the asset ID from the response
-        const assetId = data
-        console.log(`Asset ID: ${assetId}`)
+        return `Asset created successfully! ${JSON.stringify(data)}`
       } else {
-        console.error(`Error creating Asset: ${JSON.stringify(data)}`)
+        return `Error creating Asset: ${JSON.stringify(data)}`
       }
     } catch (error) {
-      console.error('Error creating Asset:', error)
+      return `Error creating Asset: ${error.message}`
     }
   }
 
@@ -116,13 +121,12 @@ class API {
       const data = await response.json()
 
       if (response.status === 200) {
-        console.log('Asset retrieved successfully!')
-        console.log(data)
+        return `Asset retrieved successfully! \n ${data}`
       } else {
-        console.error(`Error retrieving asset: ${JSON.stringify(data)}`)
+        return `Error retrieving asset: ${JSON.stringify(data)}`
       }
     } catch (error) {
-      console.error('Error retrieving asset:', error)
+      return `Error retrieving asset: ${error.message}`
     }
   }
 
@@ -146,13 +150,12 @@ class API {
       const data = await response.json()
 
       if (response.status === 200) {
-        console.log('Asset retrieved successfully!')
-        console.log(data)
+        return `Asset retrieved successfully! \n ${data}`
       } else {
-        console.error(`Error retrieving asset: ${JSON.stringify(data)}`)
+        return `Error retrieving asset: ${JSON.stringify(data)}`
       }
     } catch (error) {
-      console.error('Error retrieving asset:', error)
+      return `Error retrieving asset: ${error.message}`
     }
   }
 
@@ -176,11 +179,11 @@ class API {
 
       if (!response.ok) {
         const errorDetail = await response.json()
-        throw new Error(`Error deleting asset: ${JSON.stringify(errorDetail)}`)
+        return `Error deleting asset: ${JSON.stringify(errorDetail)}`
       }
-      console.log('Asset deleted successfully.')
+      return 'Asset deleted successfully.'
     } catch (error) {
-      console.error(error.message)
+      return `Error: ${error.message}`
     }
   }
 
@@ -191,7 +194,7 @@ class API {
         method: 'POST'
       })
     } catch (error) {
-      console.error('Error:', error)
+      return `Error: ${error}`
     }
   }
 
@@ -213,14 +216,13 @@ class API {
 
       if (!response.ok) {
         const errorDetail = await response.json() // Changed to json to catch the error detail
-        console.error('Error response:', errorDetail) // Log the full error response
+        return `Error response: ${errorDetail}` // Log the full error response
         // throw new Error(`Error updating data: ${response.status}`)
       }
 
       return await response.json()
     } catch (error) {
-      console.error('Internal error:', error)
-      throw error
+      return `Internal error: ${error}`
     }
   }
 
@@ -231,7 +233,7 @@ class API {
         method: 'POST'
       })
     } catch (error) {
-      console.error('Error:', error)
+      return `Error: ${error}`
     }
   }
 
@@ -245,11 +247,11 @@ class API {
         }
       )
       if (!response.data) {
-        throw new Error('Empty response data received')
+        return 'Empty response data received'
       }
       return parseInt(response.data)
     } catch (error) {
-      console.error('Error:', error)
+      return `Error: ${error}`
     }
   }
 
@@ -291,13 +293,13 @@ class API {
       )
 
       if (!response.ok) {
-        throw new Error(`API request failed with status ${response.status}`)
+        return `API request failed with status ${response.status}`
       }
 
       const data = await response.json() // Parse JSON response
 
       if (!data) {
-        throw new Error('Empty response data received')
+        return 'Empty response data received'
       }
 
       return {
@@ -307,7 +309,7 @@ class API {
         documents: data.documents ? data.documents : null
       }
     } catch (error) {
-      console.error('Error:', error.message)
+      return `Error: ${error.message}`
     }
   }
 
@@ -322,12 +324,12 @@ class API {
       })
 
       if (!response.ok) {
-        throw new Error(`API request failed with status ${response.status}`)
+        return `API request failed with status ${response.status}`
       }
 
       return 'success' // Assuming success on 2xx status code
     } catch (error) {
-      console.error('Error:', error.message)
+      return `Error: ${error.message}`
     }
   }
 
@@ -353,12 +355,12 @@ class API {
         }
       )
       if (!response.data) {
-        throw new Error('Empty response data received')
+        return 'Empty response data received'
       }
       // console.log(response.data);
       return response.data
     } catch (error) {
-      console.error('Error:', error)
+      return `Error: ${error}`
     }
   }
 
@@ -380,16 +382,12 @@ class API {
 
       if (!response.ok) {
         const errorDetail = await response.json() // Changed to json to catch the error detail
-        console.error('Error response:', errorDetail) // Log the full error response
-        throw new Error(
-          `Error adding data: ${response.status} - ${response.statusText}`
-        )
+        return `Error response: ${errorDetail} \n Error adding data: ${response.status} - ${response.statusText}` // Log the full error response
       }
 
       return await response.json()
     } catch (error) {
-      console.error('Internal error:', error)
-      throw error
+      return `Internal error: ${error}`
     }
   }
 
@@ -414,13 +412,13 @@ class API {
 
       if (!response.ok) {
         const errorDetail = await response.json() // Changed to json to catch the error detail
-        console.error('Error response:', errorDetail) // Log the full error response
+        return `Error response: ${errorDetail}` // Log the full error response
         //   throw new Error(`Error querying data: ${response.status}`)
       }
 
       return await response.json()
     } catch (error) {
-      console.error('Internal error:', error)
+      return `Internal error: ${error}`
       // throw error;
     }
   } // ------------------- Query Asset ---------------------
@@ -437,7 +435,7 @@ class API {
       const response = await fetch(url, requestOpts)
       return response.json()
     } catch (error) {
-      console.error('Error:', error)
+      return `Error: ${error}`
     }
   }
 
@@ -455,12 +453,11 @@ class API {
         { ids, embeddings, metadatas, documents }
       )
       if (!response.data) {
-        throw new Error('Empty response data received')
+        return 'Empty response data received'
       }
       return response.data
     } catch (error) {
-      console.error('Error:', error.message)
-      throw error
+      return `Error: ${error.message}`
     }
   }
 
@@ -489,15 +486,13 @@ class API {
 
       const responseData = await response.text() // Get response text
 
-      console.log(responseData) // Print response content for debugging
-
       if (response.ok) {
-        console.log('Data uploaded successfully!')
+        return 'Data uploaded successfully!'
       } else {
-        console.log(`Error uploading data: ${responseData}`)
+        return `Error uploading data: ${responseData}`
       }
     } catch (error) {
-      console.error('Error:', error)
+      return `Error: ${error}`
     }
   }
 
@@ -516,12 +511,11 @@ class API {
         { ids, embeddings, metadatas, documents, incrementIndex }
       )
       if (!response.data) {
-        throw new Error('Empty response data received')
+        return 'Empty response data received'
       }
       return response.data
     } catch (error) {
-      console.error('Error:', error.message)
-      throw error
+      return `Error: ${error.message}`
     }
   }
 
@@ -532,8 +526,7 @@ class API {
         this._api_url + '/clusters/' + clusterName + '/create_index'
       )
     } catch (error) {
-      console.error('Error:', error.message)
-      throw error
+      return `Error: ${error.message}`
     }
   }
 
@@ -567,7 +560,7 @@ class API {
         return data
       })
       .catch((error) => {
-        console.error('Error:', error)
+        return `Error: ${error.message}`
       })
   }
 
@@ -583,7 +576,7 @@ class API {
         return data
       })
       .catch((error) => {
-        console.error('Error:', error)
+        return `Error: ${error}`
       })
   }
 
@@ -604,13 +597,12 @@ class API {
       const data = await response.json()
 
       if (response.status === 200) {
-        console.log('Asset retrieved successfully!')
-        console.log(data)
+        return `Asset retrieved successfully! ${data}`
       } else {
-        console.error(`Error retrieving asset: ${JSON.stringify(data)}`)
+        return `Error retrieving asset: ${JSON.stringify(data)}`
       }
     } catch (error) {
-      console.error('Error retrieving asset:', error)
+      return `Error retrieving asset: ${error}`
     }
   }
 
@@ -630,13 +622,12 @@ class API {
       const data = await response.json()
 
       if (response.status === 200) {
-        console.log('API key created successfully and sent to user ID:', userId)
-        return data
+        return `API key created successfully and sent to user ID: ${userId} ${data}`
       } else {
-        console.error(`Error creating API key: ${JSON.stringify(data)}`)
+        return `Error creating API key: ${JSON.stringify(data)}`
       }
     } catch (error) {
-      console.error('Error creating API key:', error)
+      return `Error creating API key: ${error}`
     }
   }
 
@@ -661,13 +652,12 @@ class API {
       const data = await response.json()
 
       if (response.status === 200) {
-        console.log('Dataset liked successfully!')
-        return data
+        return `Dataset liked successfully! ${data}`
       } else {
-        console.error(`Error liking dataset: ${JSON.stringify(data)}`)
+        return `Error liking dataset: ${JSON.stringify(data)}`
       }
     } catch (error) {
-      console.error('Error liking dataset:', error)
+      return `Error liking dataset: ${error}`
     }
   }
 
@@ -692,13 +682,12 @@ class API {
       const data = await response.json()
 
       if (response.status === 200) {
-        console.log('Dataset rated successfully!')
-        return data
+        return `Dataset rated successfully! ${data}`
       } else {
-        console.error(`Error rating dataset: ${JSON.stringify(data)}`)
+        return `Error rating dataset: ${JSON.stringify(data)}`
       }
     } catch (error) {
-      console.error('Error rating dataset:', error)
+      return `Error rating dataset: ${error}`
     }
   }
 
@@ -720,14 +709,13 @@ class API {
 
       if (!response.ok) {
         const errorDetail = await response.json() // Changed to json to catch the error detail
-        console.error('Error response:', errorDetail) // Log the full error response
+        return `Error response: ${errorDetail} \n Error Finetuning: ${response.status} ${errorDetail.detail}`
         // throw new Error(`Error fine tuning: ${response.status}`)
       } else {
         return await response.json()
       }
     } catch (error) {
-      console.error('Internal error:', error)
-      throw error
+      return `Internal error: ${error}`
     }
   }
 
@@ -751,16 +739,12 @@ class API {
 
       if (!response.ok) {
         const errorDetail = await response.json()
-        console.error('Error response:', errorDetail)
-        throw new Error(
-          `Error listing jobs: ${response.status} ${errorDetail.detail}`
-        )
+        return `Error response: ${errorDetail} \n Error listing jobs: ${response.status} ${errorDetail.detail}`
       }
 
       return await response.json()
     } catch (error) {
-      console.error('Internal error:', error)
-      throw error
+      return `Internal error: ${error}`
     }
   }
 
@@ -780,7 +764,7 @@ class API {
 
       if (!response.ok) {
         const errorDetail = await response.json()
-        console.error('Error response:', errorDetail)
+        return `Error response: ${errorDetail}`
         // throw new Error(
         //   `Error getting job: ${response.status} ${errorDetail.detail}`
         // )
@@ -788,8 +772,7 @@ class API {
 
       return await response.json()
     } catch (error) {
-      console.error('Internal error:', error)
-      throw error
+      return `Internal error: ${error}`
     }
   }
 
@@ -811,16 +794,12 @@ class API {
 
       if (!response.ok) {
         const errorDetail = await response.json()
-        console.error('Error response:', errorDetail)
-        // throw new Error(
-        //   `Error getting job by asset: ${response.status} ${errorDetail.detail}`
-        // )
+        return `Error response: ${errorDetail} \n Error getting job by asset: ${response.status} ${errorDetail.detail}`
       }
 
       return await response.json()
     } catch (error) {
-      console.error('Internal error:', error)
-      throw error
+      return `Internal error: ${error}`
     }
   }
 
@@ -844,16 +823,12 @@ class API {
 
       if (!response.ok) {
         const errorDetail = await response.json()
-        console.error('Error response:', errorDetail)
-        throw new Error(
-          `Error listing model files: ${response.status} ${errorDetail.detail}`
-        )
+        return `Error response: ${errorDetail} Error listing model files: ${response.status} ${errorDetail.detail}`
       }
 
       return await response.json()
     } catch (error) {
-      console.error('Internal error:', error)
-      throw error
+      return `Internal error: ${error}`
     }
   }
 
@@ -877,16 +852,12 @@ class API {
 
       if (!response.ok) {
         const errorDetail = await response.json()
-        console.error('Error response:', errorDetail)
-        // // throw new Error(
-        // //   `Error downloading model file: ${response.status} ${errorDetail.detail}`
-        // )
+        return `Error response: ${errorDetail}`
       } else {
         return await response.blob() // Assuming the file is binary data
       }
     } catch (error) {
-      console.error('Internal error:', error)
-      throw error
+      return `Internal error: ${error}`
     }
   }
 
@@ -909,13 +880,86 @@ class API {
       const data = await response.json()
 
       if (response.status === 200) {
-        console.log('Notification recieved successfully!')
-        return data
+        return `Notification recieved successfully! ${data}`
       } else {
-        console.error(`Error recieving notification: ${JSON.stringify(data)}`)
+        return `Error recieving notification: ${JSON.stringify(data)}`
       }
     } catch (error) {
-      console.error('Error recieving notification:', error)
+      return `Error recieving notification: ${error}`
+    }
+  }
+
+  // download model function
+  async download_model (assetId, apiKey) {
+    return this._downloadModel(assetId, apiKey)
+  }
+
+  // async _downloadModel(assetId, apiKey = null) {
+  //     const streamPipeline = promisify(pipeline);
+
+  //     // Populate headers with API key
+  //     const headers = apiKey ? { 'x-api-key': apiKey, 'Content-Type': 'application/json' } : {};
+  //     const url = `${this._api_url}/jobs/asset/${assetId}/download`;
+  //     const fileName = `${assetId}.zip`;
+
+  //     try {
+  //         const response = await fetch(url, { method: 'GET', headers });
+
+  //         if (response.ok) {
+  //             const fileStream = fs.createWriteStream(fileName);
+  //             await streamPipeline(response.body, fileStream);
+
+  //             return `Successfully downloaded! Model ID: ${assetId}`;
+  //         } else {
+  //             return "Error downloading file";
+  //         }
+  //     } catch (error) {
+  //         return `Error: ${error.message}`;
+  //     }
+  // }
+
+  async _downloadModel (assetId, apiKey = null) {
+    const fileName = `${assetId}.zip`
+    const filePath = path.resolve(__dirname, fileName)
+
+    const headers = apiKey ? { 'x-api-key': apiKey, 'Content-Type': 'application/json' } : {}
+
+    try {
+      const url = `${this._api_url}/jobs/asset/${assetId}/download`
+
+      // Check if the file already exists and determine its current size (for resuming)
+      let startByte = 0
+      if (fs.existsSync(filePath)) {
+        const stats = fs.statSync(filePath)
+        startByte = stats.size
+        return `Resuming from byte: ${startByte}`
+      }
+
+      // Set the Range header for resuming the download
+      headers.Range = `bytes=${startByte}-`
+
+      const response = await axios.get(url, {
+        headers,
+        responseType: 'stream',
+        timeout: 10000
+      })
+
+      const writer = fs.createWriteStream(filePath, { flags: 'a' })
+
+      // Track download progress
+      let downloadedBytes = startByte
+
+      response.data.on('data', (chunk) => {
+        downloadedBytes += chunk.length
+        const progress = downloadedBytes / (fs.existsSync(filePath) ? downloadedBytes : 1)
+        return `Downloaded ${downloadedBytes} bytes (${(progress * 100).toFixed(2)}%)`
+      })
+
+      await streamPipeline(response.data, writer)
+
+      return `Successfully downloaded! Model ID: ${assetId}`
+    } catch (error) {
+      return `Error: ${error.message}`
     }
   }
 
@@ -938,13 +982,37 @@ class API {
       const data = await response.json()
 
       if (response.status === 200) {
-        console.log('File downloaded successfully!')
-        return data
+        return `File downloaded successfully! ${data}`
       } else {
-        console.error(`Error downloading files: ${JSON.stringify(data)}`)
+        return `Error downloading files: ${JSON.stringify(data)}`
       }
     } catch (error) {
-      console.error('Error downloading files:', error)
+      return `Error downloading files: ${error}`
+    }
+  }
+
+  // buy asset function
+  async buy_asset (assetId, userId, apiKey) {
+    return this._buy_asset(assetId, userId, apiKey)
+  }
+
+  async _buy_asset (assetId, userId, apiKey = null) {
+    // Populate headers with API key
+    const headers = apiKey ? { 'x-api-key': apiKey, 'Content-Type': 'application/json' } : {}
+    const url = `${this._api_url}/asset/${assetId}/buy/${userId}`
+
+    try {
+      const response = await fetch(url, { method: 'GET', headers })
+
+      if (response.ok) {
+        const data = await response.json()
+        return `Buy asset successful: ${JSON.stringify(data)}`
+      } else {
+        const errorData = await response.json()
+        return JSON.stringify(errorData)
+      }
+    } catch (error) {
+      return `Error: ${error.message}`
     }
   }
 }
