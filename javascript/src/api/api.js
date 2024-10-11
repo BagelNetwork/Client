@@ -76,32 +76,53 @@ class API {
   }
 
   // -------------------New Create Asset Function ---------------------
-  async create_asset (payload, apiKey) {
-    // Define headers
+  async create_asset(payload, apiKey = null) {
+    const url = `${this._api_url}/asset`; // Assuming `this._apiUrl` is defined elsewhere
     const headers = {
       'x-api-key': apiKey,
       'Content-Type': 'application/json'
+    } // Assuming this method exists to populate headers with the API key
+
+    // Check if payload is valid
+    if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+      return ("Payload must be a non-empty object");
+    }
+
+    // Required fields
+    const requiredFields = ['dataset_type', 'title', 'user_id'];
+    const missingFields = requiredFields.filter(field => !payload.hasOwnProperty(field));
+
+    if (missingFields.length > 0) {
+      return (`Missing required fields in payload: ${missingFields.join(', ')}`);
+    }
+
+    // Check for valid dataset_type
+    const validDatasetTypes = ['RAW', 'MODEL', 'VECTOR'];
+    if (!validDatasetTypes.includes(payload.dataset_type)) {
+      return ("Invalid dataset_type. Must be 'RAW', 'MODEL', or 'VECTOR'");
     }
 
     try {
-      const response = await fetch(this._api_url + '/asset', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(payload)
-      })
+      // Make a POST request to create a dataset
+      const response = await axios.post(url, payload, { headers });
 
-      const data = await response.json()
-
+      // Check the response status code
       if (response.status === 200) {
-        return `Asset created successfully! ${JSON.stringify(data)}`
+        const assetId = response.data;
+        return assetId;
       } else {
-        return `Error creating Asset: ${JSON.stringify(data)}`
+        return `Error creating dataset: ${JSON.stringify(response.data)}`;
       }
     } catch (error) {
-      return `Error creating Asset: ${error.message}`
+      if (error.response) {
+        // Server returned an error response
+        return (`Error creating dataset: ${error.response.data}`);
+      } else {
+        // Network or other errors
+        return (`Request failed: ${error.message}`);
+      }
     }
   }
-
   // Get a particular created asset using the asset id
   // getAssetById.js
   // -------------------New Get Asset by ID Function ---------------------
@@ -438,6 +459,87 @@ class API {
       return `Error: ${error}`
     }
   }
+
+  // -------------------New add text embedding Function --------------------
+
+  async add_text(assetId, payload, apiKey = null) {
+    // Validate assetId
+    if (!assetId) {
+      return ("Asset ID must be provided");
+    }
+
+    // Validate payload
+    if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+      return ("Payload must be a non-empty object");
+    }
+
+    const requiredKeys = ['metadatas', 'documents', 'ids'];
+    const missingKeys = requiredKeys.filter(key => !payload.hasOwnProperty(key));
+
+    if (missingKeys.length > 0) {
+      return (`Missing required keys in payload: ${missingKeys.join(', ')}`);
+    }
+
+    // Additional validations for metadatas, documents, and ids
+    if (!Array.isArray(payload.metadatas) || payload.metadatas.length === 0) {
+      return ("'metadatas' must be a non-empty array");
+    }
+
+    if (!Array.isArray(payload.documents) || payload.documents.length === 0) {
+      return ("'documents' must be a non-empty array");
+    }
+
+    if (!Array.isArray(payload.ids) || payload.ids.length === 0) {
+      return ("'ids' must be a non-empty array");
+    }
+
+    if (payload.metadatas.length !== payload.documents.length || payload.documents.length !== payload.ids.length) {
+      return ("'metadatas', 'documents', and 'ids' must have the same length");
+    }
+
+    for (const metadata of payload.metadatas) {
+      if (typeof metadata !== 'object' || !metadata.hasOwnProperty('source')) {
+        return ("Each item in 'metadatas' must be an object with a 'source' key");
+      }
+    }
+
+    // Populate headers (assuming this._populateHeadersWithApiKey exists)
+    const headers = {
+      'x-api-key': apiKey,
+      'Content-Type': 'application/json' 
+    }
+
+    try {
+      const url = `${this._api_url}/asset/${assetId}/add`; // Assuming this._apiUrl is defined elsewhere
+      const dataPayload = {
+        "metadatas": payload.metadatas,
+        "documents": payload.documents,
+        "ids": payload.ids.map(id => String(id)) // Convert IDs to strings if necessary
+      };
+
+      // Make a POST request
+      const response = await fetch(url, dataPayload, { 
+        method: 'POST',
+        headers
+      });
+
+      // Check the response status
+      if (response.status === 200) {
+        return `Text data successfully Added: ${response.data}`; // Return the response data on success
+      } else {
+        return `Error response: ${JSON.stringify(response.data)}`;
+      }
+    } catch (error) {
+      if (error.response) {
+        // Handle server error response
+        return (`Error response: ${JSON.stringify(error.response.data)}`);
+      } else {
+        // Handle network or other errors
+        return (`Internal error: ${error.message}`);
+      }
+    }
+  }
+
 
   // update data in a cluster====================================================================================
   async _update (
