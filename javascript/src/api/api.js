@@ -855,8 +855,54 @@ class API {
     }
   }
 
+  // // -------------------New Fine Tune Function ---------------------
+  // async fine_tune (payload, apiKey) {
+  //   return this._fine_tune(payload, apiKey)
+  // }
+
+  // async _fine_tune (payload, apiKey) {
+  //   try {
+  //     const response = await fetch(this._api_url + '/asset', {
+  //       method: 'POST',
+  //       headers: {
+  //         'x-api-key': apiKey,
+  //         'Content-Type': 'application/json'
+  //       },
+  //       body: JSON.stringify(payload)
+  //     })
+
+  //     if (!response.ok) {
+  //       const errorDetail = await response.json() // Changed to json to catch the error detail
+  //       return `Error response: ${errorDetail} \n Error Finetuning: ${response.status} ${errorDetail.detail}`
+  //       // throw new Error(`Error fine tuning: ${response.status}`)
+  //     } else {
+  //       return await response.json()
+  //     }
+  //   } catch (error) {
+  //     return `Internal error: ${error}`
+  //   }
+  // }
+
   // -------------------New Fine Tune Function ---------------------
-  async fine_tune (payload, apiKey) {
+  async fine_tune (params, apiKey) {
+    const payload = {
+      dataset_type: 'MODEL',
+      title: params.title,
+      category: 'AI',
+      details: '',
+      tags: [],
+      user_id: params.user_id,
+      fine_tune_payload: {
+        asset_id: params.asset_id,
+        model_name: params.title,
+        base_model: params.base_model,
+        file_name: params.file_name,
+        epochs: params.epochs || 3,
+        learning_rate: params.learning_rate || 0.001,
+        user_id: params.user_id
+      }
+    }
+
     return this._fine_tune(payload, apiKey)
   }
 
@@ -871,15 +917,15 @@ class API {
         body: JSON.stringify(payload)
       })
 
-      if (!response.ok) {
-        const errorDetail = await response.json() // Changed to json to catch the error detail
-        return `Error response: ${errorDetail} \n Error Finetuning: ${response.status} ${errorDetail.detail}`
-        // throw new Error(`Error fine tuning: ${response.status}`)
+      if (response.ok) {
+        const data = await response.json()
+        return ['Fine-tune operation has been started! Model ID: ', data]
       } else {
-        return await response.json()
+        const errorDetail = await response.json()
+        return ['Error response:', errorDetail]
       }
     } catch (error) {
-      return `Internal error: ${error}`
+      return ['Internal error:', error.toString()]
     }
   }
 
