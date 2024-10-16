@@ -1,4 +1,5 @@
 # Bagel JavaScript Client 🥯
+
 ## Table of Contents
 
 - [Installation](#installation)
@@ -9,10 +10,7 @@
 - [API Methods](#api-methods)
   - [Ping API](#ping-api)
   - [Get API Version](#get-api-version)
-  - [Create Asset](#create-asset)
-    - [Create Asset: RAW Type Dataset](#create-asset-raw-type-dataset)
-    - [Create Asset: VECTOR Type Dataset](https://github.com/BagelNetwork/Client/blob/main/javascript/README.md#create-asset-vector-type-asset
-)
+  - [Create Asset](#create-asset) - [Create Asset: RAW Type Dataset](#create-asset-raw-type-dataset) - [Create Asset: VECTOR Type Dataset](https://github.com/BagelNetwork/Client/blob/main/javascript/README.md#create-asset-vector-type-asset)
   - [Add Embeddings: 'VECTOR' Type Asset](#add-embeddings-vector-type-asset)
   - [Query Vector Asset](#query-vector-asset)
   - [Get Asset by ID](#get-asset-by-id)
@@ -36,44 +34,31 @@ To install the Bagel JavaScript client, use npm:
 npm install bagelml
 ```
 
+Make sure you to also update your `package.json` file by including ` "type": "module",` above your dependencies. Your file should look similar to this:
+
+```js
+{
+  "type": "module",
+  "dependencies": {
+    "bagelml": "^0.0.1"
+  }
+}
+```
+
 ## Overview
 
 The official Bagel API endpoint is `api.bageldb.ai`.
 The Bagel JavaScript client provides easy access to the Bagel API from Node.js applications.
 
-Also, install the following dependencies:
-
-1. Axios : `npm install axios`
-2. Node-Fetch: `npm install node-fetch`
-3. Form data: `npm install form-data`
-4. uuid: `npm install uuid`
-5. Buffer: `npm install buffer`
-
 The full source code with examples is available on [GitHub](https://github.com/BagelNetwork/Client/tree/main/javascript).
 
 ## Client
 
-The `Client` class is the main interface to the Bagel API. It requires a `Settings` object to configure connectivity:
+The `client` class is the main interface to the Bagel API. Make sure to import it using this statement:
 
 ```js
-import { Settings, Client } from "bageldb-beta";
-
-// Settings config
-const settings = new Settings({
-  bagel_api_impl: "rest",
-  bagel_server_host: "api.bageldb.ai",
-});
-
-const client = new Client(settings);
+import { client } from "bagelml";
 ```
-
-## Settings
-
-The `Settings` class contains configuration options for the client:
-
-- `bagel_api_impl` - The Bagel API implementation, usually `"rest"`
-- `bagel_server_host` - Bagel server hostname
-- See `Settings` source for additional options
 
 ## Usage
 
@@ -116,6 +101,8 @@ Assets in Bagel serve as powerful containers for large datasets, encapsulating e
 A raw dataset is an unprocessed collection of data in its original form. This type of dataset typically consists of various types of data such as text, images, audio, or any other form of data that hasn't been transformed, processed, or encoded into a specific format.
 
 ```js
+import { client } from "bagelml";
+
 const apiKey = "insert-your-api-key";
 const payload = {
   dataset_type: "RAW",
@@ -151,6 +138,8 @@ A vector dataset consists of data that has been transformed into vectors, which 
 Creating a 'VECTOR' type asset is similar to creating a 'RAW' type asset. The only difference is the payload:
 
 ```js
+import { client } from "bagelml";
+
 const apiKey = "insert-your-api-key";
 const payload = {
   dataset_type: "VECTOR",
@@ -174,6 +163,8 @@ createVectorAsset();
 ### Add Embeddings: 'VECTOR' Type Asset
 
 ```js
+import { client } from "bagelml";
+
 const assetId = "insert your asset Id";
 const apiKey = "insert your api key";
 
@@ -201,6 +192,8 @@ addVectorAsset();
 ### Query Vector Asset
 
 ```js
+import { client } from "bagelml";
+
 const assetId = "insert your asset Id";
 const apiKey = "insert your api key";
 
@@ -237,6 +230,8 @@ query();
 This method retrieves details for a specific Asset using the generated "Asset ID". An API key is used to ensure security.
 
 ```js
+import { client } from "bagelml";
+
 const apiKey = "insert-your-api-key";
 const assetId = "insert-your-asset-id";
 
@@ -253,7 +248,7 @@ getAsset();
 Updates data in the Asset
 
 ```js
-import { Settings, Client } from "bageldb-beta";
+import { client } from "bagelml";
 
 // Settings config
 const settings = new Settings({
@@ -263,15 +258,15 @@ const settings = new Settings({
 
 const client = new Client(settings);
 
-const assetId = "f4013273-03fa-4d2a-bfb4-d36bda4d5a1c";
-const apiKey = "4gB2wJPByf8qnUihAmH8dgbGYsZESEOH";
+const assetId = "";
+const apiKey = "";
 
 const payload = {
   price: 200,
   is_published: true,
   is_purchased: true,
-  details: "This is for everyone video TV gadget",
-  title: "LG Televisoin",
+  details: "",
+  title: "",
 };
 const update = async () => {
   try {
@@ -290,9 +285,11 @@ update();
 
 ### Get All Assets (For a Specific User)
 
-Retrieves all assets associated with a specific user.  An API key is used to ensure security.
+Retrieves all assets associated with a specific user. An API key is used to ensure security.
 
 ```js
+import { client } from "bagelml";
+
 const apiKey = "insert-your-api-key";
 const userId = "insert-your-user-id";
 
@@ -309,6 +306,8 @@ getAssets();
 This method uploads files to a specific Asset.
 
 ```Js
+import { client } from "bagelml";
+
 const assetId = "insert your asset Id"
 const filePath = "./sample_data.csv"
 const apiKey = "insert your api key"
@@ -327,6 +326,8 @@ uploadFile()
 Updates data in the Asset
 
 ```js
+import { client } from "bagelml";
+
 const apiKey = "insert-your-api-key";
 const assetId = "insert-your-asset-id";
 
@@ -353,9 +354,12 @@ update();
 ```
 
 ### Get User Details
+
 Retrieve details of a specific user from BagelDB using their user ID.
 
 ```js
+import { client } from "bagelml";
+
 const apiKey = "insert your api key";
 const userId = "insert your user id"; // Replace with an actual user ID
 
@@ -372,9 +376,12 @@ getUserDetails();
 ```
 
 #### Create API Key
+
 Create a new API key for a specified user.
 
 ```js
+import { client } from "bagelml";
+
 const userId = "insert your user id";
 
 const createApiKey = async (userId) => {
@@ -389,79 +396,116 @@ const createApiKey = async (userId) => {
 createApiKey(userId);
 ```
 
+### Buy Asset
+
+This code purchases an asset of your choice by passing in the following parameters:
+
+```js
+import { client } from "bagelml";
+
+const assetId = "";
+const apiKey = "";
+const userId = "";
+
+const buyAsset = async () => {
+  // get version
+  const asset = await client.buy_asset(assetId, userId, apiKey);
+  console.log(asset);
+};
+
+buyAsset();
+```
+
+### Download Model Files
+
+```js
+import { client } from 'bagelml'
+
+const assetId = 'input asset id' // e.g '78908uyuihghjkjhyu'
+const apiKey = 'input api key' // e.gn '76890kjhg876huiyg67876tyhj'
+
+const downloadModel = async () => {
+  // get version
+  const asset = await client.download_model(assetId, apiKey)
+  console.log(asset)
+}
+downloadModel()
+```
 
 ### Finetuning
+
 Fine-tune a model using a specific dataset and configuration.
 
 ```js
-const apiKey = "insert your api key";
+import { client } from 'bagelml'
 
-const payload = {
-  dataset_type: "MODEL",
-  title: "insert title", // 
-  category: "insert category", 
-  details: "insert details", //choose detail
-  tags: [],
-  userId: "insert user id", //your user id 
-  fine_tune_payload: {
-    asset_id: "insert RAW asset id", // make sure to upload a .txt file to the raw asset after creating
-    model_name: "insert model name ", // Same name as the title 
-    base_model: "insert base model id", // asset id of purchased model from marketplace 
-    file_name: "nameoffile.txt", // file name in RAW asset 
-    userId: "insert your user id", // your user id 
-  },
-};
+const fineTune = async () => {
+  // get version
+  const apiKey = 'input api key' // e.g '67890ytghijhgghugfghutrty'
+  const title = 'input name of finetuned model' // e.g 'orange comic'
+  const user_id = 'input your user id' // e.g '3456789876'
+  const asset_id = 'input asset id' // e.g 'yuiou89-hgjkhgiohg-gh8yuiouy'
+  const base_model_id = 'input base model id' // This is the model you want to use for fine tuning
+  const file_name = 'input file name' // This is the name of file uploaded to the asset you want to finetune to the new model
+  const epochs = 3 // default is 3
+  const learning_rate = 0.01 // default is 0.01 but you could change it
 
-// Function to initiate fine-tuning
-const testFineTune = async () => {
-  try {
-    console.log("Sending request with payload:", payload);
-    const response = await client.fine_tune(payload, apiKey);
-    console.log('Fine tune response:', response);
-  } catch (error) {
-    console.error('Error during fine tuning:', error);
-  }
-};
+  const asset = await client.fine_tune(
+    title,
+    user_id,
+    asset_id,
+    base_model_id,
+    file_name,
+    epochs,
+    learning_rate,
+    apiKey
+  )
+  console.log(asset)
+}
 
-testFineTune();
+fineTune()
 ```
 
+### Get Job by asset
 
-
-### Get Job by asset 
 Retrieve job details associated with a specific asset ID.
 
-```js 
+```js
+import { client } from "bagelml";
+
 const apiKey = "insert your api key";
 const asset_id = "insert your asset id"; // Replace with actual asset ID
 
 const testGetJobByAsset = async () => {
   try {
     const response = await client.get_job_by_asset(asset_id, apiKey);
-    console.log('Get job by asset response:', response);
+    console.log("Get job by asset response:", response);
   } catch (error) {
-    console.error('Error getting job by asset:', error.message);
-    console.error('Error details:', error);
+    console.error("Error getting job by asset:", error.message);
+    console.error("Error details:", error);
   }
 };
 
 testGetJobByAsset();
 ```
 
-### Get Job 
+### Get Job
+
 Retrieve details of a specific job by its ID.
 
-```js 
+```js
+import { client } from "bagelml";
+
 const apiKey = "insert your api key";
 const job_id = "insert your job id"; // Replace with actual job ID
 
 const testGetJob = async () => {
   try {
     const response = await client.get_job(job_id, apiKey);
-    console.log('Get job response:', response);
+    console.log("Get job response:", response);
   } catch (error) {
-    console.error('Error getting job:', error.message);
-    console.error('Error details:', error);
+    console.error("Error getting job:", error.message);
+    console.error("Error details:", error);
   }
 };
 
@@ -469,19 +513,22 @@ testGetJob();
 ```
 
 ### List Jobs
+
 List all jobs associated with a specific user.
 
-```js 
+```js
+import { client } from "bagelml";
+
 const apiKey = "insert your api key";
 const user_id = "insert your user id"; // Replace with actual user ID
 
 const testListJobs = async () => {
   try {
     const response = await client.list_jobs(user_id, apiKey);
-    console.log('List jobs response:', response);
+    console.log("List jobs response:", response);
   } catch (error) {
-    console.error('Error listing jobs:', error.message);
-    console.error('Error details:', error);
+    console.error("Error listing jobs:", error.message);
+    console.error("Error details:", error);
   }
 };
 
@@ -489,31 +536,35 @@ testListJobs();
 ```
 
 ### List model files
+
 List all files associated with a specific model asset.
 
-```js 
+```js
+import { client } from "bagelml";
+
 const apiKey = "insert your api key";
 const asset_id = "insert your asset id"; // Replace with actual asset ID
 
 const testListModelFiles = async () => {
   try {
     const response = await client.list_model_files(asset_id, apiKey);
-    console.log('List model files response:', response);
+    console.log("List model files response:", response);
   } catch (error) {
-    console.error('Error listing model files:', error.message);
-    console.error('Error details:', error);
+    console.error("Error listing model files:", error.message);
+    console.error("Error details:", error);
   }
 };
 
 testListModelFiles();
 ```
 
-
 ### Delete Asset
 
 This method deletes a specific Asset.
 
 ```js
+import { client } from "bagelml";
+
 const apiKey = "insert your api key";
 const assetId = "insert your asset id"; // Replace with actual asset ID
 
@@ -524,7 +575,6 @@ const deleteAsset = async () => {
 };
 deleteAsset();
 ```
-
 
 This documentation provides examples of using Bagels API methods for user management, job handling, model management, and finetuning. For additional support, please contact victor@bagel.net 🥯.
 
