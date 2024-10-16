@@ -419,18 +419,17 @@ buyAsset();
 ### Download Model Files
 
 ```js
-import { client } from "bagelml";
+import { client } from 'bagelml'
 
-const assetId = "";
-const apiKey = "";
+const assetId = 'input asset id' // e.g '78908uyuihghjkjhyu'
+const apiKey = 'input api key' // e.gn '76890kjhg876huiyg67876tyhj'
 
 const downloadModel = async () => {
   // get version
-  const asset = await client.download_model(assetId, apiKey);
-  console.log(asset);
-};
-
-downloadModel();
+  const asset = await client.download_model(assetId, apiKey)
+  console.log(asset)
+}
+downloadModel()
 ```
 
 ### Finetuning
@@ -438,29 +437,33 @@ downloadModel();
 Fine-tune a model using a specific dataset and configuration.
 
 ```js
-import { client } from "bagelml";
+import { client } from 'bagelml'
 
-const apiKey = "insert your api key";
+const fineTune = async () => {
+  // get version
+  const apiKey = 'input api key' // e.g '67890ytghijhgghugfghutrty'
+  const title = 'input name of finetuned model' // e.g 'orange comic'
+  const user_id = 'input your user id' // e.g '3456789876'
+  const asset_id = 'input asset id' // e.g 'yuiou89-hgjkhgiohg-gh8yuiouy'
+  const base_model_id = 'input base model id' // This is the model you want to use for fine tuning
+  const file_name = 'input file name' // This is the name of file uploaded to the asset you want to finetune to the new model
+  const epochs = 3 // default is 3
+  const learning_rate = 0.01 // default is 0.01 but you could change it
 
-// Function to initiate fine-tuning
-const testFineTune = async () => {
-  try {
-    const response = await client.fine_tune({
-      title: "insert title",
-      user_id: "insert user id",
-      asset_id: "insert RAW asset id",
-      file_name: "nameoffile.txt",
-      base_model: "insert base model id",
-      epochs: 3,
-      learning_rate: 0.01
-    }, apiKey);
-    console.log('Fine tune response:', response);
-  } catch (error) {
-    console.error('Error during fine tuning:', error);
-  }
-};
+  const asset = await client.fine_tune(
+    title,
+    user_id,
+    asset_id,
+    base_model_id,
+    file_name,
+    epochs,
+    learning_rate,
+    apiKey
+  )
+  console.log(asset)
+}
 
-testFineTune();
+fineTune()
 ```
 
 ### Get Job by asset

@@ -883,31 +883,47 @@ class API {
   //   }
   // }
 
-  // -------------------New Fine Tune Function ---------------------
-  async fine_tune (params, apiKey) {
-    const payload = {
-      dataset_type: 'MODEL',
-      title: params.title,
-      category: 'AI',
-      details: '',
-      tags: [],
-      user_id: params.user_id,
-      fine_tune_payload: {
-        asset_id: params.asset_id,
-        model_name: params.title,
-        base_model: params.base_model,
-        file_name: params.file_name,
-        epochs: params.epochs || 3,
-        learning_rate: params.learning_rate || 0.001,
-        user_id: params.user_id
-      }
-    }
-
-    return this._fine_tune(payload, apiKey)
+  async fine_tune (title,
+    user_id,
+    asset_id,
+    base_model,
+    file_name,
+    epochs,
+    learning_rate, apiKey) {
+    return this._fine_tune(title,
+      user_id,
+      asset_id,
+      base_model,
+      file_name,
+      epochs,
+      learning_rate, apiKey)
   }
 
-  async _fine_tune (payload, apiKey) {
+  async _fine_tune (title,
+    user_id,
+    asset_id,
+    base_model,
+    file_name,
+    epochs,
+    learning_rate, apiKey) {
     try {
+      const payload = {
+        dataset_type: 'MODEL',
+        title,
+        category: 'AI',
+        details: '',
+        tags: [],
+        user_id,
+        fine_tune_payload: {
+          asset_id,
+          model_name: title,
+          base_model,
+          file_name,
+          epochs,
+          learning_rate,
+          user_id
+        }
+      }
       const response = await fetch(this._api_url + '/asset', {
         method: 'POST',
         headers: {
@@ -917,15 +933,15 @@ class API {
         body: JSON.stringify(payload)
       })
 
-      if (response.ok) {
-        const data = await response.json()
-        return ['Fine-tune operation has been started! Model ID: ', data]
+      if (!response.ok) {
+        const errorDetail = await response.json() // Changed to json to catch the error detail
+        return 'Error response:', errorDetail // Log the full error response
+        // throw new Error(`Error fine tuning: ${response.status}`)
       } else {
-        const errorDetail = await response.json()
-        return ['Error response:', errorDetail]
+        return await response.json()
       }
     } catch (error) {
-      return ['Internal error:', error.toString()]
+      return `Internal error: ${error}`
     }
   }
 
@@ -1042,34 +1058,78 @@ class API {
     }
   }
 
-  // -------------------New Download Model Files Function ---------------------
-  async download_model_file (assetId, fileName, apiKey) {
-    return this._download_model_file(assetId, fileName, apiKey)
+  async download_model (assetId, apiKey) {
+    return this._downloadModel(assetId, apiKey)
   }
 
-  async _download_model_file (assetId, fileName, apiKey) {
-    try {
-      const url = `${this._api_url}/api/v1/jobs/asset/${assetId}/files/${fileName}`
-      console.log('Request URL:', url) // Log the URL to verify it's correct
+  async _downloadModel (assetId, apiKey = null) {
+    if (!assetId) {
+      return ('Asset ID must be provided')
+    }
 
-      const response = await fetch(url, {
+    // Populate headers with API key if provided
+    const headers = {
+      'x-api-key': apiKey,
+      'Content-Type': 'application/json'
+    }
+
+    try {
+      const url = `${this._api_url}/jobs/asset/${assetId}/download`
+      const fileName = `${assetId}.zip`
+
+      // Make the request using axios
+      const response = await axios({
+        url,
         method: 'GET',
-        headers: {
-          'x-api-key': apiKey,
-          'Content-Type': 'application/json'
-        }
+        headers,
+        responseType: 'stream'
       })
 
-      if (!response.ok) {
-        const errorDetail = await response.json()
-        return `Error response: ${errorDetail}`
+      if (response.status === 200) {
+        // Write the file to disk
+        const writer = fs.createWriteStream(fileName)
+        response.data.pipe(writer)
+
+        return new Promise((resolve, reject) => {
+          writer.on('finish', () => resolve(`Successfully downloaded! Model ID: ${assetId}`))
+          writer.on('error', reject)
+        })
       } else {
-        return await response.blob() // Assuming the file is binary data
+        return 'Error downloading file'
       }
     } catch (error) {
-      return `Internal error: ${error}`
+      return `Error: ${error.message}`
     }
   }
+
+  // // -------------------New Download Model Files Function ---------------------
+  // async download_model_file (assetId, fileName, apiKey) {
+  //   return this._download_model_file(assetId, fileName, apiKey)
+  // }
+
+  // async _download_model_file (assetId, fileName, apiKey) {
+  //   try {
+  //     const url = `${this._api_url}/api/v1/jobs/asset/${assetId}/files/${fileName}`
+  //     console.log('Request URL:', url) // Log the URL to verify it's correct
+
+  //     const response = await fetch(url, {
+  //       method: 'GET',
+  //       headers: {
+  //         'x-api-key': apiKey,
+  //         'Content-Type': 'application/json'
+  //       }
+  //     })
+
+  //     if (!response.ok) {
+  //       const errorDetail = await response.json()
+  //       return `Error response: ${errorDetail}`
+  //     } else {
+  //       return await response.blob() // Assuming the file is binary data
+  //     }
+  //   } catch (error) {
+  //     return `Internal error: ${error}`
+  //   }
+  // }
 
   // Get notification ============================================== [WIP]
   async get_notification (userId, apiKey) {
@@ -1099,10 +1159,10 @@ class API {
     }
   }
 
-  // download model function
-  async download_model (assetId, apiKey) {
-    return this._downloadModel(assetId, apiKey)
-  }
+  // // download model function
+  // async download_model (assetId, apiKey) {
+  //   return this._downloadModel(assetId, apiKey)
+  // }
 
   // async _downloadModel(assetId, apiKey = null) {
   //     const streamPipeline = promisify(pipeline);
@@ -1128,78 +1188,78 @@ class API {
   //     }
   // }
 
-  async _downloadModel (assetId, apiKey = null) {
-    const fileName = `${assetId}.zip`
-    const filePath = path.resolve(__dirname, fileName)
+  // async _downloadModel (assetId, apiKey = null) {
+  //   const fileName = `${assetId}.zip`
+  //   const filePath = path.resolve(__dirname, fileName)
 
-    const headers = apiKey ? { 'x-api-key': apiKey, 'Content-Type': 'application/json' } : {}
+  //   const headers = apiKey ? { 'x-api-key': apiKey, 'Content-Type': 'application/json' } : {}
 
-    try {
-      const url = `${this._api_url}/jobs/asset/${assetId}/download`
+  //   try {
+  //     const url = `${this._api_url}/jobs/asset/${assetId}/download`
 
-      // Check if the file already exists and determine its current size (for resuming)
-      let startByte = 0
-      if (fs.existsSync(filePath)) {
-        const stats = fs.statSync(filePath)
-        startByte = stats.size
-        return `Resuming from byte: ${startByte}`
-      }
+  //     // Check if the file already exists and determine its current size (for resuming)
+  //     let startByte = 0
+  //     if (fs.existsSync(filePath)) {
+  //       const stats = fs.statSync(filePath)
+  //       startByte = stats.size
+  //       return `Resuming from byte: ${startByte}`
+  //     }
 
-      // Set the Range header for resuming the download
-      headers.Range = `bytes=${startByte}-`
+  //     // Set the Range header for resuming the download
+  //     headers.Range = `bytes=${startByte}-`
 
-      const response = await axios.get(url, {
-        headers,
-        responseType: 'stream',
-        timeout: 10000
-      })
+  //     const response = await axios.get(url, {
+  //       headers,
+  //       responseType: 'stream',
+  //       timeout: 10000
+  //     })
 
-      const writer = fs.createWriteStream(filePath, { flags: 'a' })
+  //     const writer = fs.createWriteStream(filePath, { flags: 'a' })
 
-      // Track download progress
-      let downloadedBytes = startByte
+  //     // Track download progress
+  //     let downloadedBytes = startByte
 
-      response.data.on('data', (chunk) => {
-        downloadedBytes += chunk.length
-        const progress = downloadedBytes / (fs.existsSync(filePath) ? downloadedBytes : 1)
-        return `Downloaded ${downloadedBytes} bytes (${(progress * 100).toFixed(2)}%)`
-      })
+  //     response.data.on('data', (chunk) => {
+  //       downloadedBytes += chunk.length
+  //       const progress = downloadedBytes / (fs.existsSync(filePath) ? downloadedBytes : 1)
+  //       return `Downloaded ${downloadedBytes} bytes (${(progress * 100).toFixed(2)}%)`
+  //     })
 
-      await streamPipeline(response.data, writer)
+  //     await streamPipeline(response.data, writer)
 
-      return `Successfully downloaded! Model ID: ${assetId}`
-    } catch (error) {
-      return `Error: ${error.message}`
-    }
-  }
+  //     return `Successfully downloaded! Model ID: ${assetId}`
+  //   } catch (error) {
+  //     return `Error: ${error.message}`
+  //   }
+  // }
 
-  // Download model files ==============================[WIP]
-  async download_model_files (jobId, fileName, apiKey) {
-    const headers = {
-      'x-api-key': apiKey,
-      'Content-Type': 'application/json'
-    }
+  // // Download model files ==============================[WIP]
+  // async download_model_files (jobId, fileName, apiKey) {
+  //   const headers = {
+  //     'x-api-key': apiKey,
+  //     'Content-Type': 'application/json'
+  //   }
 
-    try {
-      const response = await fetch(
-        this._api_url + `/jobs/${jobId}/files/${fileName}`,
-        {
-          method: 'GET',
-          headers
-        }
-      )
+  //   try {
+  //     const response = await fetch(
+  //       this._api_url + `/jobs/${jobId}/files/${fileName}`,
+  //       {
+  //         method: 'GET',
+  //         headers
+  //       }
+  //     )
 
-      const data = await response.json()
+  //     const data = await response.json()
 
-      if (response.status === 200) {
-        return `File downloaded successfully! ${data}`
-      } else {
-        return `Error downloading files: ${JSON.stringify(data)}`
-      }
-    } catch (error) {
-      return `Error downloading files: ${error}`
-    }
-  }
+  //     if (response.status === 200) {
+  //       return `File downloaded successfully! ${data}`
+  //     } else {
+  //       return `Error downloading files: ${JSON.stringify(data)}`
+  //     }
+  //   } catch (error) {
+  //     return `Error downloading files: ${error}`
+  //   }
+  // }
 
   // buy asset function
   async buy_asset (assetId, userId, apiKey) {
