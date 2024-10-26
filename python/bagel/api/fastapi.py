@@ -844,7 +844,7 @@ class FastAPI(API):
         headers = self._popuate_headers_with_api_key(api_key)
         try:
             url = f"{self._api_url}/asset/{asset_id}/add"
-            payload = {
+            request_payload = {
                         "metadatas": [
                             {"source": payload['source']}
                         ],
@@ -852,11 +852,11 @@ class FastAPI(API):
                             payload['documents']
                         ],
                         "ids": [
-                            str(UUID)
+                            str(uuid.uuid4())
                         ]
                     }
             # Make a POST request to query the asset
-            response = requests.post(url, headers=headers, data=json.dumps(payload))
+            response = requests.post(url, headers=headers, data=json.dumps(request_payload))
             # Check the response status code
             if response.status_code == 201:
                 response_data = response.json()
