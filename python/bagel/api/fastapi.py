@@ -819,28 +819,6 @@ class FastAPI(API):
         if not payload or not isinstance(payload, dict):
             raise ValueError("Payload must be a non-empty dictionary")
 
-        required_keys = ['metadatas', 'documents', 'ids']
-        missing_keys = [key for key in required_keys if key not in payload]
-
-        if missing_keys:
-            raise ValueError(f"Missing required keys in payload: {', '.join(missing_keys)}")
-
-        # Additional validations
-        if not isinstance(payload['metadatas'], list) or not payload['metadatas']:
-            raise ValueError("'metadatas' must be a non-empty list")
-        
-        if not isinstance(payload['documents'], list) or not payload['documents']:
-            raise ValueError("'documents' must be a non-empty list")
-        
-        if not isinstance(payload['ids'], list) or not payload['ids']:
-            raise ValueError("'ids' must be a non-empty list")
-
-        if len(payload['metadatas']) != len(payload['documents']) or len(payload['documents']) != len(payload['ids']):
-            raise ValueError("'metadatas', 'documents', and 'ids' must have the same length")
-
-        for metadata in payload['metadatas']:
-            if not isinstance(metadata, dict) or 'source' not in metadata:
-                raise ValueError("Each item in 'metadatas' must be a dictionary with a 'source' key")
         headers = self._popuate_headers_with_api_key(api_key)
         try:
             url = f"{self._api_url}/asset/{asset_id}/add"
@@ -954,6 +932,7 @@ class FastAPI(API):
     @override
     def fine_tune(self, title: str, user_id: str, asset_id: str, file_name: str, 
                   base_model: str, epochs: Optional[int] = 3, learning_rate: Optional[float] = 0.001, 
+                  input_column: str = None, output_column: str = None,
                   api_key: Optional[str] = None) -> str:
         required_params = {
             'title': title, 'user_id': user_id, 'asset_id': asset_id,
@@ -980,7 +959,9 @@ class FastAPI(API):
                         "file_name": file_name,
                         "epochs": epochs,
                         "learning_rate": learning_rate,
-                        "user_id": user_id
+                        "user_id": user_id,
+                        "input_column": input_column,
+                        "output_column": output_column
                     }
                 }
             response = requests.post(url, json=payload, headers=headers)
@@ -994,7 +975,23 @@ class FastAPI(API):
         except Exception as e:
             return ('Internal error:', str(e))
         
-
+    @override
+    def get_dataset_column_names(self, asset_id: str, file_name: str, api_key: Optional[str] = None):
+        if not asset_id:
+            raise ValueError("Asset ID must be provided")
+        headers = self._popuate_headers_with_api_key(api_key)
+        try:
+            url = f"{self._api_url}/asset/{asset_id}/{file_name}/get_column_names"  # Replace with the actual base URL
+            response = requests.get(url, headers=headers)
+            if response.status_code != 200:
+                error_detail = response.json()
+                print('Error response:', error_detail)
+                raise Exception(f"Error getting job: {response.status_code} {error_detail.get('detail')}")
+            else:
+                return response.json()
+        except Exception as error:
+            print('Internal error:', error)
+            raise error
 
     @override
     def get_job(self, job_id, api_key) -> str:
