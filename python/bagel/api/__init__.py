@@ -523,8 +523,14 @@ class API(Component, ABC):
     @abstractmethod
     def fine_tune(self, title: str, user_id: str, asset_id: str, file_name: str, 
                   base_model: str, epochs: Optional[int] = 3, learning_rate: Optional[float] = 0.001, 
+                  input_column: str = None, output_column: str = None,
                   api_key: Optional[str] = None) -> str:
         """Fine tune method"""
+        pass
+
+    @abstractmethod
+    def get_dataset_column_names(self, asset_id: str, file_name: str, api_key: Optional[str] = None):
+        """Get dataset columns"""
         pass
 
     @abstractmethod
