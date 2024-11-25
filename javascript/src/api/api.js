@@ -702,6 +702,34 @@ class API {
     }
   }
 
+  // -------------------New Get dataset column names Function ---------------------
+  async get_dataset_column_names(assetId, fileName, apiKey) {
+    if (!assetId) {
+      throw new Error('Asset ID must be provided');
+    }
+
+    const headers = this._populateHeadersWithApiKey(apiKey);
+
+    try {
+      const url = `${this._api_url}/asset/${assetId}/${fileName}/get_column_names`;
+      const response = await fetch(url, {
+        method: 'GET',
+        headers
+      });
+
+      if (response.status !== 200) {
+        const errorDetail = await response.json();
+        console.error('Error response:', errorDetail);
+        throw new Error(`Error getting job: ${response.status} ${errorDetail?.detail}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Internal error:', error);
+      throw error;
+    }
+  }
+
   // -------------------New Fine Tune Function ---------------------
   async fine_tune (payload, apiKey) {
     return this._fine_tune(payload, apiKey)
@@ -916,6 +944,28 @@ class API {
       }
     } catch (error) {
       console.error('Error recieving notification:', error)
+    }
+  }
+
+
+  // -------------------New Get Model File download url Function ---------------------
+  async get_download_url(assetId, fileName, apiKey) {
+    if (!assetId || !fileName) {
+      throw new Error('Both asset ID and file name must be provided');
+    }
+
+    const url = `${this._api_url}/asset/${assetId}/files/${fileName}`;
+    const headers = this._populateHeadersWithApiKey(apiKey);
+
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers
+      });
+
+      return await response.json();
+    } catch (error) {
+      return ['Error:', error.toString()];
     }
   }
 
