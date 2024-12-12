@@ -311,7 +311,7 @@ api_key = os.environ['BAGEL_API_KEY'] = DEMO_KEY_IN_USE
 
 user_Id = ""
 
-response = client.get_all_asset(user_Id, api_key)
+response = client.get_assets_list(user_Id, api_key)
 print(response)
 ```
 
@@ -335,7 +335,7 @@ api_key = os.environ['BAGEL_API_KEY'] = DEMO_KEY_IN_USE
 
 asset_id = ""
 
-response = client.get_asset_by_id(asset_id, api_key)
+response = client.get_asset_info(asset_id, api_key)
 print(response)
 ```
 
